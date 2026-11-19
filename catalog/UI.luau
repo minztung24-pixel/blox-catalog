@@ -23,7 +23,7 @@ function UI.start()
     local state = Inventory.new()
     local tab, category, query, page = "Inventory", "Fruits", "", 1
     local flags = {Visual = true, Balance = true, ["Gift Perm"] = true, Icons = true, Preview3D = true}
-    local models, connections, modal, render, refreshModels = {}, {}, nil, nil, nil
+    local models, connections, modal, render, refreshModels, updateQuantity = {}, {}, nil, nil, nil, nil
     local alive, scanning = true, false
 
     local function make(class, parent, props)
@@ -88,15 +88,33 @@ function UI.start()
     local footer = make("Frame", panel, {Name = "Footer", BackgroundTransparency = 1})
     local status = text(panel, "Status", "Simulation / Right Shift: show or hide", UDim2.new(), UDim2.new(), 11, true)
     local function tell(value) if alive then status.Text = value end end
-    local equipment = Equipment.new(state, player, function(item)
+    local function sourceFor(item)
         return models[item.id] or (item.physicalId and models[tostring(item.physicalId)])
-    end, tell)
+    end
+    local equipment = Equipment.new(state, player, sourceFor, tell)
     state.removeEquipment = function(id) equipment:remove(id) end
     local function equip(item)
-        local ok, err = equipment:equip(item)
-        tell(ok and ("Equipped locally: " .. item.name) or ("Equip unavailable: " .. tostring(err)))
+        local ok, err, mode = equipment:equip(item)
+        tell(ok and ((mode == "existing" and "Equipped existing Tool: " or "Equipped local visual: ") .. item.name) or ("Equip unavailable: " .. tostring(err)))
         if not ok then warn("[Blox Catalog] Equip unavailable: " .. tostring(err)) end
-        return ok, err
+        return ok, err, mode
+    end
+    local function useVisual(item)
+        if not Equipment.findExistingTool(player, item) and not state.items[item.id] then
+            if not sourceFor(item) then
+                tell("Missing 3D model for " .. item.name .. ". View shows its icon; no Tool is available to equip.")
+                return
+            end
+            local ok, err = Inventory.add(state, item)
+            if not ok then tell("Add failed: " .. tostring(err)); return end
+            updateQuantity()
+        end
+        local ok, _, mode = equip(item)
+        if ok then
+            state.visualId = item.id
+            if state.items[item.id] then state.items[item.id].visual = mode == "visual" end
+            gui:SetAttribute("VisualItemId", item.id)
+        end
     end
     local function closeModal()
         if modal then modal:Destroy(); modal = nil end
@@ -128,7 +146,7 @@ function UI.start()
         return label
     end
     local function modelPreview(parent, item)
-        local source = models[item.id]
+        local source = sourceFor(item)
         if not source or not source.Parent then return false end
         local ok, clone = pcall(function() return source:Clone() end)
         if not ok or not clone then return false end
@@ -148,8 +166,7 @@ function UI.start()
         viewport.CurrentCamera = camera
         return true
     end
-    local function preview(item, selectVisual)
-        if selectVisual then state.visualId = item.id; gui:SetAttribute("VisualItemId", item.id) end
+    local function preview(item)
         local body = openModal(item.title ~= "" and item.title or item.name)
         local hasModel = flags.Preview3D and modelPreview(body, item)
         if not hasModel then image(body, item, UDim2.new(0.5, -80, 0, 0), UDim2.fromOffset(160, 160)) end
@@ -157,7 +174,7 @@ function UI.start()
         details ..= hasModel and "\nLocal model preview" or "\nIcon preview"
         text(body, "Details", details, UDim2.fromOffset(4, 186), UDim2.new(1, -8, 0, 80), 13)
         text(body, "Description", item.description, UDim2.fromOffset(4, 274), UDim2.new(1, -8, 0, 100), 12, true)
-        tell(selectVisual and ("Visual preview selected: " .. item.name) or ("Viewing: " .. item.name))
+        tell("Viewing: " .. item.name)
     end
     local function settings()
         local body = openModal("Utilities")
@@ -186,7 +203,7 @@ function UI.start()
         end, colors.green)
         text(body, "Scope", "Gifts are recorded inside this simulator.", UDim2.fromOffset(4, 190), UDim2.new(1, -8, 0, 55), 12, true)
     end
-    local function updateQuantity()
+    updateQuantity = function()
         local count = 0
         for _, row in pairs(state.items) do count += row.count end
         gui:SetAttribute("LocalQuantity", count)
@@ -266,6 +283,15 @@ function UI.start()
             end)
         elseif tab == "Visual" then
             button(footer, "RestoreVisual", "Restore visuals", UDim2.fromScale(0.67, 0), UDim2.new(0.33, 0, 1, 0), function()
+                for id, row in pairs(state.items) do
+                    if row.visual then
+                        if state.native then
+                            local ok, err = state.native:sync(row.item, row.count, false, false)
+                            if not ok then tell("Restore failed: " .. tostring(err)); return end
+                        end
+                        equipment:remove(id); row.visual = nil
+                    end
+                end
                 state.visualId = nil; gui:SetAttribute("VisualItemId", nil); closeModal(); tell("Visual selection cleared.")
             end)
         else
@@ -279,8 +305,12 @@ function UI.start()
         end
         for index = (page - 1) * 30 + 1, math.min(page * 30, #rows) do
             local item = rows[index]
+            local source = sourceFor(item)
+            local stock = state.items[item.id]
+            local available = (source and source.Parent and source:FindFirstChildWhichIsA("BasePart", true))
+                or Equipment.findExistingTool(player, item) or (stock and stock.tool and stock.tool.Parent)
             local card = make("Frame", content, {Name = "Item_" .. item.id, LayoutOrder = index,
-                BackgroundColor3 = models[item.id] and colors.available or colors.surface, BorderSizePixel = 0})
+                BackgroundColor3 = available and colors.available or colors.surface, BorderSizePixel = 0})
             card:SetAttribute("ItemId", item.id); round(card, false)
             if flags.Icons then image(card, item, UDim2.fromOffset(8, 8), UDim2.fromOffset(58, 58)) end
             local left = flags.Icons and 74 or 10
@@ -288,16 +318,16 @@ function UI.start()
             text(card, "Metadata", item.rarity .. " • " .. item.id, UDim2.fromOffset(10, 64), UDim2.new(1, -20, 0, 16), 10, true)
             if tab == "Added" then
                 text(card, "Count", "×" .. state.items[item.id].count, UDim2.fromOffset(10, 88), UDim2.new(0.4, 0, 0, 22), 12)
-                button(card, "Equip", "Equip", UDim2.new(1, -168, 1, -48), UDim2.fromOffset(76, 42), function() equip(item) end, colors.green)
+                button(card, "Equip", available and "Equip" or "No model", UDim2.new(1, -168, 1, -48), UDim2.fromOffset(76, 42), function() equip(item) end, available and colors.green or colors.surface)
                 button(card, "Clear", "Clear", UDim2.new(1, -84, 1, -48), UDim2.fromOffset(76, 42), function()
                     local ok, err = Inventory.clear(state, item.id)
                     updateQuantity(); render(); tell(ok and "Item cleared from the local inventory." or ("Clear failed: " .. tostring(err)))
                 end, colors.red)
             else
-                button(card, "Details", "View", UDim2.fromOffset(8, 84), UDim2.fromOffset(60, 42), function() preview(item, false) end)
-                button(card, "Action", tab == "Visual" and "Use" or tab == "Gift Perm" and "Gift" or "+ Add",
+                button(card, "Details", "View", UDim2.fromOffset(8, 84), UDim2.fromOffset(60, 42), function() preview(item) end)
+                button(card, "Action", tab == "Visual" and (available and "Equip" or "No model") or tab == "Gift Perm" and "Gift" or "+ Add",
                     UDim2.new(1, -94, 1, -48), UDim2.fromOffset(86, 42), function()
-                        if tab == "Visual" then preview(item, true)
+                        if tab == "Visual" then useVisual(item)
                         elseif tab == "Gift Perm" then showGift(item)
                         else
                             local ok, err = Inventory.add(state, item)
@@ -313,7 +343,7 @@ function UI.start()
                                 end
                             end
                         end
-                    end, colors.green)
+                    end, tab == "Visual" and not available and colors.surface or colors.green)
             end
         end
     end

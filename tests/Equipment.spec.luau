@@ -11,6 +11,18 @@ return function(Equipment)
     local external = Instance.new("Part"); external.Parent = root
     local unsafe = Instance.new("WeldConstraint"); unsafe.Part0 = handle; unsafe.Part1 = external; unsafe.Parent = source
     local ok, err = pcall(function()
+        local existingItem = {id = "1393", name = "Buddha", storageKey = "Buddha-Buddha", category = "Fruits"}
+        source:SetAttribute("ItemId", 1393)
+        local fakePlayer = {Character = nil, FindFirstChildOfClass = function() return root end}
+        assert(Equipment.findExistingTool(fakePlayer, existingItem) == source, "Existing player Tools must be reused")
+        source:SetAttribute("BloxCatalogOwned", true)
+        assert(Equipment.findExistingTool(fakePlayer, existingItem) == nil, "Cosmetic clones must not count as existing game Tools")
+        source:SetAttribute("BloxCatalogOwned", nil)
+        source:SetAttribute("ItemId", 9999)
+        source.Name = "Buddha Fruit"
+        assert(Equipment.findExistingTool(fakePlayer, existingItem) == nil, "An explicit mismatched ItemId must not fall back to its name")
+        source:SetAttribute("ItemId", nil)
+        assert(Equipment.findExistingTool(fakePlayer, existingItem) == source, "Legacy physical fruit names must be recognized")
         local tool = assert(Equipment.clone(source, {id = "1393", name = "Buddha", category = "Fruits"}))
         assert(tool:IsA("Tool") and tool:GetAttribute("BloxCatalogOwned") == true)
         assert(not tool:FindFirstChildWhichIsA("LuaSourceContainer", true))

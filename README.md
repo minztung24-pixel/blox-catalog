@@ -8,15 +8,23 @@ Modular Luau catalog and local inventory simulator. This repository is separate 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/minztung24-pixel/blox-catalog/main/load.lua"))()
 ```
 
-Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Add updates the local Items cache and the Added tab. Equip in Added creates a local visual Tool when the matching model is already available to the client. Right Shift hides/shows the window; Tools enables/disables utilities.
+Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Add updates the local Items cache and the Added tab. Equip uses an existing matching Tool in Backpack/Character when available; otherwise it creates a local visual Tool from an available model. Right Shift hides/shows the window; Tools enables/disables utilities.
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v3 cache fix
+## v4 equipment fix
+
+Visual Equip now equips the selected item instead of opening a preview. View remains the preview button. Existing Tools retain their scripts and activation behavior; Clear, Restore visuals and Close leave those Tools intact. Native Equip actions for stock that existed before the local overlay retain the game's original handler.
+
+Entries without a Tool or usable model show `No model`. Repeated Visual Equip does not add duplicate stock. Restore visuals removes all cosmetic Tools created through Visual.
+
+Studio tests verified existing Tool equip and server activation, two cosmetic equips, repeated equip, missing-model handling and cleanup. This does not verify Blox Fruits combat or its custom hotbar in the current live version.
+
+## Cache behavior
 
 The inspected game cache normalizes `false` and `0` to `nil`. Earlier versions compared these values literally and reported a failed write. The adapter now writes only Quantity, accepts its zero-to-nil representation and leaves other item flags to the game. Verification remains enabled, and rejected or mismatched writes are rolled back. Errors include the item ID, key and expected/actual values; supported environments also save `blox-catalog-native-error-<PlaceId>.json` locally.
 
-The fix has a regression test matching the inspected cache behavior. Final live-game compatibility still requires checking the current game version.
+Regression tests match the inspected cache behavior. The user has confirmed local entries now appear in the live Items UI; equipment changes still need a live-game check.
 
 ## Source and updates
 

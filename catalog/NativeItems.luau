@@ -93,6 +93,9 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
     local handler = function(action, id, uid, equipped)
         local entry = bridge.entries[id]
         if not entry or uid ~= nil then return original(action, id, uid, equipped) end
+        if equipActions[action] and typeof(entry.original) == "number" and entry.original > 0 then
+            return original(action, id, uid, equipped)
+        end
         -- RemoteUtil returns Future<Result>; synthetic actions stay entirely local.
         return Future.from(function()
             if equipActions[action] then

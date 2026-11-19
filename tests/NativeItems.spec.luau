@@ -35,16 +35,18 @@ return function(NativeItems)
     local item = {id = "1393", name = "Buddha", category = "Fruits"}
     assert(bridge:sync(item, 2, false, false) and values[1393].Quantity == 5, "Add must reach the observed native quantity field")
     local response = remote.invokeAction(equipAction, 1393)
-    assert(response.future and response.value.ok and equipped == 1, "Native Equip must return Future<Result>, not a raw Result")
-    assert(not remote.invokeAction({}, 1393).value.ok and forwarded == 0, "Synthetic items must not reach server actions")
-    assert(remote.invokeAction({}, 999).original and forwarded == 1, "Unrelated IDs must keep their handler")
-    assert(remote.invokeAction({}, 1393, "real-uid").original and forwarded == 2, "Networked original copies must keep their handler")
+    assert(response.original and equipped == 0 and forwarded == 1, "Stock that existed before the panel must keep the game's normal Equip path")
+    assert(not remote.invokeAction({}, 1393).value.ok and forwarded == 1, "Synthetic transactions must not reach server actions")
+    assert(remote.invokeAction({}, 999).original and forwarded == 2, "Unrelated IDs must keep their handler")
+    assert(remote.invokeAction({}, 1393, "real-uid").original and forwarded == 3, "Networked original copies must keep their handler")
     values[1393].Quantity = 20
     assert(bridge:sync(item, 3, false, false) and values[1393].Quantity == 23, "An external update must become the new baseline")
     assert(bridge:sync(item, 3, true, true) and values[1393].Quantity == 22)
     assert(bridge:restore(item) and values[1393].Quantity == 20, "Clear must restore the observed baseline")
     local empty = {id = "1525", name = "Arcsteel Magnet", category = "Fruits"}
     assert(bridge:sync(empty, 1, false, false) and values[1525].Quantity == 1)
+    local localResponse = remote.invokeAction(equipAction, 1525)
+    assert(localResponse.future and localResponse.value.ok and equipped == 1 and forwarded == 3, "An added-only item must use local Equip and return Future<Result>")
     assert(bridge:sync(empty, 1, true, true) and values[1525].Quantity == nil, "Equipping the final copy must accept the game's zero-to-nil normalization")
     assert(bridge:restore(empty) and values[1525].Quantity == nil)
     failKey = "Quantity"

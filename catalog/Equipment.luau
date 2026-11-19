@@ -1,5 +1,25 @@
 local Equipment = {}
 
+function Equipment.findExistingTool(player, item)
+    local function normalized(name) return name:lower():gsub("%s", "") end
+    local names = {}
+    local suffix = item.category == "Fruits" and " Fruit" or ""
+    names[normalized(item.name .. suffix)] = true
+    names[normalized((item.storageKey or item.name) .. suffix)] = true
+    local fallback
+    for _, root in pairs({player:FindFirstChildOfClass("Backpack"), player.Character}) do
+        for _, tool in ipairs(root:GetChildren()) do
+            if tool:IsA("Tool") and not tool:GetAttribute("BloxCatalogOwned") and not tool:GetAttribute("ClientCatalogOwned") then
+                local id = tool:GetAttribute("ItemId")
+                if id ~= nil then
+                    if tostring(id) == item.id then return tool end
+                elseif names[normalized(tool.Name)] then fallback = fallback or tool end
+            end
+        end
+    end
+    return fallback
+end
+
 function Equipment.clone(source, item)
     if not source or not source.Parent or source:IsA("LuaSourceContainer") then return nil end
     local ok, clone = pcall(function() return source:Clone() end)
@@ -82,11 +102,24 @@ function Equipment.new(state, player, getSource, notify)
     end
     function controller:equip(item)
         local row = state.items[item.id]
-        if not row or row.count < 1 then return false, "Add the item first" end
         local character = player.Character
         local humanoid = character and character:FindFirstChildOfClass("Humanoid")
         local backpack = player:FindFirstChildOfClass("Backpack")
         if not humanoid or humanoid.Health <= 0 or not backpack then return false, "Wait for your character to spawn" end
+        local existing = Equipment.findExistingTool(player, item)
+        if existing then
+            if row and row.tool then
+                if state.native then
+                    local synced, message = state.native:sync(item, row.count, false, false)
+                    if not synced then return false, message end
+                end
+                self:remove(item.id)
+            end
+            local ok, message = pcall(humanoid.EquipTool, humanoid, existing)
+            if not ok or existing.Parent ~= character then return false, tostring(message or "Existing Tool did not equip") end
+            return true, nil, "existing"
+        end
+        if not row or row.count < 1 then return false, "Add the item first" end
         local tool = row.tool
         if not tool or not tool.Parent then
             self:remove(item.id)
@@ -117,7 +150,7 @@ function Equipment.new(state, player, getSource, notify)
             end
             self.bindings[item.id] = {tool.Equipped:Connect(changed), tool.Unequipped:Connect(changed)}
         end
-        return true
+        return true, nil, "visual"
     end
     function controller:close()
         for id in pairs(state.items) do self:remove(id) end
