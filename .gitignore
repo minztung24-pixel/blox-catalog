@@ -1,0 +1,5 @@
+.reference/
+__pycache__/
+*.py[cod]
+blox-catalog-native-error-*.json
+blox-fruits-item-cache-*.json
