@@ -123,8 +123,9 @@ function Equipment.new(state, player, getSource, notify)
         local tool = row.tool
         if not tool or not tool.Parent then
             self:remove(item.id)
-            tool = Equipment.clone(getSource(item), item)
-            if not tool then return false, "Missing 3D model for " .. item.name .. "; the catalog only has its metadata/icon" end
+            local source, sourceError = getSource(item)
+            tool = Equipment.clone(source, item)
+            if not tool then return false, sourceError or ("Missing 3D model for " .. item.name .. "; the catalog only has its metadata/icon") end
             row.tool = tool
         end
         if state.native then

@@ -1,5 +1,6 @@
 import importlib.util
 import unittest
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -43,6 +44,15 @@ class BuildCatalogTests(unittest.TestCase):
         self.assertEqual(self.module.lua('\\u001b'), '"\\\\u001b"')
         with self.assertRaises(ValueError):
             self.module.normalize({"Index": {"ItemId": float("nan")}, "Display": {"Category": "Sword"}})
+
+    def test_studio_package_contains_required_fruit_model_module(self):
+        folder = Path(__file__).parents[1] / "catalog"
+        sources = {name: (folder / (name + ".luau")).read_text(encoding="utf-8")
+                   for name in ("Catalog", "NativeItems", "Equipment", "FruitModels", "Inventory", "UI")}
+        sources.update(Data="return {}", Main="return nil")
+        root = ET.fromstring(self.module.package_xml(sources, {}))
+        names = {item.findtext("Properties/string[@name='Name']") for item in root.find("Item").findall("Item")}
+        self.assertIn("FruitModels", names, "Studio package must include the UI's new dependency")
 
 
 if __name__ == "__main__":

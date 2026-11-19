@@ -92,7 +92,7 @@ def package_xml(sources, data_sources):
     data = script(folder, "Data", sources["Data"])
     for name, source in data_sources.items():
         script(data, name, source)
-    for name in ("Catalog", "NativeItems", "Equipment", "Inventory", "UI"):
+    for name in ("Catalog", "NativeItems", "Equipment", "FruitModels", "Inventory", "UI"):
         script(folder, name, sources[name])
     script(folder, "Main", sources["Main"], "LocalScript")
     return ET.tostring(root, encoding="utf-8", xml_declaration=True)
@@ -105,19 +105,19 @@ def bundle(snapshot_version=None):
         snapshot_version = json.loads((output / "catalog.json").read_text(encoding="utf-8"))["manifest"]["placeVersion"]
     data_sources = {name: (ROOT / "catalog" / "Data" / (name + ".luau")).read_text(encoding="utf-8") for name in CATEGORIES.values()}
     sources = {name: (ROOT / "catalog" / ("Data/init.luau" if name == "Data" else name + (".client.luau" if name == "Main" else ".luau"))).read_text(encoding="utf-8")
-               for name in ("Data", "Catalog", "NativeItems", "Equipment", "Inventory", "UI", "Main")}
-    parts = ["-- Blox Catalog v4 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
+               for name in ("Data", "Catalog", "NativeItems", "Equipment", "FruitModels", "Inventory", "UI", "Main")}
+    parts = ["-- Blox Catalog v5 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
     for name, text in data_sources.items():
         parts.append("local Data" + name + " = (function()\n" + text + "\nend)()\n")
-    for name in ("Data", "Catalog", "NativeItems", "Equipment", "Inventory", "UI"):
+    for name in ("Data", "Catalog", "NativeItems", "Equipment", "FruitModels", "Inventory", "UI"):
         text = sources[name]
         if name == "Data":
             for category, module in CATEGORIES.items():
                 text = text.replace("require(script." + module + ")", "Data" + module)
         elif name == "Catalog":
             text = text.replace("local Database = require(script.Parent.Data)", "local Database = Data")
-        elif name == "UI":
-            for dependency in ("Catalog", "Inventory", "NativeItems", "Equipment"):
+        elif name in ("UI", "FruitModels"):
+            for dependency in ("Catalog", "Inventory", "NativeItems", "Equipment", "FruitModels"):
                 text = text.replace("local " + dependency + " = require(script.Parent." + dependency + ")", "local " + dependency + " = " + dependency)
         parts.append("local " + name + " = (function()\n" + text + "\nend)()\n")
     parts.append("return UI.start()\n")
@@ -125,7 +125,7 @@ def bundle(snapshot_version=None):
     if "require(script." in bundled:
         raise ValueError("Unbundled module dependency")
     (ROOT / "client.lua").write_text(bundled, encoding="utf-8")
-    (output / "blox-catalog-sim-v4.lua").write_text(bundled, encoding="utf-8")
+    (output / "blox-catalog-sim-v5.lua").write_text(bundled, encoding="utf-8")
     (output / "BloxCatalog.rbxmx").write_bytes(package_xml(sources, data_sources))
 
 
