@@ -62,6 +62,23 @@ return function(FruitModels, Equipment)
         local model, err = bad:load(item)
         assert(model == nil and err:find("fixture import denied",1,true))
         bad:close()
+        for _, case in ipairs({
+            {id="1393",imported="78877647242196",expected="15123606541"},
+            {id="1393",imported="15123606541",expected="15123606541"},
+            {id="1525",imported="78877647242196",expected="78877647242196"},
+        }) do
+            local selected={id=case.id,name="Fixture",storageKey="Fixture",category="Fruits"}
+            local original=Instance.new("Tool");original:SetAttribute("ItemId",tonumber(case.id))
+            Instance.new("Part",original).Name="Handle"
+            local fruit=Instance.new("Model",original);fruit.Name="Fruit"
+            Instance.new("AnimationController",fruit)
+            local idle=Instance.new("Animation",fruit);idle.Name="Idle";idle.AnimationId="rbxassetid://"..case.imported
+            local migrated=FruitModels.new(function()return true end,function()return "fixture" end,function()return {original} end)
+            local loaded=assert(migrated:load(selected))
+            local correct=loaded.Fruit.Idle.AnimationId=="rbxassetid://"..case.expected
+            migrated:close()
+            assert(correct,"Correct only the verified Buddha export ID; preserve other IDs and fruits")
+        end
         for _, kind in ipairs({"wrongId","multiple","noPart"}) do
             local a = Instance.new("Tool");a:SetAttribute("ItemId",kind=="wrongId" and 9999 or 1525)
             if kind ~= "noPart" then Instance.new("Part",a).Name="Handle" end

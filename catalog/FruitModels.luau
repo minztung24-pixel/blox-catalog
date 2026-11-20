@@ -62,6 +62,12 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             -- Imported scripts never enter the DataModel; clone strips code, remotes and tags.
             source.Parent = root
             clean = assert(Equipment.clone(source,item),"Model has no usable BasePart")
+            local fruit = clean:FindFirstChild("Fruit")
+            local idle = fruit and fruit:FindFirstChild("Idle")
+            -- Native Buddha capture and typed preload verified this exact export correction.
+            if item.id == "1393" and idle and idle:IsA("Animation") and idle.AnimationId == "rbxassetid://78877647242196" then
+                idle.AnimationId = "rbxassetid://15123606541"
+            end
             assert(not self.closed,"Fruit model cache was closed while loading")
             clean.Parent = root
             self.models[item.id] = clean

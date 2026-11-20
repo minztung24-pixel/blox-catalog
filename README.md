@@ -12,6 +12,12 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v10 Verified Buddha import correction
+
+The native Buddha Tool used animation `15123606541`; the local Buddha export instead referenced `78877647242196`. Typed animation preloading confirmed the native ID succeeds and the exported ID fails in place 2753915549. Import now corrects that exact old ID only for Buddha (ItemId 1393), on the sanitized copy. Original files, genuine Tools, already-correct IDs and other fruits remain unchanged. A matching local Buddha model is still required; a real held Buddha is no longer needed to obtain this correction on each launch.
+
+The v2 preload audit passed its native reference and reported 5 successful IDs and 38 failed IDs. This measures asset loading, not complete rig/FX parity. Account and place changed together, so it does not isolate an account effect. The earlier v1 raw-string preload audit is invalid for this classification. Other unavailable animations, missing scripted FX and the 35 catalog fruit records without matching local files remain unresolved.
+
 ## v9 Native fruit templates
 
 Rescan keeps a sanitized in-memory copy of real fruit Tools in the local player's Backpack/Character, matched by exact ItemId. These copies take priority over imported files and survive when the genuine Tool is stored or removed during this catalog session. Original Tools are unchanged. Close destroys the copies; they are not saved or uploaded. Hold the real fruit until its model has loaded, then press Rescan.

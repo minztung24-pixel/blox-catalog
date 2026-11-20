@@ -1,4 +1,4 @@
--- Blox Catalog v9 simulator. Snapshot place version 4632.
+-- Blox Catalog v10 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -1093,6 +1093,12 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             -- Imported scripts never enter the DataModel; clone strips code, remotes and tags.
             source.Parent = root
             clean = assert(Equipment.clone(source,item),"Model has no usable BasePart")
+            local fruit = clean:FindFirstChild("Fruit")
+            local idle = fruit and fruit:FindFirstChild("Idle")
+            -- Native Buddha capture and typed preload verified this exact export correction.
+            if item.id == "1393" and idle and idle:IsA("Animation") and idle.AnimationId == "rbxassetid://78877647242196" then
+                idle.AnimationId = "rbxassetid://15123606541"
+            end
             assert(not self.closed,"Fruit model cache was closed while loading")
             clean.Parent = root
             self.models[item.id] = clean
@@ -1273,8 +1279,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v9", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 9)
+    text(panel, "Title", "BLOX CATALOG v10", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 10)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

@@ -1,4 +1,4 @@
-# Blox Catalog simulator — v9
+# Blox Catalog simulator — v10
 
 Giao diện quản lý/mô phỏng chạy trên client. Nguồn: báo cáo `blox-fruits-catalog-data-v1-2753915549.json`, place version 4632. File chạy chứa sẵn database, không cần chạy script mẫu hoặc helper trước mỗi lần mở.
 
@@ -12,7 +12,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/minztung24-pixel/blox
 
 Right Shift ẩn/hiện; kéo thanh tiêu đề để di chuyển; Hide thu thành nút Catalog; X đóng và dọn kết nối. Tools bật/tắt Visual, Balance, Gift Perm, icon và xem model 3D. F6/Rescan cập nhật model hiện có trên client. Danh sách có thanh cuộn và tối đa 30 thẻ mỗi trang.
 
-Hoặc dùng file local `dist/blox-catalog-sim-v9.lua`. Trong Blox Fruits, mở Items trước rồi nhấn Rescan. Dòng `Items linked locally` xác nhận đã nối vào cache inventory của client. Khi đó Add vừa cập nhật Added vừa gọi API WriteTempItem của game để hiển thị các bản ghi cục bộ trong Items. Nếu chưa nối được, header ghi `Items offline / panel only`; console có nguyên nhân. Không require module game chưa được tải.
+Hoặc dùng file local `dist/blox-catalog-sim-v10.lua`. Trong Blox Fruits, mở Items trước rồi nhấn Rescan. Dòng `Items linked locally` xác nhận đã nối vào cache inventory của client. Khi đó Add vừa cập nhật Added vừa gọi API WriteTempItem của game để hiển thị các bản ghi cục bộ trong Items. Nếu chưa nối được, header ghi `Items offline / panel only`; console có nguyên nhân. Không require module game chưa được tải.
 
 V3 sửa lỗi ghi native được báo từ game thật: UserReplicationCache.Set chuyển 0/false thành nil. Adapter chỉ ghi Quantity, so sánh đúng biểu diễn nil của stock bằng 0 và để game quản lý các cờ khác. Vẫn kiểm tra đọc lại; ghi bị từ chối, bị biến đổi hoặc ném lỗi sau khi cập nhật sẽ được rollback. Nếu còn lỗi, console ghi rõ key/ID/expected/actual và tạo báo cáo `blox-catalog-native-error-<PlaceId>.json` khi writefile khả dụng. Căn cứ là báo cáo cache chỉ đọc do người dùng xuất trong phiên thật; không tắt restriction của game.
 
@@ -40,7 +40,9 @@ Tên ưu tiên Display.Name, nếu thiếu dùng Index.StorageKey và ghi `nameS
 
 Trong Studio, chèn `dist/BloxCatalog.rbxmx` vào StarterPlayer > StarterPlayerScripts rồi Play. Package chứa Folder BloxCatalog với các ModuleScript và LocalScript Main. File bundle và package được tạo từ cùng mã nguồn.
 
-## Fruits / v9
+## Fruits / v10
+
+Import v10 sửa đúng ID Idle cũ 78877647242196 của Buddha (ItemId 1393) sang 15123606541, lấy từ Tool Buddha thật và đã tải thành công qua kiểm tra typed Animation v2. Chỉ sửa trên bản sao khi ID cũ khớp; file local và Tool thật giữ nguyên, không áp dụng sang trái khác. Cần file model Buddha nhưng không cần cầm Buddha thật sau mỗi lần mở script. Chưa xác nhận đầy đủ chuyển động/FX trong Potassium sau thay đổi này.
 
 Add một Fruit rồi mở Added và bấm Equip. Trái có model được tạo thành Tool và hiển thị trên hotbar gốc của game. Thanh Fruits tự tạo cùng tùy chọn bật/tắt đã bị gỡ theo yêu cầu người dùng. Clear xóa Tool cục bộ; Undo phục hồi bản ghi kho; X dọn Tool và cache model đã tải. Bản v6 giữ nguyên luồng tạo Tool và tải file đã hoạt động ở v5.
 
@@ -75,7 +77,7 @@ python tools/build_catalog.py 'C:\duong-dan\blox-fruits-catalog-data-v1-27539155
 python -m unittest discover -s tests -p test_build_catalog.py
 ```
 
-Builder tạo lại bảy database, client.lua, bundle v9, package Studio và catalog JSON. Chạy `python tools/build_catalog.py` không kèm báo cáo để chỉ build các module/database đã có trong repo. Không cần thư viện Python ngoài standard library. Tệp đầu vào phải complete=true, ItemConfig.status=ok và không chạm giới hạn hàng/thời gian. Cờ partial ở export hiện tại đến từ Color3 của các mục ngoài bảy nhóm và một số vô hạn trong Quality của Dark Blade; các trường đã trích xuất được đối chiếu riêng với nguồn.
+Builder tạo lại bảy database, client.lua, bundle v10, package Studio và catalog JSON. Chạy `python tools/build_catalog.py` không kèm báo cáo để chỉ build các module/database đã có trong repo. Không cần thư viện Python ngoài standard library. Tệp đầu vào phải complete=true, ItemConfig.status=ok và không chạm giới hạn hàng/thời gian. Cờ partial ở export hiện tại đến từ Color3 của các mục ngoài bảy nhóm và một số vô hạn trong Quality của Dark Blade; các trường đã trích xuất được đối chiếu riêng với nguồn.
 
 `tests/Simulation.spec.luau` trả về hàm nhận Inventory và Catalog để chạy assert trong Studio Edit. `tests/NativeItems.spec.luau` kiểm tra chữ ký self/key/itemId/uid/value, Future<Result>, action guard, stock có sẵn giữ handler gốc, cập nhật baseline, rollback và restore. `tests/Equipment.spec.luau` kiểm tra chọn đúng Tool có sẵn, loại bản clone/ID sai, clone sạch, tag, rig/joint, weld và nguồn model không bị sửa.
 
