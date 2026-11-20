@@ -72,8 +72,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v8", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 8)
+    text(panel, "Title", "BLOX CATALOG v9", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 9)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -96,7 +96,8 @@ function UI.start()
     local status = text(panel, "Status", "Simulation / Right Shift: show or hide", UDim2.new(), UDim2.new(), 11, true)
     local function tell(value) if alive then status.Text = value end end
     local function sourceFor(item)
-        return models[item.id] or (item.physicalId and models[tostring(item.physicalId)]) or fruitModels.models[item.id]
+        return (fruitModels.native[item.id] and fruitModels.models[item.id]) or models[item.id]
+            or (item.physicalId and models[tostring(item.physicalId)]) or fruitModels.models[item.id]
     end
     local equipment = Equipment.new(state, player, function(item)
         local source = sourceFor(item)
@@ -440,7 +441,12 @@ function UI.start()
                     if not node:GetAttribute("BloxCatalogOwned") and (node:IsA("Tool") or node:IsA("Model")) then
                         local id = tostring(node:GetAttribute("ItemId") or "")
                         if id == "" and node:IsA("Tool") then id = Catalog.byToolName[node.Name] or "" end
-                        if Catalog.byId[id] then found[id] = node end
+                        if Catalog.byId[id] then
+                            found[id] = node
+                            if node:IsA("Tool") and (node.Parent == player.Character or node.Parent == player:FindFirstChildOfClass("Backpack")) then
+                                fruitModels:capture(Catalog.byId[id],node)
+                            end
+                        end
                     end
                     for _, child in ipairs(node:GetChildren()) do
                         if #queue >= 3000 then break end

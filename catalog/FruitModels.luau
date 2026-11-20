@@ -7,7 +7,23 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     getObjects = getObjects or function(uri) return game:GetObjects(uri) end
     local root = Instance.new("Folder")
     root.Name = "BloxCatalogLocalFruitModels"
-    local cache = {models = {}, loading = {}, closed = false}
+    local cache = {models = {}, native = {}, loading = {}, closed = false}
+    function cache:capture(item, tool)
+        if self.closed or item.category ~= "Fruits" or not tool:IsA("Tool") or not tool.Parent
+            or tool:GetAttribute("BloxCatalogOwned") or tool:GetAttribute("ClientCatalogOwned")
+            or tostring(tool:GetAttribute("ItemId")) ~= item.id then return nil end
+        if self.native[item.id] == tool then return self.models[item.id] end
+        if #tool:GetDescendants() > 3000 then return nil end
+        local ok, clean = pcall(Equipment.clone,tool,item)
+        if not ok or not clean then return nil end
+        -- Keep a sanitized snapshot before Store/respawn removes the genuine Tool.
+        clean.Parent = root
+        local previous = self.models[item.id]
+        self.models[item.id] = clean
+        self.native[item.id] = tool
+        if previous then previous:Destroy() end
+        return clean
+    end
     function cache:path(item)
         if self.closed or item.category ~= "Fruits" or not fileExists or not assetUri then return nil end
         for _, name in ipairs({item.storageKey, item.name}) do
@@ -29,6 +45,7 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         local objects, clean
         local ok, message = pcall(function()
             objects = getObjects(assetUri(path))
+            if self.native[item.id] then return end
             assert(typeof(objects) == "table" and #objects > 0 and #objects <= 20,"Invalid model file contents")
             local source
             for _, object in ipairs(objects) do
@@ -57,12 +74,13 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             if clean then clean:Destroy() end
             return nil,"Local model load failed: " .. tostring(message)
         end
-        return clean
+        return self.models[item.id]
     end
     function cache:close()
         self.closed = true
         root:Destroy()
         table.clear(self.models)
+        table.clear(self.native)
     end
     return cache
 end

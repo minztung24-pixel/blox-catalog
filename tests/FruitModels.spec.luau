@@ -26,8 +26,38 @@ return function(FruitModels, Equipment)
         assert(source == cache:load(item) and reads == 1, "Reuse parsed files")
         assert(originals[1].Parent == nil and #originals[1]:GetChildren() == 0, "Dispose raw objects")
         local held = assert(Equipment.clone(source,item)); held:Destroy()
+        local native = Instance.new("Tool");native.Name="Arcsteel Magnet Fruit";native:SetAttribute("ItemId",1525)
+        native.Parent=Instance.new("Folder")
+        Instance.new("Part",native).Name="Handle"
+        local fruit=Instance.new("Model",native);fruit.Name="Fruit"
+        Instance.new("AnimationController",fruit)
+        local animation=Instance.new("Animation",fruit);animation.AnimationId="rbxassetid://90561160320604"
+        local emitter=Instance.new("ParticleEmitter",native.Handle);emitter.Rate=7;emitter.Enabled=false
+        Instance.new("Script",native).Name="FruitAnimator"
+        local nativeParent=native.Parent
+        table.insert(originals,nativeParent)
+        assert(cache:capture({id="999",category="Fruits"},native)==nil,"Do not cache a mismatched ItemId")
+        native:SetAttribute("BloxCatalogOwned",true)
+        assert(cache:capture(item,native)==nil,"Never learn from another catalog clone")
+        native:SetAttribute("BloxCatalogOwned",nil)
+        local racing
+        racing=FruitModels.new(function()return true end,function()return "fixture" end,function()
+            assert(racing:capture(item,native))
+            local imported=Instance.new("Tool");Instance.new("Part",imported).Name="Handle"
+            return {imported}
+        end)
+        assert(racing:load(item)==racing.models[item.id] and racing.native[item.id]==native,"An import finishing late must not replace a native template")
+        racing:close()
+        local captured=assert(cache:capture(item,native))
+        assert(cache:load(item)==captured and cache:capture(item,native)==captured and reads==1,"Native template replaces imported data and is reused")
+        assert(source.Parent==nil and captured:FindFirstChild("FruitAnimator")==nil,"Dispose old template and strip native scripts")
+        assert(captured.Fruit.Animation.AnimationId==animation.AnimationId and captured.Handle.ParticleEmitter.Rate==7
+            and not captured.Handle.ParticleEmitter.Enabled,"Keep actual animation ID and authored FX state")
+        assert(native.Parent==nativeParent and native.FruitAnimator.Parent==native,"Leave the genuine Tool intact")
+        nativeParent:Destroy()
+        assert(cache:load(item)==captured,"Keep a safe template after the genuine Tool leaves")
         cache:close()
-        assert(source.Parent == nil and cache:load(item) == nil, "Closed cache must not reload files")
+        assert(captured.Parent == nil and cache:load(item) == nil, "Closed cache must not reload files")
         local bad = FruitModels.new(function() return true end,function() return "fixture" end,function() error("fixture import denied") end)
         local model, err = bad:load(item)
         assert(model == nil and err:find("fixture import denied",1,true))

@@ -95,7 +95,7 @@ function Equipment.fruitMotion(tool, notify, loadAnimation)
     local rigs = {}
     for _, node in ipairs(tool:GetDescendants()) do
         if node:IsA("AnimationController") then
-            local idle = node.Parent:FindFirstChild("Idle")
+            local idle = node.Parent:FindFirstChild("Idle") or node.Parent:FindFirstChild("Animation")
             if idle and idle:IsA("Animation") and idle.AnimationId ~= "" then
                 local animator = node:FindFirstChildOfClass("Animator") or Instance.new("Animator",node)
                 table.insert(rigs,{animator=animator,animation=idle})

@@ -21,6 +21,14 @@ return function(Equipment)
         motion:setActive(true);assert(loads==1 and plays==2,"Reuse the track when re-equipped")
         motion:close();motion:close();motion:setActive(true)
         assert(destroys==1 and loads==1 and plays==2,"Cleanup is idempotent and prevents restart")
+        idle.Name="Animation";idle.AnimationId="rbxassetid://15123606541"
+        local nativeMotion=Equipment.fruitMotion(tool,function(message)error(message)end,function(_,animation)
+            assert(animation==idle,"Use the native Buddha Animation beside its controller")
+            loads+=1;return track
+        end)
+        nativeMotion:setActive(true)
+        assert(loads==2 and plays==3,"A native Animation must play without an Idle child")
+        nativeMotion:close()
     end)
     motion:close();root:Destroy();assert(ok,err)
     return "Fruit motion assertions passed"

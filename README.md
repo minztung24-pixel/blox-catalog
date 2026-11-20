@@ -12,7 +12,13 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v8 Native fruit dialogue
+## v9 Native fruit templates
+
+Rescan keeps a sanitized in-memory copy of real fruit Tools in the local player's Backpack/Character, matched by exact ItemId. These copies take priority over imported files and survive when the genuine Tool is stored or removed during this catalog session. Original Tools are unchanged. Close destroys the copies; they are not saved or uploaded. Hold the real fruit until its model has loaded, then press Rescan.
+
+The captured Buddha reference exposed a different animation ID in the imported file and a native `Fruit/Animation` child rather than `Idle`. The client now accepts that native child name as a fallback beside the same AnimationController. It does not replace another fruit's animation ID with Buddha's. Imported files may still contain unavailable animation IDs; missing scripted FX and absent models remain limitations.
+
+## Native fruit dialogue
 
 Fruit Equip first uses a matching player Tool, then an already available game model, then a local file at `codex_fruit_studio/models/<StorageKey>.rbxm` or `<Name>.rbxm` in the executor workspace. Files are loaded on demand through `getcustomasset` and `game:GetObjects`; these require an environment that supports local model imports. The model files stay on the user's machine and are not bundled or uploaded to this repository. [Potassium local asset documentation](https://docs.potassium.pro/api-reference/Instance%20Library/getcustomasset).
 
@@ -20,7 +26,7 @@ The inspected local folder contains exact filename matches for **46 of the 81** 
 
 The custom fruit bar and its setting have been removed. The legacy Items panel's Equip button is connected to the same local Tool creation path for added-only Fruits. Real stock retains its original button callback. Clear removes cosmetic Tools; Undo restores inventory entries; Close cleans up Tools and imported templates. The game's hotbar and CoreGui settings are left intact.
 
-Held or locally dropped fruits play the `Idle` animation found beside their own AnimationController. Tracks are reused on re-equip, stopped outside Workspace and destroyed on cleanup. Authored particle rates, colors, enabled states, beams, trails, bones and joints are retained; missing scripted FX are not replaced with invented motion. Animation asset permissions and missing files may still prevent exact visual parity. [Animator loading requirements](https://create.roblox.com/docs/reference/engine/classes/Animator#LoadAnimation).
+Held or locally dropped fruits play the `Idle` animation (or native `Animation` fallback) found beside their own AnimationController. Tracks are reused on re-equip, stopped outside Workspace and destroyed on cleanup. Authored particle rates, colors, enabled states, beams, trails, bones and joints are retained; missing scripted FX are not replaced with invented motion. Animation asset permissions and missing files may still prevent exact visual parity. [Animator loading requirements](https://create.roblox.com/docs/reference/engine/classes/Animator#LoadAnimation).
 
 Click a held local fruit to open the game's own `DialogueController.start` renderer. The dialogue configuration comes from the user's captured real-fruit menu: title Blox Fruit, the original prompt and animation tag, Chat options Eat/Drop/Store, Nevermind, and default layout. No legacy GUI clone, custom coordinates, fonts or icons are used. The catalog hides while this menu is open so it does not cover the native renderer.
 
@@ -30,7 +36,7 @@ Actions retain local simulation semantics: Drop places this client's visual in t
 
 Only an already-loaded DialogueController is required. Closing the catalog dismisses only its own dialogue; an NPC or genuine fruit menu is never replaced or closed. If the controller is not cached, open any game dialogue once and retry. The outdated Main.Dialogue fallback has been removed.
 
-Imported raw objects remain outside the DataModel. Equipment strips scripts, remotes and component tags before any copy enters Backpack/Character. Fruit clones activate only their menu; cosmetic weapons remain disabled. The native dialogue regression reproduces the failing lazy entry and passes using direct start. Studio input tests verify opening the native-controller adapter and closing/restoring on tool unequip with the lazy entry set to fail. The direct v8 call still needs a live Potassium check.
+Imported raw objects remain outside the DataModel. Equipment strips scripts, remotes and component tags before any copy enters Backpack/Character. Fruit clones activate only their menu; cosmetic weapons remain disabled. The native dialogue regression reproduces the failing lazy entry and passes using direct start. Studio input tests verify opening the native-controller adapter and closing/restoring on tool unequip with the lazy entry set to fail. The user confirmed the v8 native menu in Potassium; v9 template capture still needs a live check.
 
 ## Existing Tool behavior
 

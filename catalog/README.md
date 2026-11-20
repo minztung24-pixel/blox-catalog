@@ -1,4 +1,4 @@
-# Blox Catalog simulator — v8
+# Blox Catalog simulator — v9
 
 Giao diện quản lý/mô phỏng chạy trên client. Nguồn: báo cáo `blox-fruits-catalog-data-v1-2753915549.json`, place version 4632. File chạy chứa sẵn database, không cần chạy script mẫu hoặc helper trước mỗi lần mở.
 
@@ -12,7 +12,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/minztung24-pixel/blox
 
 Right Shift ẩn/hiện; kéo thanh tiêu đề để di chuyển; Hide thu thành nút Catalog; X đóng và dọn kết nối. Tools bật/tắt Visual, Balance, Gift Perm, icon và xem model 3D. F6/Rescan cập nhật model hiện có trên client. Danh sách có thanh cuộn và tối đa 30 thẻ mỗi trang.
 
-Hoặc dùng file local `dist/blox-catalog-sim-v8.lua`. Trong Blox Fruits, mở Items trước rồi nhấn Rescan. Dòng `Items linked locally` xác nhận đã nối vào cache inventory của client. Khi đó Add vừa cập nhật Added vừa gọi API WriteTempItem của game để hiển thị các bản ghi cục bộ trong Items. Nếu chưa nối được, header ghi `Items offline / panel only`; console có nguyên nhân. Không require module game chưa được tải.
+Hoặc dùng file local `dist/blox-catalog-sim-v9.lua`. Trong Blox Fruits, mở Items trước rồi nhấn Rescan. Dòng `Items linked locally` xác nhận đã nối vào cache inventory của client. Khi đó Add vừa cập nhật Added vừa gọi API WriteTempItem của game để hiển thị các bản ghi cục bộ trong Items. Nếu chưa nối được, header ghi `Items offline / panel only`; console có nguyên nhân. Không require module game chưa được tải.
 
 V3 sửa lỗi ghi native được báo từ game thật: UserReplicationCache.Set chuyển 0/false thành nil. Adapter chỉ ghi Quantity, so sánh đúng biểu diễn nil của stock bằng 0 và để game quản lý các cờ khác. Vẫn kiểm tra đọc lại; ghi bị từ chối, bị biến đổi hoặc ném lỗi sau khi cập nhật sẽ được rollback. Nếu còn lỗi, console ghi rõ key/ID/expected/actual và tạo báo cáo `blox-catalog-native-error-<PlaceId>.json` khi writefile khả dụng. Căn cứ là báo cáo cache chỉ đọc do người dùng xuất trong phiên thật; không tắt restriction của game.
 
@@ -40,7 +40,7 @@ Tên ưu tiên Display.Name, nếu thiếu dùng Index.StorageKey và ghi `nameS
 
 Trong Studio, chèn `dist/BloxCatalog.rbxmx` vào StarterPlayer > StarterPlayerScripts rồi Play. Package chứa Folder BloxCatalog với các ModuleScript và LocalScript Main. File bundle và package được tạo từ cùng mã nguồn.
 
-## Fruits / v8
+## Fruits / v9
 
 Add một Fruit rồi mở Added và bấm Equip. Trái có model được tạo thành Tool và hiển thị trên hotbar gốc của game. Thanh Fruits tự tạo cùng tùy chọn bật/tắt đã bị gỡ theo yêu cầu người dùng. Clear xóa Tool cục bộ; Undo phục hồi bản ghi kho; X dọn Tool và cache model đã tải. Bản v6 giữ nguyên luồng tạo Tool và tải file đã hoạt động ở v5.
 
@@ -50,13 +50,15 @@ V8 dùng trực tiếp DialogueController.new/start từ module đã cache trong
 
 Drop và Store vẫn chỉ tác động Tool/stock mô phỏng cục bộ; Eat giải thích cần trái thật, không gọi EatRemote. Ngữ cảnh Local visual được ghi ở dòng trạng thái Catalog. Callback chỉ chạy sau khi menu đóng, không chạy nếu Catalog đã bị đóng. NativeDialogue kiểm tra quyền sở hữu phiên menu trước khi đóng, nên không chạm menu NPC/trái thật. Tool thật có sẵn giữ nguyên xử lý gốc.
 
-Rig có AnimationController và Animation tên Idle được phát bằng Animator sau khi Tool vào Workspace, gồm lúc cầm và thả cục bộ. Track được tái sử dụng, dừng khi cất và hủy khi dọn Tool. Các giá trị ParticleEmitter/Beam/Trail và rig gốc không bị thay bằng hiệu ứng đoán; script FX hoặc quyền asset còn thiếu vẫn có thể gây khác biệt so với game.
+Rig có AnimationController và Animation tên Idle (hoặc Animation như mẫu Buddha thật) được phát bằng Animator sau khi Tool vào Workspace, gồm lúc cầm và thả cục bộ. Track được tái sử dụng, dừng khi cất và hủy khi dọn Tool. Các giá trị ParticleEmitter/Beam/Trail và rig gốc không bị thay bằng hiệu ứng đoán; script FX hoặc quyền asset còn thiếu vẫn có thể gây khác biệt so với game.
+
+Rescan v9 giữ bản sao đã lọc của Tool trái thật trong Backpack/Character, đối chiếu ItemId chính xác. Mẫu thật được ưu tiên hơn file import và còn dùng được trong phiên Catalog khi Tool thật đã rời Backpack. Cần đợi model thật hiện đủ rồi Rescan; không sửa Tool gốc, không lưu mẫu ra file hoặc lên GitHub. Close hủy các bản sao. Mẫu Buddha thật đã cho thấy ID animation khác file import; không áp dụng ID của Buddha sang trái khác. Chưa có mẫu thật cho Control/Kitsune/Dragon nên lỗi tải animation và thiếu FX ở các file đó vẫn còn.
 
 Equip ưu tiên Tool có sẵn, model đang có trên client, rồi file `codex_fruit_studio/models/<StorageKey>.rbxm` hoặc `<Name>.rbxm` trong Potassium workspace. Import dùng getcustomasset và game:GetObjects, chỉ khi người dùng bấm Equip; không chạy script trong file. Các object gốc ở ngoài DataModel, bản clone được lọc script/remote/tag bằng Equipment trước khi vào Backpack. Bản build trên GitHub không chứa các file model cục bộ.
 
 Thư mục đã kiểm kê có 46 tên file khớp chính xác trong 81 bản ghi Fruits, gồm Arcsteel Magnet, Blizzard, Bomb và Control. Chưa có file khớp cho Dragon (East), Celestial và các mục còn thiếu khác. Không tự dùng model gần giống hoặc icon thay model. Nguồn local này đã bị bỏ sót khi chẩn đoán v4; kết luận trước rằng Arcsteel/Blizzard không có nguồn model đã được thay bằng kiểm kê file này.
 
-Người dùng xác nhận v6 hoạt động với trái, còn v7 gặp lỗi lazy require trong môi trường thật. Kiểm thử hồi quy mới tái hiện lỗi rồi qua khi chuyển sang start. Luồng Studio v8 kiểm tra mở menu qua controller, bỏ Tool đóng menu và phục hồi Catalog, với startForTool giả lập luôn báo lỗi. V8 còn cần so sánh trong Potassium thật. Các trái thiếu file vẫn báo No model; không có ăn trái/chiêu thức hoặc quyền sở hữu mới trên máy chủ.
+Người dùng xác nhận v6 hoạt động với trái, còn v7 gặp lỗi lazy require trong môi trường thật. Kiểm thử hồi quy mới tái hiện lỗi rồi qua khi chuyển sang start. Luồng Studio v8 kiểm tra mở menu qua controller, bỏ Tool đóng menu và phục hồi Catalog, với startForTool giả lập luôn báo lỗi. Người dùng đã xác nhận menu v8 trong Potassium; cache model thật của v9 còn cần kiểm tra live. Các trái thiếu file vẫn báo No model; không có ăn trái/chiêu thức hoặc quyền sở hữu mới trên máy chủ.
 
 ## Model và preview
 
@@ -73,7 +75,7 @@ python tools/build_catalog.py 'C:\duong-dan\blox-fruits-catalog-data-v1-27539155
 python -m unittest discover -s tests -p test_build_catalog.py
 ```
 
-Builder tạo lại bảy database, client.lua, bundle v8, package Studio và catalog JSON. Chạy `python tools/build_catalog.py` không kèm báo cáo để chỉ build các module/database đã có trong repo. Không cần thư viện Python ngoài standard library. Tệp đầu vào phải complete=true, ItemConfig.status=ok và không chạm giới hạn hàng/thời gian. Cờ partial ở export hiện tại đến từ Color3 của các mục ngoài bảy nhóm và một số vô hạn trong Quality của Dark Blade; các trường đã trích xuất được đối chiếu riêng với nguồn.
+Builder tạo lại bảy database, client.lua, bundle v9, package Studio và catalog JSON. Chạy `python tools/build_catalog.py` không kèm báo cáo để chỉ build các module/database đã có trong repo. Không cần thư viện Python ngoài standard library. Tệp đầu vào phải complete=true, ItemConfig.status=ok và không chạm giới hạn hàng/thời gian. Cờ partial ở export hiện tại đến từ Color3 của các mục ngoài bảy nhóm và một số vô hạn trong Quality của Dark Blade; các trường đã trích xuất được đối chiếu riêng với nguồn.
 
 `tests/Simulation.spec.luau` trả về hàm nhận Inventory và Catalog để chạy assert trong Studio Edit. `tests/NativeItems.spec.luau` kiểm tra chữ ký self/key/itemId/uid/value, Future<Result>, action guard, stock có sẵn giữ handler gốc, cập nhật baseline, rollback và restore. `tests/Equipment.spec.luau` kiểm tra chọn đúng Tool có sẵn, loại bản clone/ID sai, clone sạch, tag, rig/joint, weld và nguồn model không bị sửa.
 
