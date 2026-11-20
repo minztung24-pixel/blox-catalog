@@ -1,4 +1,4 @@
--- Blox Catalog v7 simulator. Snapshot place version 4632.
+-- Blox Catalog v8 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -673,7 +673,7 @@ local NativeDialogue = {}
 
 function NativeDialogue.new(controller)
     assert(typeof(controller)=="table","Native dialogue controller is unavailable")
-    for _,name in ipairs({"new","startForTool","getActiveDialogue","close"}) do
+    for _,name in ipairs({"new","start","getActiveDialogue","close"}) do
         assert(typeof(controller[name])=="function","Native dialogue API unavailable: "..name)
     end
     local binding = {controller=controller,running=false,closed=false}
@@ -689,6 +689,7 @@ function NativeDialogue.new(controller)
         if not tool:GetAttribute("BloxCatalogOwned") then return false,"Use the original menu for real fruit" end
         self.running=true
         local selected
+        local connections={}
         local ok,message=pcall(function()
             local dialogue=controller.new()
             self.dialogue=dialogue
@@ -705,8 +706,15 @@ function NativeDialogue.new(controller)
                 page:setCancelText("Nevermind")
             end)
             dialogue:build()
-            controller.startForTool(tool,dialogue)
+            -- startForTool lazily requires another game module, which fails in the executor context.
+            local function dismissOwned()
+                if self.dialogue==dialogue then self:dismiss() end
+            end
+            table.insert(connections,tool.Unequipped:Connect(dismissOwned))
+            table.insert(connections,tool.Destroying:Connect(dismissOwned))
+            controller.start(dialogue)
         end)
+        for _,connection in ipairs(connections) do connection:Disconnect() end
         if not ok then self:dismiss() end
         self.running=false
         self.dialogue=nil
@@ -1247,8 +1255,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v7", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 7)
+    text(panel, "Title", "BLOX CATALOG v8", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 8)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -1330,9 +1338,14 @@ function UI.start()
     showFruitMenu = function(item,tool)
         if nativeDialogue and nativeDialogue.running then return end
         closeModal()
+        local function menuError(reason)
+            local message="Fruit menu unavailable: "..tostring(reason)
+            tell(message);warn("[Blox Catalog] "..message)
+            if typeof(writefile)=="function" then pcall(writefile,"blox-catalog-menu-error.txt",message) end
+        end
         if not nativeDialogue then
             local connected,value=pcall(NativeDialogue.connect)
-            if not connected then tell(tostring(value));return end
+            if not connected then menuError(value);return end
             nativeDialogue=value
         end
         if not alive then nativeDialogue:close();return end
@@ -1353,7 +1366,7 @@ function UI.start()
         })
         if alive then
             gui.Enabled=wasEnabled
-            if not called or not ok then tell("Fruit menu unavailable: "..tostring(called and message or ok)) end
+            if not called or not ok then menuError(called and message or ok) end
         end
     end
     local function image(parent, item, position, size)

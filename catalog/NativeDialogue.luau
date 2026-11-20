@@ -2,7 +2,7 @@ local NativeDialogue = {}
 
 function NativeDialogue.new(controller)
     assert(typeof(controller)=="table","Native dialogue controller is unavailable")
-    for _,name in ipairs({"new","startForTool","getActiveDialogue","close"}) do
+    for _,name in ipairs({"new","start","getActiveDialogue","close"}) do
         assert(typeof(controller[name])=="function","Native dialogue API unavailable: "..name)
     end
     local binding = {controller=controller,running=false,closed=false}
@@ -18,6 +18,7 @@ function NativeDialogue.new(controller)
         if not tool:GetAttribute("BloxCatalogOwned") then return false,"Use the original menu for real fruit" end
         self.running=true
         local selected
+        local connections={}
         local ok,message=pcall(function()
             local dialogue=controller.new()
             self.dialogue=dialogue
@@ -34,8 +35,15 @@ function NativeDialogue.new(controller)
                 page:setCancelText("Nevermind")
             end)
             dialogue:build()
-            controller.startForTool(tool,dialogue)
+            -- startForTool lazily requires another game module, which fails in the executor context.
+            local function dismissOwned()
+                if self.dialogue==dialogue then self:dismiss() end
+            end
+            table.insert(connections,tool.Unequipped:Connect(dismissOwned))
+            table.insert(connections,tool.Destroying:Connect(dismissOwned))
+            controller.start(dialogue)
         end)
+        for _,connection in ipairs(connections) do connection:Disconnect() end
         if not ok then self:dismiss() end
         self.running=false
         self.dialogue=nil

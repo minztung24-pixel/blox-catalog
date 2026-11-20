@@ -11,9 +11,9 @@ return function(NativeDialogue)
         function dialogue:build()self.built=true end
         return dialogue
     end
-    function native.startForTool(actual,dialogue,delay)
-        assert(delay==nil,"Use the game's default interaction timing")
-        assert(actual==tool and dialogue.built and dialogue.title=="Blox Fruit" and dialogue.subtitle==nil)
+    function native.startForTool()error("Cannot require a non-RobloxScript module from a RobloxScript")end
+    function native.start(dialogue)
+        assert(dialogue.built and dialogue.title=="Blox Fruit" and dialogue.subtitle==nil)
         starts+=1;current={_dialogue=dialogue}
         local page={options={}}
         function page:addText(value)self.text=value end

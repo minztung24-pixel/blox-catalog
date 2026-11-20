@@ -72,8 +72,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v7", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 7)
+    text(panel, "Title", "BLOX CATALOG v8", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 8)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -155,9 +155,14 @@ function UI.start()
     showFruitMenu = function(item,tool)
         if nativeDialogue and nativeDialogue.running then return end
         closeModal()
+        local function menuError(reason)
+            local message="Fruit menu unavailable: "..tostring(reason)
+            tell(message);warn("[Blox Catalog] "..message)
+            if typeof(writefile)=="function" then pcall(writefile,"blox-catalog-menu-error.txt",message) end
+        end
         if not nativeDialogue then
             local connected,value=pcall(NativeDialogue.connect)
-            if not connected then tell(tostring(value));return end
+            if not connected then menuError(value);return end
             nativeDialogue=value
         end
         if not alive then nativeDialogue:close();return end
@@ -178,7 +183,7 @@ function UI.start()
         })
         if alive then
             gui.Enabled=wasEnabled
-            if not called or not ok then tell("Fruit menu unavailable: "..tostring(called and message or ok)) end
+            if not called or not ok then menuError(called and message or ok) end
         end
     end
     local function image(parent, item, position, size)
