@@ -89,55 +89,138 @@ function Equipment.clone(source, item)
     return tool
 end
 
-function Equipment.fruitMotion(tool, notify, loadAnimation)
-    assert(tool:GetAttribute("BloxCatalogOwned"), "Animate only catalog-owned clones")
-    loadAnimation = loadAnimation or function(animator, animation) return animator:LoadAnimation(animation) end
+function Equipment.animationLoader(preload, timeout)
+    preload = preload or function(objects, callback) game:GetService("ContentProvider"):PreloadAsync(objects,callback) end
+    timeout = timeout or 8
+    local cache = {entries={},closed=false}
+    function cache:load(animator, animation)
+        local id = animation.AnimationId
+        assert(not self.closed,"Animation loader closed: "..id)
+        local entry = self.entries[id]
+        if not entry then
+            entry = {};self.entries[id] = entry
+            entry.asset = Instance.new("Animation");entry.asset.AnimationId = id
+            entry.task = task.spawn(function()
+                local finished, status, failure = false,nil,nil
+                entry.request = task.spawn(function()
+                    local ok, message = pcall(preload,{entry.asset},function(uri,result)
+                        if uri==id or (typeof(uri)=="string" and uri:match("[?&]id=(%d+)")==id:match("%d+")) then status=result end
+                    end)
+                    if not ok then failure=tostring(message) end
+                    finished=true
+                end)
+                local deadline=os.clock()+timeout
+                while not finished and not self.closed and os.clock()<deadline do task.wait(.01) end
+                if self.closed then return end
+                if not finished then
+                    pcall(task.cancel,entry.request);failure="Animation preload timed out"
+                elseif not failure and status~=Enum.AssetFetchStatus.Success then
+                    failure="Animation preload failed: "..tostring(status or "no fetch result")
+                end
+                entry.asset:Destroy()
+                entry.error=failure;entry.done=true
+            end)
+        end
+        while not entry.done and not self.closed do task.wait(.01) end
+        assert(not self.closed,"Animation loader closed: "..id)
+        assert(not entry.error,tostring(entry.error).." ["..id.."]")
+        return animator:LoadAnimation(animation)
+    end
+    function cache:close()
+        if self.closed then return end
+        self.closed=true
+        for _,entry in pairs(self.entries) do
+            if entry.request then pcall(task.cancel,entry.request) end
+            if entry.task then pcall(task.cancel,entry.task) end
+            if entry.asset then entry.asset:Destroy() end
+        end
+    end
+    return cache
+end
+
+function Equipment.fruitMotion(tool, notify, loadAnimation, timeout)
+    assert(tool:GetAttribute("BloxCatalogOwned"),"Animate only catalog-owned clones")
+    loadAnimation = loadAnimation or function(animator,animation)return animator:LoadAnimation(animation)end
+    timeout = timeout or 8
     local rigs = {}
-    for _, node in ipairs(tool:GetDescendants()) do
+    for _,node in ipairs(tool:GetDescendants()) do
         if node:IsA("AnimationController") then
-            local idle = node.Parent:FindFirstChild("Idle") or node.Parent:FindFirstChild("Animation")
-            if idle and idle:IsA("Animation") and idle.AnimationId ~= "" then
-                local animator = node:FindFirstChildOfClass("Animator") or Instance.new("Animator",node)
+            local idle=node.Parent:FindFirstChild("Idle") or node.Parent:FindFirstChild("Animation")
+            if idle and idle:IsA("Animation") and idle.AnimationId~="" then
+                local animator=node:FindFirstChildOfClass("Animator") or Instance.new("Animator",node)
                 table.insert(rigs,{animator=animator,animation=idle})
             end
         end
     end
-    local motion = {closed=false}
+    local motion={closed=false}
+    local function active()return not motion.closed and motion.held and tool:IsDescendantOf(workspace)end
+    local function update()
+        if motion.closed then return end
+        local status=motion.held and "Ready" or "Stopped"
+        if #rigs==0 then status="Missing" end
+        for _,rig in ipairs(rigs) do
+            if rig.error then
+                tool:SetAttribute("BloxCatalogAnimationStatus","Failed")
+                tool:SetAttribute("BloxCatalogAnimationError",rig.error)
+                return "Failed"
+            elseif motion.held and not rig.ready then status="Loading" end
+        end
+        tool:SetAttribute("BloxCatalogAnimationStatus",status)
+        tool:SetAttribute("BloxCatalogAnimationError",nil)
+        return status
+    end
     function motion:setActive(held)
-        if self.closed or self.held == held then return end
-        -- Animator:LoadAnimation requires Workspace ancestry, so import/preview never starts it.
+        if self.closed or self.held==held then return end
         if held and not tool:IsDescendantOf(workspace) then return end
-        self.held = held
-        for _, rig in ipairs(rigs) do
-            if held then
-                local ok, message = pcall(function()
-                    if not rig.track then
-                        local track = assert(loadAnimation(rig.animator,rig.animation),"No animation track returned")
-                        if self.closed then track:Destroy(); return end
-                        rig.track = track
+        self.held=held
+        if not held then
+            for _,rig in ipairs(rigs) do if rig.track then pcall(rig.track.Stop,rig.track,0.1) end end
+            update();return
+        end
+        for _,rig in ipairs(rigs) do rig.ready=false end
+        update()
+        if #rigs==0 then notify("Model contains no idle animation: "..tool.Name);return end
+        for _,rig in ipairs(rigs) do
+            if rig.error then notify(rig.error)
+            elseif not rig.busy then
+                rig.busy=true
+                rig.worker=task.defer(function()
+                    local ok,message=pcall(function()
+                        if not rig.track then
+                            local track=assert(loadAnimation(rig.animator,rig.animation),"No animation track returned")
+                            if self.closed then track:Destroy();return end
+                            rig.track=track
+                        end
+                        local deadline=os.clock()+timeout
+                        while active() and rig.track.Length<=0 and os.clock()<deadline do task.wait(.01) end
+                        if not active() then return end
+                        assert(rig.track.Length>0,"Animation track has no loaded data after timeout")
+                        rig.track.Looped=true
+                        rig.track.Priority=Enum.AnimationPriority.Idle
+                        rig.track:Play(0.1)
+                        rig.ready=true
+                    end)
+                    rig.busy=false
+                    if self.closed then return end
+                    if not ok then
+                        rig.error="Fruit animation unavailable: "..tool.Name.." ["..rig.animation.AnimationId.."]: "..tostring(message)
+                        if rig.track then
+                            pcall(rig.track.Stop,rig.track,0.1);pcall(rig.track.Destroy,rig.track);rig.track=nil
+                        end
+                        warn("[Blox Catalog] "..rig.error)
+                        if active() then notify(rig.error) end
                     end
-                    rig.track.Looped = true
-                    rig.track.Priority = Enum.AnimationPriority.Idle
-                    rig.track:Play(0.1)
+                    if update()=="Ready" and active() then notify("Fruit animation ready: "..tool.Name) end
                 end)
-                if not ok then
-                    local messageText = "Fruit idle unavailable: " .. tostring(message)
-                    warn("[Blox Catalog] " .. messageText)
-                    notify(messageText)
-                end
-            elseif rig.track then
-                pcall(rig.track.Stop,rig.track,0.1)
             end
         end
     end
     function motion:close()
         if self.closed then return end
-        self.closed = true
-        for _, rig in ipairs(rigs) do
-            if rig.track then
-                pcall(rig.track.Stop,rig.track,0.1)
-                pcall(rig.track.Destroy,rig.track)
-            end
+        self.closed=true
+        for _,rig in ipairs(rigs) do
+            if rig.worker then pcall(task.cancel,rig.worker) end
+            if rig.track then pcall(rig.track.Stop,rig.track,0.1);pcall(rig.track.Destroy,rig.track) end
         end
         table.clear(rigs)
     end
@@ -146,6 +229,7 @@ end
 
 function Equipment.new(state, player, getSource, notify, onFruitActivated)
     local controller = {bindings = {}, animations = {}}
+    local animationLoader = Equipment.animationLoader()
     function controller:remove(id)
         if self.animations[id] then self.animations[id]:close(); self.animations[id] = nil end
         for _, connection in ipairs(self.bindings[id] or {}) do connection:Disconnect() end
@@ -240,7 +324,9 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
         end
         row.equipped = true
         if item.category == "Fruits" and not self.animations[item.id] then
-            self.animations[item.id] = Equipment.fruitMotion(tool,notify)
+            self.animations[item.id] = Equipment.fruitMotion(tool,notify,function(animator,animation)
+                return animationLoader:load(animator,animation)
+            end)
         end
         local motion = self.animations[item.id]
         if motion then motion:setActive(true) end
@@ -254,7 +340,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
                     if not ok then notify(message) end
                 end
             end
-            self.bindings[item.id] = {tool.Equipped:Connect(changed), tool.Unequipped:Connect(changed),
+            self.bindings[item.id] = {tool.Equipped:Connect(changed), tool.Unequipped:Connect(changed), tool.AncestryChanged:Connect(changed),
                 tool.Destroying:Connect(function() if motion then motion:close() end end)}
             if item.category=="Fruits" and onFruitActivated then
                 table.insert(self.bindings[item.id],tool.Activated:Connect(function()
@@ -264,8 +350,9 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
         end
         return true, nil, "visual"
     end
-    function controller:close()
+    function controller:close(final)
         for id in pairs(state.items) do self:remove(id) end
+        if final then animationLoader:close() end
     end
     return controller
 end

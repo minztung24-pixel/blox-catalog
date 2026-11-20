@@ -106,7 +106,7 @@ def bundle(snapshot_version=None):
     data_sources = {name: (ROOT / "catalog" / "Data" / (name + ".luau")).read_text(encoding="utf-8") for name in CATEGORIES.values()}
     sources = {name: (ROOT / "catalog" / ("Data/init.luau" if name == "Data" else name + (".client.luau" if name == "Main" else ".luau"))).read_text(encoding="utf-8")
                for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitModels", "Inventory", "UI", "Main")}
-    parts = ["-- Blox Catalog v10 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
+    parts = ["-- Blox Catalog v11 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
     for name, text in data_sources.items():
         parts.append("local Data" + name + " = (function()\n" + text + "\nend)()\n")
     for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitModels", "Inventory", "UI"):
@@ -125,7 +125,7 @@ def bundle(snapshot_version=None):
     if "require(script." in bundled:
         raise ValueError("Unbundled module dependency")
     (ROOT / "client.lua").write_text(bundled, encoding="utf-8")
-    (output / "blox-catalog-sim-v10.lua").write_text(bundled, encoding="utf-8")
+    (output / "blox-catalog-sim-v11.lua").write_text(bundled, encoding="utf-8")
     (output / "BloxCatalog.rbxmx").write_bytes(package_xml(sources, data_sources))
 
 

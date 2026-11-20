@@ -72,8 +72,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v10", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 10)
+    text(panel, "Title", "BLOX CATALOG v11", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 11)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -107,7 +107,17 @@ function UI.start()
     state.removeEquipment = function(id) equipment:remove(id) end
     local function equip(item)
         local ok, err, mode = equipment:equip(item)
-        tell(ok and ((mode == "existing" and "Equipped existing Tool: " or "Equipped local visual: ") .. item.name) or ("Equip unavailable: " .. tostring(err)))
+        local prefix=mode=="existing" and "Equipped existing Tool: "
+            or (item.category=="Fruits" and "Fruit equipped / checking animation: " or "Equipped local visual: ")
+        local row=state.items[item.id]
+        local animationError
+        if ok and mode=="visual" and row and row.tool then
+            local animationStatus=row.tool:GetAttribute("BloxCatalogAnimationStatus")
+            if animationStatus=="Missing" then prefix="Fruit equipped / model has no idle animation: "
+            elseif animationStatus=="Ready" then prefix="Fruit animation ready: "
+            elseif animationStatus=="Failed" then animationError=row.tool:GetAttribute("BloxCatalogAnimationError") end
+        end
+        tell(animationError or (ok and (prefix..item.name) or ("Equip unavailable: "..tostring(err))))
         if not ok then warn("[Blox Catalog] Equip unavailable: " .. tostring(err)) end
         return ok, err, mode
     end
@@ -524,7 +534,7 @@ function UI.start()
     table.insert(connections, gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
     gui.Destroying:Connect(function()
         alive = false
-        equipment:close()
+        equipment:close(true)
         fruitModels:close()
         nativeEquip:close()
         if nativeDialogue then nativeDialogue:close() end

@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v11 Animation loading in the main client
+
+Run the client once; no separate preload helper is needed. On first fruit Equip, the client preloads a private `Animation` instance and caches the result by AnimationId for this catalog session. Concurrent requests share the same fetch. Each rig still gets its own Animator track, reused on re-equip. Failed IDs are cached too, without automatic retry loops; restarting the catalog starts a new session.
+
+Equipping a local fruit now reports that its animation is being checked. Playback starts only after its track has nonzero Length. Fetching and track readiness each have an 8-second timeout. Unequipping or closing prevents late playback; closing also cancels pending fetches and disposes temporary objects. Missing animation, failed loading and ready states are reported separately. Existing genuine Tools keep their native behavior, and FX properties are retained.
+
+This makes loading and error reporting reliable; it cannot make unavailable IDs accessible or add absent rigs/FX. The captured audit found 38 failed IDs. Their original assets or verified per-fruit replacements are still needed. Preload success and nonzero track length do not establish full rig/FX parity. [AnimationTrack.Length](https://create.roblox.com/docs/reference/engine/classes/AnimationTrack#Length).
+
 ## v10 Verified Buddha import correction
 
 The native Buddha Tool used animation `15123606541`; the local Buddha export instead referenced `78877647242196`. Typed animation preloading confirmed the native ID succeeds and the exported ID fails in place 2753915549. Import now corrects that exact old ID only for Buddha (ItemId 1393), on the sanitized copy. Original files, genuine Tools, already-correct IDs and other fruits remain unchanged. A matching local Buddha model is still required; a real held Buddha is no longer needed to obtain this correction on each launch.
