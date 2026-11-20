@@ -12,7 +12,7 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v6 Fruits and native hotbar
+## v7 Native fruit dialogue
 
 Fruit Equip first uses a matching player Tool, then an already available game model, then a local file at `codex_fruit_studio/models/<StorageKey>.rbxm` or `<Name>.rbxm` in the executor workspace. Files are loaded on demand through `getcustomasset` and `game:GetObjects`; these require an environment that supports local model imports. The model files stay on the user's machine and are not bundled or uploaded to this repository. [Potassium local asset documentation](https://docs.potassium.pro/api-reference/Instance%20Library/getcustomasset).
 
@@ -22,9 +22,13 @@ The custom fruit bar and its setting have been removed. The legacy Items panel's
 
 Held or locally dropped fruits play the `Idle` animation found beside their own AnimationController. Tracks are reused on re-equip, stopped outside Workspace and destroyed on cleanup. Authored particle rates, colors, enabled states, beams, trails, bones and joints are retained; missing scripted FX are not replaced with invented motion. Animation asset permissions and missing files may still prevent exact visual parity. [Animator loading requirements](https://create.roblox.com/docs/reference/engine/classes/Animator#LoadAnimation).
 
-Click a held local fruit to open a sanitized copy of the game's `Main.Dialogue` template. **Drop (local)** drops only this client's visual and adds a pickup prompt; **Store (local)** removes the Tool and returns its local quantity to stock. **Eat (real fruit only)** explains that server ownership is required. These controls do not call the fruit's server EatRemote or grant gameplay abilities. Original player Tools retain their native scripts and menu.
+Click a held local fruit to open the game's own `DialogueController.startForTool` renderer. The dialogue configuration comes from the user's captured real-fruit menu: title Blox Fruit, the original prompt and animation tag, Chat options Eat/Drop/Store, Nevermind, and default layout. No legacy GUI clone, custom coordinates, fonts or icons are used. The catalog hides while this menu is open so it does not cover the native renderer.
 
-Imported raw objects remain outside the DataModel. Equipment strips scripts, remotes and component tags before any copy enters Backpack/Character. Fruit clones activate only the local menu; cosmetic weapons remain disabled. Seven Luau assertion suites and five Python checks pass. Studio input tests verified the legacy native Equip button, real-stock passthrough, fruit activation, menu Drop, E-prompt pickup and local Store using injected models. The user has confirmed v5 local import and Arcsteel's native hotbar in Potassium; v6 routing, animation assets and menu styling still need a live-game check.
+Actions retain local simulation semantics: Drop places this client's visual in the world with a pickup prompt; Store removes its Tool and restores local stock; Eat explains that a real server-owned fruit is required. These callbacks run after the native dialogue closes and do not call EatRemote. The catalog footer identifies the local visual context. Original player Tools retain their native scripts and menu.
+
+Only an already-loaded DialogueController is required. Closing the catalog dismisses only its own dialogue; an NPC or genuine fruit menu is never replaced or closed. If the controller is not cached, open any game dialogue once and retry. The outdated Main.Dialogue fallback has been removed.
+
+Imported raw objects remain outside the DataModel. Equipment strips scripts, remotes and component tags before any copy enters Backpack/Character. Fruit clones activate only their menu; cosmetic weapons remain disabled. Eight Luau assertion suites and five Python checks pass. Studio tests with an injected controller verify the captured native menu configuration, catalog hide/restore, Nevermind, delayed Store, ownership and error cleanup. The user confirmed v6 fruit behavior live; v7 native rendering still needs a live-game comparison.
 
 ## Existing Tool behavior
 
@@ -64,4 +68,4 @@ python tools/build_catalog.py 'C:\path\to\blox-fruits-catalog-data-v1-2753915549
 
 Commit the updated modules together with generated `client.lua`; users keep the same loader URL. Raw game code dumps, cache reports, local credentials and unrelated projects are excluded from publication.
 
-Lua suites return a function accepting their tested modules. Run them in Studio Edit: `Simulation.spec.luau` takes Inventory/Catalog, `NativeItems.spec.luau` takes NativeItems, `NativeEquip.spec.luau` takes NativeEquip, `Equipment.spec.luau`, `FruitMotion.spec.luau` and `EquipmentActions.spec.luau` take Equipment, and `FruitModels.spec.luau` takes FruitModels/Equipment. [Detailed runtime notes](catalog/README.md).
+Lua suites return a function accepting their tested modules. Run them in Studio Edit: `Simulation.spec.luau` takes Inventory/Catalog, `NativeItems.spec.luau` takes NativeItems, `NativeEquip.spec.luau` takes NativeEquip, `NativeDialogue.spec.luau` takes NativeDialogue, `Equipment.spec.luau`, `FruitMotion.spec.luau` and `EquipmentActions.spec.luau` take Equipment, and `FruitModels.spec.luau` takes FruitModels/Equipment. [Detailed runtime notes](catalog/README.md).

@@ -635,6 +635,79 @@ function NativeEquip.new(playerGui,state,onEquip)
 end
 
 return NativeEquip
+</ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">NativeDialogue</string><ProtectedString name="Source">local NativeDialogue = {}
+
+function NativeDialogue.new(controller)
+    assert(typeof(controller)=="table","Native dialogue controller is unavailable")
+    for _,name in ipairs({"new","startForTool","getActiveDialogue","close"}) do
+        assert(typeof(controller[name])=="function","Native dialogue API unavailable: "..name)
+    end
+    local binding = {controller=controller,running=false,closed=false}
+    function binding:dismiss()
+        if not self.dialogue then return end
+        local ok,active=pcall(controller.getActiveDialogue)
+        -- Never close an NPC or genuine fruit dialogue opened by somebody else.
+        if ok and active and active._dialogue==self.dialogue then pcall(controller.close) end
+    end
+    function binding:show(tool,actions)
+        if self.closed then return false,"Native fruit menu is closed" end
+        if self.running or controller.getActiveDialogue() then return false,"Finish the current game dialogue first" end
+        if not tool:GetAttribute("BloxCatalogOwned") then return false,"Use the original menu for real fruit" end
+        self.running=true
+        local selected
+        local ok,message=pcall(function()
+            local dialogue=controller.new()
+            self.dialogue=dialogue
+            dialogue:setTitle("Blox Fruit")
+            dialogue:addPage(function(page)
+                page:addText("What do you wish to do with this Blox Fruit?&lt;AnimateYield=3&gt;")
+                for _,name in ipairs({"Eat","Drop","Store"}) do
+                    page:addOption(function(option)
+                        option:setText(name)
+                        option:setType("Chat")
+                        option:onSelected(function()selected=name end)
+                    end)
+                end
+                page:setCancelText("Nevermind")
+            end)
+            dialogue:build()
+            controller.startForTool(tool,dialogue)
+        end)
+        if not ok then self:dismiss() end
+        self.running=false
+        self.dialogue=nil
+        if not ok then return false,tostring(message) end
+        if self.closed then return false,"Native fruit menu was closed" end
+        if selected and actions[selected] then
+            local called,err=pcall(actions[selected])
+            if not called then return false,tostring(err) end
+        end
+        return true
+    end
+    function binding:close()
+        self.closed=true
+        self:dismiss()
+    end
+    return binding
+end
+
+function NativeDialogue.connect()
+    assert(typeof(getloadedmodules)=="function","Open a game dialogue once, then retry")
+    local module=game:GetService("ReplicatedStorage"):FindFirstChild("DialogueController")
+    assert(module and module:IsA("ModuleScript"),"Game dialogue controller is unavailable")
+    local loaded=false
+    for _,candidate in pairs(getloadedmodules()) do if candidate==module then loaded=true;break end end
+    assert(loaded,"Open a game dialogue once, then retry")
+    local result
+    local worker=task.spawn(function()result=table.pack(pcall(require,module))end)
+    local deadline=os.clock()+3
+    while not result and os.clock()&lt;deadline do task.wait(0.03) end
+    if not result then pcall(task.cancel,worker);error("Cached dialogue controller timed out") end
+    assert(result[1],result[2])
+    return NativeDialogue.new(result[2])
+end
+
+return NativeDialogue
 </ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">Equipment</string><ProtectedString name="Source">local Equipment = {}
 
 function Equipment.findExistingTool(player, item)
@@ -1058,6 +1131,7 @@ return Inventory
 local Inventory = require(script.Parent.Inventory)
 local NativeItems = require(script.Parent.NativeItems)
 local NativeEquip = require(script.Parent.NativeEquip)
+local NativeDialogue = require(script.Parent.NativeDialogue)
 local Equipment = require(script.Parent.Equipment)
 local FruitModels = require(script.Parent.FruitModels)
 local UI = {}
@@ -1085,6 +1159,7 @@ function UI.start()
     local fruitModels = FruitModels.new()
     local alive, scanning = true, false
     local showFruitMenu
+    local nativeDialogue
 
     local function make(class, parent, props)
         local object = Instance.new(class)
@@ -1126,8 +1201,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v6", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 6)
+    text(panel, "Title", "BLOX CATALOG v7", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 7)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -1186,6 +1261,7 @@ function UI.start()
         end
     end
     local function closeModal()
+        if nativeDialogue then nativeDialogue:dismiss() end
         local current=modal;modal=nil
         if current then current:Destroy() end
     end
@@ -1206,47 +1282,33 @@ function UI.start()
         return scroll
     end
     showFruitMenu = function(item,tool)
-        local main=playerGui:FindFirstChild("Main")
-        local template=main and main:FindFirstChild("Dialogue")
-        if not template or not template:IsA("GuiObject") then tell("Game dialogue template is unavailable; try again after the game UI loads.");return end
-        if template.Visible then tell("Finish the game's current dialogue first.");return end
+        if nativeDialogue and nativeDialogue.running then return end
         closeModal()
-        local ok,copy=pcall(template.Clone,template)
-        if not ok or not copy then tell("Unable to clone the game dialogue template.");return end
-        for _,node in ipairs(copy:GetDescendants()) do
-            if node:IsA("LuaSourceContainer") or node:IsA("RemoteEvent") or node:IsA("RemoteFunction") or node:IsA("ViewportFrame") then node:Destroy()
-            else for _,tag in ipairs(game:GetService("CollectionService"):GetTags(node)) do game:GetService("CollectionService"):RemoveTag(node,tag) end end
+        if not nativeDialogue then
+            local connected,value=pcall(NativeDialogue.connect)
+            if not connected then tell(tostring(value));return end
+            nativeDialogue=value
         end
-        for _,tag in ipairs(game:GetService("CollectionService"):GetTags(copy)) do game:GetService("CollectionService"):RemoveTag(copy,tag) end
-        modal=copy;copy.Name="FruitDialogue";copy.Visible=true;copy.Parent=gui
-        local title=copy:FindFirstChild("Title")
-        if title and title:IsA("TextLabel") then title.Text="Blox Fruit / Local visual";title.Visible=true end
-        local body=copy:FindFirstChild("TextFrame")
-        if body then
-            body:ClearAllChildren();body.Visible=true
-            text(body,"LocalScope","What do you wish to do with this local fruit visual?",UDim2.new(),UDim2.fromScale(1,1),24)
+        if not alive then nativeDialogue:close();return end
+        tell("Local visual menu / Drop and Store affect this client only.")
+        local wasEnabled=gui.Enabled
+        gui.Enabled=false
+        local called,ok,message=pcall(nativeDialogue.show,nativeDialogue,tool,{
+            Eat=function()tell("Eating requires a real server-owned fruit; this visual grants no abilities.")end,
+            Drop=function()
+                local success,err=equipment:drop(item)
+                tell(success and "Dropped local visual. Use its pickup prompt to hold it again." or tostring(err))
+            end,
+            Store=function()
+                local success,err=equipment:store(item)
+                if success then updateQuantity();render() end
+                tell(success and "Local fruit returned to stock." or tostring(err))
+            end,
+        })
+        if alive then
+            gui.Enabled=wasEnabled
+            if not called or not ok then tell("Fruit menu unavailable: "..tostring(called and message or ok)) end
         end
-        local function action(name,label,callback)
-            local control=copy:FindFirstChild(name)
-            if not control or not control:IsA("GuiButton") then return end
-            control.Visible=true;control.Active=true;control.Selectable=true
-            local caption=control:FindFirstChild("TextLabel")
-            if caption and caption:IsA("TextLabel") then caption.Text=label elseif control:IsA("TextButton") then control.Text=label end
-            control.Activated:Connect(callback)
-        end
-        action("Option1","Eat (real fruit only)",function()tell("Eating requires a real server-owned fruit; this visual grants no abilities.")end)
-        action("Option2","Drop (local)",function()
-            closeModal();local success,message=equipment:drop(item)
-            tell(success and "Dropped local visual. Use its pickup prompt to hold it again." or tostring(message))
-        end)
-        action("Option3","Store (local)",function()
-            closeModal();local success,message=equipment:store(item)
-            if success then updateQuantity();render() end
-            tell(success and "Local fruit returned to stock." or tostring(message))
-        end)
-        action("Cancel","Nevermind",closeModal)
-        local unequipped=tool.Unequipped:Connect(closeModal)
-        copy.Destroying:Connect(function()unequipped:Disconnect()end)
     end
     local function image(parent, item, position, size)
         local label = make("ImageLabel", parent, {Name = "Icon", Image = item.icon, BackgroundTransparency = 1,
@@ -1583,6 +1645,7 @@ function UI.start()
         equipment:close()
         fruitModels:close()
         nativeEquip:close()
+        if nativeDialogue then nativeDialogue:close() end
         if state.native then
             local called, ok, err = pcall(state.native.close, state.native)
             if not called or not ok then warn("[Blox Catalog] Native restore failed: " .. tostring(called and err or ok)) end
