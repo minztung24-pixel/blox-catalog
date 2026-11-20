@@ -1,4 +1,4 @@
-# Blox Catalog simulator — v12
+# Blox Catalog simulator — v12.1
 
 Giao diện quản lý/mô phỏng chạy trên client. Nguồn: báo cáo `blox-fruits-catalog-data-v1-2753915549.json`, place version 4632. File chạy chứa sẵn database, không cần chạy script mẫu hoặc helper trước mỗi lần mở.
 
@@ -41,6 +41,8 @@ Tên ưu tiên Display.Name, nếu thiếu dùng Index.StorageKey và ghi `nameS
 Trong Studio, chèn `dist/BloxCatalog.rbxmx` vào StarterPlayer > StarterPlayerScripts rồi Play. Package chứa Folder BloxCatalog với các ModuleScript và LocalScript Main. File bundle và package được tạo từ cùng mã nguồn.
 
 ## Fruits / v12
+
+v12.1 chặn file Empyrean không có ItemId nhưng root tên Galaxy Empyrean Kitsune Fruit: file này đang chứa nhầm skin Galaxy. Khi đó Equip báo rõ cần model Empyrean đúng; không đổi tên Galaxy thành Empyrean. Mẫu native, file Empyrean đúng và Galaxy (1042) vẫn dùng được. [Danh sách người dùng kiểm tra](../data/fruit-user-feedback-2026-11-21.json) lưu 22 trường hợp chưa hoàn chỉnh và các trái đã xác nhận đúng. Các phép đo v12 chỉ xác nhận chuyển động khớp, không chứng minh model mới nhất hoặc đủ FX. Chưa bổ sung hiệu ứng đoán cho các trái thiếu mẫu thật.
 
 Đã kiểm tra trong Blox Fruits gốc: 3/3 trái đối chứng chuyển động; 30 ID thay thế làm Bone/Motor6D của đúng model chuyển động, gồm Control, Kitsune, Gravity, Gas và Eagle. `FruitAnimations.luau` chỉ sửa bản import khi ItemId, ID cũ và fingerprint rig khớp. Eagle được bổ sung Animation đã kiểm chứng trên rig có sẵn; không tạo rig/model giả. Tool thật và mẫu native giữ nguyên. Xem [báo cáo](../docs/fruit-animation-validation.json). Flame tải được nhưng rig không chuyển động nên bị loại; Dragon chưa đối chiếu chắc chắn. 35/81 mục vẫn chưa có file model khớp. Chuyển động khớp rig chưa chứng minh mọi FX/hoạt ảnh giống hoàn toàn game.
 

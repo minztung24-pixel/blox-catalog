@@ -79,15 +79,30 @@ return function(FruitModels, Equipment)
             migrated:close()
             assert(correct,"Correct only the verified Buddha export ID; preserve other IDs and fruits")
         end
-        for _, kind in ipairs({"wrongId","multiple","noPart"}) do
+        for _, kind in ipairs({"wrongId","multiple","noPart","wrongEmpyrean"}) do
             local a = Instance.new("Tool");a:SetAttribute("ItemId",kind=="wrongId" and 9999 or 1525)
+            local selected=item
+            if kind=="wrongEmpyrean" then
+                a:SetAttribute("ItemId",nil);a.Name="Galaxy Empyrean Kitsune Fruit"
+                selected={id="1041",name="Empyrean",storageKey="Empyrean (Kitsune)-Empyrean (Kitsune)",category="Fruits"}
+            end
             if kind ~= "noPart" then Instance.new("Part",a).Name="Handle" end
             local objects = {a}
             if kind == "multiple" then table.insert(objects,Instance.new("Model")) end
             local rejected = FruitModels.new(function()return true end,function()return "fixture" end,function()return objects end)
-            assert(rejected:load(item)==nil,"Reject "..kind)
+            local loaded,reason=rejected:load(selected)
+            assert(loaded==nil,"Reject "..kind)
+            if kind=="wrongEmpyrean" then assert(reason:find("contains Galaxy",1,true),"Explain the mislabeled export")end
             for _, object in ipairs(objects) do assert(object.Parent==nil and #object:GetChildren()==0) end
             rejected:close()
+        end
+        for _,case in ipairs({{id="1041",name="Empyrean Fruit"},{id="1042",name="Galaxy Empyrean Kitsune Fruit"}})do
+            local source=Instance.new("Tool");source.Name=case.name
+            Instance.new("Part",source).Name="Handle"
+            local accepted=FruitModels.new(function()return true end,function()return "fixture" end,function()return {source}end)
+            local loaded=accepted:load({id=case.id,name=case.name,storageKey=case.name,category="Fruits"})
+            accepted:close()
+            assert(loaded,"Accept the correct Empyrean and preserve Galaxy")
         end
     end)
     cache:close()

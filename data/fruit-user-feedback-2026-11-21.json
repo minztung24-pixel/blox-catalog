@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "reportedDate": "2026-11-21",
+  "baselineVersion": 12,
+  "evidence": "User visual comparison; absent FX is not yet confirmed to differ from the native fruit",
+  "reported": [
+    {
+      "name": "Control",
+      "itemId": "1409",
+      "issue": "outdated_model",
+      "motionObserved": null,
+      "fxObserved": null
+    },
+    {
+      "name": "Dragon",
+      "itemId": "1447",
+      "issue": "motion_missing",
+      "motionObserved": false,
+      "fxObserved": true
+    },
+    {
+      "name": "Dragon (West)",
+      "itemId": "884",
+      "issue": "motion_missing",
+      "motionObserved": false,
+      "fxObserved": true
+    },
+    {
+      "name": "Ember",
+      "itemId": "1047",
+      "issue": "motion_missing",
+      "motionObserved": false,
+      "fxObserved": true
+    },
+    {
+      "name": "Empyrean",
+      "itemId": "1041",
+      "issue": "wrong_model",
+      "motionObserved": null,
+      "fxObserved": null
+    },
+    {
+      "name": "Gas",
+      "itemId": "1422",
+      "issue": "eyes_missing",
+      "motionObserved": true,
+      "fxObserved": true
+    },
+    {
+      "name": "Flame",
+      "itemId": "1394",
+      "issue": "motion_missing",
+      "motionObserved": false,
+      "fxObserved": true
+    },
+    {
+      "name": "Kitsune",
+      "itemId": "1423",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Lightning",
+      "itemId": "1427",
+      "issue": "motion_missing",
+      "motionObserved": false,
+      "fxObserved": true
+    },
+    {
+      "name": "Magma",
+      "itemId": "1391",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Mammoth",
+      "itemId": "1418",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Meme",
+      "itemId": "1431",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Pain",
+      "itemId": "1406",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Phoenix",
+      "itemId": "1401",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Quake",
+      "itemId": "1389",
+      "issue": "motion_and_fx_missing",
+      "motionObserved": false,
+      "fxObserved": false
+    },
+    {
+      "name": "Rocket",
+      "itemId": "1390",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Rubber",
+      "itemId": "1396",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Spider",
+      "itemId": "1403",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Spirit",
+      "itemId": "1415",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    },
+    {
+      "name": "Werewolf",
+      "itemId": "814",
+      "issue": "motion_missing",
+      "motionObserved": false,
+      "fxObserved": true,
+      "catalogName": "Werewolf (Tiger)"
+    },
+    {
+      "name": "Tiger",
+      "itemId": "1430",
+      "issue": "motion_missing",
+      "motionObserved": false,
+      "fxObserved": true
+    },
+    {
+      "name": "Spring",
+      "itemId": "1402",
+      "issue": "fx_unconfirmed",
+      "motionObserved": true,
+      "fxObserved": false
+    }
+  ],
+  "userConfirmedGood": [
+    "Yeti",
+    "Galaxy <Empyrean (Kitsune)>",
+    "Arcsteel Magnet",
+    "Shadow",
+    "Love",
+    "Sand"
+  ],
+  "policy": "Preserve confirmed-good fruits; fix motion, model identity and FX independently using current native references. Do not synthesize missing effects or map a skin to its base fruit."
+}

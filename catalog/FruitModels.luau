@@ -59,6 +59,9 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             assert(source,"Model file has no Tool or Model")
             local id = source:GetAttribute("ItemId")
             assert(id == nil or tostring(id) == item.id,"Model ItemId does not match catalog")
+            -- This mislabeled export contains the Galaxy skin, not the base Empyrean model.
+            assert(not (item.id=="1041" and id==nil and source.Name=="Galaxy Empyrean Kitsune Fruit"),
+                "Wrong Empyrean model: this local export contains Galaxy; a genuine Empyrean model is required")
             assert(#source:GetDescendants() <= 3000,"Fruit model exceeds instance limit")
             -- Imported scripts never enter the DataModel; clone strips code, remotes and tags.
             source.Parent = root

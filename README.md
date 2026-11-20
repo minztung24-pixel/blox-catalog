@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.1 Model identity and visual feedback
+
+The Empyrean export without an ItemId has the root name `Galaxy Empyrean Kitsune Fruit`, matching the user's report that it displays the Galaxy skin. Import now rejects that mislabeled source for Empyrean (1041) with a specific error, instead of presenting Galaxy as Empyrean. A correctly named Empyrean source, genuine native templates, and Galaxy (1042) remain supported. A proper Empyrean model is still required; this patch does not supply it.
+
+[User visual feedback](data/fruit-user-feedback-2026-11-21.json) records 22 incomplete cases and six confirmed-good references. Control was reported as an outdated model. Gas lacks visible side eyes despite the local file containing an Eyes mesh. Missing FX, inactive authored FX, missing motion and absent models are tracked separately; absence of particles alone is not proof that the native fruit should have them. No FX is synthesized or enabled speculatively. The three-control and 34-model v12 tests measured pose changes, not complete current-game appearance or FX parity.
+
+`tools/InspectCurrentFruitSources.client.luau` reads current client sources and asset fetch status, without requiring game modules, loading assets or touching inventory. Scan limits are explicit; a limited scan cannot establish that a model does not exist. Model files and detailed runtime reports remain local.
+
 ## v12 Verified animation references
 
 The local model pack had many incorrect Idle IDs. In the original experience, a batch checked candidate clips on hidden sanitized copies: all three known-good controls moved, and 30 replacement clips changed the corresponding rigs' Bone/Motor6D poses. These include Control, Kitsune, Gravity, Gas and Eagle. Imports now apply only the verified ItemId, old AnimationId and exact rig fingerprint; genuine Tools and captured native templates keep their own animation. Eagle's verified rig also receives its missing Animation instance. No extra preload helper is needed for normal use.
