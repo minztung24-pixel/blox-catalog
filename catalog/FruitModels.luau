@@ -1,4 +1,5 @@
 local Equipment = require(script.Parent.Equipment)
+local FruitAnimations = require(script.Parent.FruitAnimations)
 local FruitModels = {}
 
 function FruitModels.new(fileExists, assetUri, getObjects)
@@ -62,6 +63,7 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             -- Imported scripts never enter the DataModel; clone strips code, remotes and tags.
             source.Parent = root
             clean = assert(Equipment.clone(source,item),"Model has no usable BasePart")
+            FruitAnimations.apply(clean,item)
             local fruit = clean:FindFirstChild("Fruit")
             local idle = fruit and fruit:FindFirstChild("Idle")
             -- Native Buddha capture and typed preload verified this exact export correction.

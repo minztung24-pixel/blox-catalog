@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "gameId": 994732206,
+  "source": "https://github.com/PlockScripts/BloxFruits/blob/b1de5b704eddf63cf76eedd383ac069ce9c3ff38/Utils/Module.luau",
+  "purpose": "Candidate IDs only; require actual rig motion and positive controls before applying",
+  "targets": [
+    {
+      "itemId": "1525",
+      "name": "Arcsteel Magnet",
+      "animationId": "rbxassetid://90561160320604",
+      "control": true
+    },
+    {
+      "itemId": "1042",
+      "name": "Galaxy",
+      "animationId": "rbxassetid://121051622257427",
+      "control": true
+    },
+    {
+      "itemId": "1523",
+      "name": "Starlight Gravity",
+      "animationId": "rbxassetid://15123633312",
+      "control": true
+    },
+    {
+      "itemId": "1390",
+      "name": "Rocket",
+      "animationId": "rbxassetid://15124425041",
+      "control": false
+    },
+    {
+      "itemId": "1411",
+      "name": "Spin",
+      "animationId": "rbxassetid://15123685330",
+      "control": false
+    },
+    {
+      "itemId": "1399",
+      "name": "Blade",
+      "animationId": "rbxassetid://15123613404",
+      "control": false
+    },
+    {
+      "itemId": "1402",
+      "name": "Spring",
+      "animationId": "rbxassetid://15123689268",
+      "control": false
+    },
+    {
+      "itemId": "1397",
+      "name": "Bomb",
+      "animationId": "rbxassetid://15123595806",
+      "control": false
+    },
+    {
+      "itemId": "1400",
+      "name": "Smoke",
+      "animationId": "rbxassetid://15123677932",
+      "control": false
+    },
+    {
+      "itemId": "1398",
+      "name": "Spike",
+      "animationId": "rbxassetid://15124220207",
+      "control": false
+    },
+    {
+      "itemId": "1394",
+      "name": "Flame",
+      "animationId": "rbxassetid://121545956771325",
+      "control": false
+    },
+    {
+      "itemId": "1404",
+      "name": "Sand",
+      "animationId": "rbxassetid://15123673019",
+      "control": false
+    },
+    {
+      "itemId": "1395",
+      "name": "Dark",
+      "animationId": "rbxassetid://15123618591",
+      "control": false
+    },
+    {
+      "itemId": "1425",
+      "name": "Eagle",
+      "animationId": "rbxassetid://77885466312115",
+      "control": false
+    },
+    {
+      "itemId": "1421",
+      "name": "Diamond",
+      "animationId": "rbxassetid://15112600534",
+      "control": false
+    },
+    {
+      "itemId": "1407",
+      "name": "Light",
+      "animationId": "rbxassetid://15123640714",
+      "control": false
+    },
+    {
+      "itemId": "1396",
+      "name": "Rubber",
+      "animationId": "rbxassetid://15123668008",
+      "control": false
+    },
+    {
+      "itemId": "1412",
+      "name": "Ghost",
+      "animationId": "rbxassetid://15123662036",
+      "control": false
+    },
+    {
+      "itemId": "1391",
+      "name": "Magma",
+      "animationId": "rbxassetid://15123645682",
+      "control": false
+    },
+    {
+      "itemId": "1393",
+      "name": "Buddha",
+      "animationId": "rbxassetid://15123606541",
+      "control": false
+    },
+    {
+      "itemId": "1408",
+      "name": "Love",
+      "animationId": "rbxassetid://15123643097",
+      "control": false
+    },
+    {
+      "itemId": "1403",
+      "name": "Spider",
+      "animationId": "rbxassetid://15123681598",
+      "control": false
+    },
+    {
+      "itemId": "1426",
+      "name": "Creation",
+      "animationId": "rbxassetid://116828771482820",
+      "control": false
+    },
+    {
+      "itemId": "1419",
+      "name": "Sound",
+      "animationId": "rbxassetid://15123679712",
+      "control": false
+    },
+    {
+      "itemId": "1401",
+      "name": "Phoenix",
+      "animationId": "rbxassetid://15123654553",
+      "control": false
+    },
+    {
+      "itemId": "1414",
+      "name": "Portal",
+      "animationId": "rbxassetid://15123656798",
+      "control": false
+    },
+    {
+      "itemId": "1406",
+      "name": "Pain",
+      "animationId": "rbxassetid://15123652069",
+      "control": false
+    },
+    {
+      "itemId": "1416",
+      "name": "Blizzard",
+      "animationId": "rbxassetid://15123587371",
+      "control": false
+    },
+    {
+      "itemId": "1405",
+      "name": "Gravity",
+      "animationId": "rbxassetid://15123633312",
+      "control": false
+    },
+    {
+      "itemId": "1418",
+      "name": "Mammoth",
+      "animationId": "rbxassetid://15123648309",
+      "control": false
+    },
+    {
+      "itemId": "1420",
+      "name": "T-Rex",
+      "animationId": "rbxassetid://15694681122",
+      "control": false
+    },
+    {
+      "itemId": "1417",
+      "name": "Dough",
+      "animationId": "rbxassetid://15123624401",
+      "control": false
+    },
+    {
+      "itemId": "1413",
+      "name": "Shadow",
+      "animationId": "rbxassetid://15123675904",
+      "control": false
+    },
+    {
+      "itemId": "1410",
+      "name": "Venom",
+      "animationId": "rbxassetid://10773719142",
+      "control": false
+    },
+    {
+      "itemId": "1409",
+      "name": "Control",
+      "animationId": "rbxassetid://15123616275",
+      "control": false
+    },
+    {
+      "itemId": "1415",
+      "name": "Spirit",
+      "animationId": "rbxassetid://11911905519",
+      "control": false
+    },
+    {
+      "itemId": "1423",
+      "name": "Kitsune",
+      "animationId": "rbxassetid://15487764876",
+      "control": false
+    },
+    {
+      "itemId": "1424",
+      "name": "Yeti",
+      "animationId": "rbxassetid://115276580506154",
+      "control": false
+    },
+    {
+      "itemId": "1422",
+      "name": "Gas",
+      "animationId": "rbxassetid://118054805452821",
+      "control": false
+    }
+  ],
+  "skipped": [
+    "Quake",
+    "Rumble",
+    "Leopard",
+    "Dragon East"
+  ]
+}

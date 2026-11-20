@@ -12,19 +12,27 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v11 Animation loading in the main client
+## v12 Verified animation references
+
+The local model pack had many incorrect Idle IDs. In the original experience, a batch checked candidate clips on hidden sanitized copies: all three known-good controls moved, and 30 replacement clips changed the corresponding rigs' Bone/Motor6D poses. These include Control, Kitsune, Gravity, Gas and Eagle. Imports now apply only the verified ItemId, old AnimationId and exact rig fingerprint; genuine Tools and captured native templates keep their own animation. Eagle's verified rig also receives its missing Animation instance. No extra preload helper is needed for normal use.
+
+[Validation data and candidate source](docs/fruit-animation-validation.json) record the tested mappings and limits. Pose changes establish rig binding, not complete visual/FX parity. Flame's candidate loaded without moving its rig and was excluded. Diamond lacks a rig; Rocket, Portal and Venom lack matching local files. Dragon variants remain unverified. The existing local pack still matches only 46 of 81 Fruits; this update does not supply missing meshes or invent motion/effects.
+
+The rebuilt v12 import path was checked again in the original game without overriding imported IDs: all 34 tested models moved (30 corrected fruits, Buddha and three controls). Eleven Luau assertion suites and five Python build checks passed. The normal client needs no probe.
+
+## Animation loading in the main client
 
 Run the client once; no separate preload helper is needed. On first fruit Equip, the client preloads a private `Animation` instance and caches the result by AnimationId for this catalog session. Concurrent requests share the same fetch. Each rig still gets its own Animator track, reused on re-equip. Failed IDs are cached too, without automatic retry loops; restarting the catalog starts a new session.
 
 Equipping a local fruit now reports that its animation is being checked. Playback starts only after its track has nonzero Length. Fetching and track readiness each have an 8-second timeout. Unequipping or closing prevents late playback; closing also cancels pending fetches and disposes temporary objects. Missing animation, failed loading and ready states are reported separately. Existing genuine Tools keep their native behavior, and FX properties are retained.
 
-This makes loading and error reporting reliable; it cannot make unavailable IDs accessible or add absent rigs/FX. The captured audit found 38 failed IDs. Their original assets or verified per-fruit replacements are still needed. Preload success and nonzero track length do not establish full rig/FX parity. [AnimationTrack.Length](https://create.roblox.com/docs/reference/engine/classes/AnimationTrack#Length).
+The older export audit found 38 failed IDs; v12 replaces only independently validated mappings. Preload success and nonzero track length do not establish full rig/FX parity. [AnimationTrack.Length](https://create.roblox.com/docs/reference/engine/classes/AnimationTrack#Length).
 
 ## v10 Verified Buddha import correction
 
 The native Buddha Tool used animation `15123606541`; the local Buddha export instead referenced `78877647242196`. Typed animation preloading confirmed the native ID succeeds and the exported ID fails in place 2753915549. Import now corrects that exact old ID only for Buddha (ItemId 1393), on the sanitized copy. Original files, genuine Tools, already-correct IDs and other fruits remain unchanged. A matching local Buddha model is still required; a real held Buddha is no longer needed to obtain this correction on each launch.
 
-The v2 preload audit passed its native reference and reported 5 successful IDs and 38 failed IDs. This measures asset loading, not complete rig/FX parity. Account and place changed together, so it does not isolate an account effect. The earlier v1 raw-string preload audit is invalid for this classification. Other unavailable animations, missing scripted FX and the 35 catalog fruit records without matching local files remain unresolved.
+The earlier v2 preload audit passed its native reference and reported 5 successful IDs and 38 failed IDs, before the v12 reference corrections. Account and place changed together, so it does not isolate an account effect. The earlier v1 raw-string preload audit is invalid for this classification. Unverified animations, missing scripted FX and the 35 catalog fruit records without matching local files remain unresolved.
 
 ## v9 Native fruit templates
 
@@ -91,3 +99,11 @@ python tools/build_catalog.py 'C:\path\to\blox-fruits-catalog-data-v1-2753915549
 Commit the updated modules together with generated `client.lua`; users keep the same loader URL. Raw game code dumps, cache reports, local credentials and unrelated projects are excluded from publication.
 
 Lua suites return a function accepting their tested modules. Run them in Studio Edit: `Simulation.spec.luau` takes Inventory/Catalog, `NativeItems.spec.luau` takes NativeItems, `NativeEquip.spec.luau` takes NativeEquip, `NativeDialogue.spec.luau` takes NativeDialogue, `Equipment.spec.luau`, `FruitMotion.spec.luau` and `EquipmentActions.spec.luau` take Equipment, and `FruitModels.spec.luau` takes FruitModels/Equipment. [Detailed runtime notes](catalog/README.md).
+
+Diagnostic probe: copy `tools/ProbeOriginalFruitAnimations.client.luau` to `codex-original-fruit-animation-rigs-v1.lua` in the Potassium workspace, and the corresponding `data/` manifest to its `codex-` filename. `data/original-fruit-animation-candidates.json` is candidate mode; `data/v12-fruit-animation-validation.json` is import verification mode. Both require the corresponding local v11/v12 bundle and model files. Run only in the original Blox Fruits experience.
+
+```lua
+loadstring(readfile("codex-original-fruit-animation-rigs-v1.lua"))("codex-v12-fruit-animation-validation.json")
+```
+
+`FruitAnimations.spec.luau` takes FruitAnimations; `FruitAnimationImport.spec.luau` takes FruitModels/Equipment/FruitAnimations.

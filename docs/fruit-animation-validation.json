@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "gameId": 994732206,
+  "placeId": 2753915549,
+  "candidateSource": "https://github.com/PlockScripts/BloxFruits/blob/b1de5b704eddf63cf76eedd383ac069ce9c3ff38/Utils/Module.luau",
+  "method": "Typed Animation preload, nonzero track Length, and changing Bone/Motor6D.Transform at six clip positions on hidden sanitized copies in the original experience",
+  "controls": {
+    "tested": 3,
+    "loaded": 3,
+    "moved": 3
+  },
+  "complete": true,
+  "conclusive": true,
+  "verified": [
+    {
+      "name": "Spin",
+      "movingNodes": 15,
+      "signature": "b084a610:29",
+      "animationId": "rbxassetid://15123685330",
+      "originalId": "rbxassetid://100716764466975",
+      "itemId": "1411"
+    },
+    {
+      "name": "Blade",
+      "movingNodes": 11,
+      "signature": "3523854b:22",
+      "animationId": "rbxassetid://15123613404",
+      "originalId": "rbxassetid://78763341927414",
+      "itemId": "1399"
+    },
+    {
+      "name": "Spring",
+      "movingNodes": 38,
+      "signature": "7de4dbe4:55",
+      "animationId": "rbxassetid://15123689268",
+      "originalId": "rbxassetid://123916780450655",
+      "itemId": "1402"
+    },
+    {
+      "name": "Bomb",
+      "movingNodes": 38,
+      "signature": "2ecd3777:54",
+      "animationId": "rbxassetid://15123595806",
+      "originalId": "rbxassetid://87174669415581",
+      "itemId": "1397"
+    },
+    {
+      "name": "Smoke",
+      "movingNodes": 162,
+      "signature": "25095ae4:174",
+      "animationId": "rbxassetid://15123677932",
+      "originalId": "rbxassetid://90337525444547",
+      "itemId": "1400"
+    },
+    {
+      "name": "Spike",
+      "movingNodes": 72,
+      "signature": "cfca5a5a:154",
+      "animationId": "rbxassetid://15124220207",
+      "originalId": "rbxassetid://108171996739918",
+      "itemId": "1398"
+    },
+    {
+      "name": "Sand",
+      "movingNodes": 126,
+      "signature": "d484bf3b:149",
+      "animationId": "rbxassetid://15123673019",
+      "originalId": "rbxassetid://92557992918502",
+      "itemId": "1404"
+    },
+    {
+      "name": "Dark",
+      "movingNodes": 47,
+      "signature": "531b1bdd:79",
+      "animationId": "rbxassetid://15123618591",
+      "originalId": "rbxassetid://85473797801042",
+      "itemId": "1395"
+    },
+    {
+      "name": "Eagle",
+      "movingNodes": 50,
+      "signature": "afe45137:77",
+      "animationId": "rbxassetid://77885466312115",
+      "originalId": "",
+      "itemId": "1425"
+    },
+    {
+      "name": "Light",
+      "movingNodes": 32,
+      "signature": "5a98bc81:47",
+      "animationId": "rbxassetid://15123640714",
+      "originalId": "rbxassetid://139348349272463",
+      "itemId": "1407"
+    },
+    {
+      "name": "Rubber",
+      "movingNodes": 83,
+      "signature": "3514e101:99",
+      "animationId": "rbxassetid://15123668008",
+      "originalId": "rbxassetid://109351257940335",
+      "itemId": "1396"
+    },
+    {
+      "name": "Ghost",
+      "movingNodes": 75,
+      "signature": "8b49a3f4:93",
+      "animationId": "rbxassetid://15123662036",
+      "originalId": "rbxassetid://111438700727499",
+      "itemId": "1412"
+    },
+    {
+      "name": "Magma",
+      "movingNodes": 33,
+      "signature": "331acd69:45",
+      "animationId": "rbxassetid://15123645682",
+      "originalId": "rbxassetid://116451105732247",
+      "itemId": "1391"
+    },
+    {
+      "name": "Love",
+      "movingNodes": 46,
+      "signature": "14a29ba8:63",
+      "animationId": "rbxassetid://15123643097",
+      "originalId": "rbxassetid://91553047104929",
+      "itemId": "1408"
+    },
+    {
+      "name": "Spider",
+      "movingNodes": 100,
+      "signature": "851c59df:113",
+      "animationId": "rbxassetid://15123681598",
+      "originalId": "rbxassetid://70644057708392",
+      "itemId": "1403"
+    },
+    {
+      "name": "Creation",
+      "movingNodes": 68,
+      "signature": "2662b4b2:270",
+      "animationId": "rbxassetid://116828771482820",
+      "originalId": "rbxassetid://125602647148821",
+      "itemId": "1426"
+    },
+    {
+      "name": "Sound",
+      "movingNodes": 3,
+      "signature": "f3992a44:22",
+      "animationId": "rbxassetid://15123679712",
+      "originalId": "rbxassetid://110296133369830",
+      "itemId": "1419"
+    },
+    {
+      "name": "Phoenix",
+      "movingNodes": 120,
+      "signature": "f723e1ad:148",
+      "animationId": "rbxassetid://15123654553",
+      "originalId": "rbxassetid://110612702088317",
+      "itemId": "1401"
+    },
+    {
+      "name": "Pain",
+      "movingNodes": 43,
+      "signature": "e9f8eb69:61",
+      "animationId": "rbxassetid://15123652069",
+      "originalId": "rbxassetid://90610310104520",
+      "itemId": "1406"
+    },
+    {
+      "name": "Blizzard",
+      "movingNodes": 28,
+      "signature": "774b737e:52",
+      "animationId": "rbxassetid://15123587371",
+      "originalId": "rbxassetid://86482233160763",
+      "itemId": "1416"
+    },
+    {
+      "name": "Gravity",
+      "movingNodes": 8,
+      "signature": "bbeef6df:29",
+      "animationId": "rbxassetid://15123633312",
+      "originalId": "rbxassetid://116927061710230",
+      "itemId": "1405"
+    },
+    {
+      "name": "Mammoth",
+      "movingNodes": 14,
+      "signature": "63f30c83:68",
+      "animationId": "rbxassetid://15123648309",
+      "originalId": "rbxassetid://130603473374710",
+      "itemId": "1418"
+    },
+    {
+      "name": "T-Rex",
+      "movingNodes": 27,
+      "signature": "a192ef7a:37",
+      "animationId": "rbxassetid://15694681122",
+      "originalId": "rbxassetid://80001241268158",
+      "itemId": "1420"
+    },
+    {
+      "name": "Dough",
+      "movingNodes": 77,
+      "signature": "af10ce91:93",
+      "animationId": "rbxassetid://15123624401",
+      "originalId": "rbxassetid://78945929208351",
+      "itemId": "1417"
+    },
+    {
+      "name": "Shadow",
+      "movingNodes": 89,
+      "signature": "8a65d8e9:109",
+      "animationId": "rbxassetid://15123675904",
+      "originalId": "rbxassetid://125732165968983",
+      "itemId": "1413"
+    },
+    {
+      "name": "Control",
+      "movingNodes": 36,
+      "signature": "b3a04f4f:49",
+      "animationId": "rbxassetid://15123616275",
+      "originalId": "rbxassetid://79809986694708",
+      "itemId": "1409"
+    },
+    {
+      "name": "Spirit",
+      "movingNodes": 24,
+      "signature": "af733ecf:51",
+      "animationId": "rbxassetid://11911905519",
+      "originalId": "rbxassetid://125702468812458",
+      "itemId": "1415"
+    },
+    {
+      "name": "Kitsune",
+      "movingNodes": 128,
+      "signature": "1620d10f:157",
+      "animationId": "rbxassetid://15487764876",
+      "originalId": "rbxassetid://111861961607052",
+      "itemId": "1423"
+    },
+    {
+      "name": "Yeti",
+      "movingNodes": 108,
+      "signature": "12796b03:128",
+      "animationId": "rbxassetid://115276580506154",
+      "originalId": "rbxassetid://139168229602923",
+      "itemId": "1424"
+    },
+    {
+      "name": "Gas",
+      "movingNodes": 109,
+      "signature": "1e654c15:154",
+      "animationId": "rbxassetid://118054805452821",
+      "originalId": "rbxassetid://121824149217894",
+      "itemId": "1422"
+    }
+  ],
+  "excluded": [
+    {
+      "itemId": "1390",
+      "name": "Rocket",
+      "status": "MissingModel",
+      "animationId": "rbxassetid://15124425041"
+    },
+    {
+      "itemId": "1394",
+      "name": "Flame",
+      "status": "NoRigMotion",
+      "animationId": "rbxassetid://121545956771325"
+    },
+    {
+      "itemId": "1421",
+      "name": "Diamond",
+      "status": "MissingRig",
+      "animationId": "rbxassetid://15112600534"
+    },
+    {
+      "itemId": "1414",
+      "name": "Portal",
+      "status": "MissingModel",
+      "animationId": "rbxassetid://15123656798"
+    },
+    {
+      "itemId": "1410",
+      "name": "Venom",
+      "status": "MissingModel",
+      "animationId": "rbxassetid://10773719142"
+    }
+  ],
+  "limits": "Pose changes confirm rig binding, not full native visual/FX parity. Missing models/rigs are not synthesized. Dragon variants were not matched to an unambiguous source.",
+  "v12ImportValidation": {
+    "complete": true,
+    "conclusive": true,
+    "tested": 34,
+    "moved": 34,
+    "controls": {
+      "tested": 3,
+      "loaded": 3,
+      "moved": 3
+    },
+    "method": "Rebuilt v12 imports retained the expected IDs without probe overrides, then passed the same actual pose-change measurement."
+  }
+}
