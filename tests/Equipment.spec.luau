@@ -10,6 +10,7 @@ return function(Equipment)
     local remote = Instance.new("RemoteEvent"); remote.Parent = source
     local external = Instance.new("Part"); external.Parent = root
     local unsafe = Instance.new("WeldConstraint"); unsafe.Part0 = handle; unsafe.Part1 = external; unsafe.Parent = source
+    local particle = Instance.new("ParticleEmitter",handle);particle.Rate=7;particle.TimeScale=0.35;particle.Enabled=false
     local ok, err = pcall(function()
         local existingItem = {id = "1393", name = "Buddha", storageKey = "Buddha-Buddha", category = "Fruits"}
         source:SetAttribute("ItemId", 1393)
@@ -27,8 +28,11 @@ return function(Equipment)
         assert(tool:IsA("Tool") and tool:GetAttribute("BloxCatalogOwned") == true)
         assert(not tool:FindFirstChildWhichIsA("LuaSourceContainer", true))
         assert(not tool:FindFirstChildWhichIsA("RemoteEvent", true))
-        assert(not tool.Handle.Anchored and not tool.Handle.CanCollide and not tool.Enabled)
-        assert(tool.ManualActivationOnly and tool.RequiresHandle and tool:FindFirstChild("Handle"))
+        assert(not tool.Handle.Anchored and not tool.Handle.CanCollide and tool.Enabled)
+        assert(not tool.ManualActivationOnly and tool.RequiresHandle and tool:FindFirstChild("Handle"))
+        local copiedParticle=tool.Handle:FindFirstChildOfClass("ParticleEmitter")
+        assert(copiedParticle and copiedParticle.Rate==particle.Rate and copiedParticle.TimeScale==particle.TimeScale and not copiedParticle.Enabled,
+            "Keep authored FX settings instead of inventing intensity or enabling burst emitters")
         assert(#game:GetService("CollectionService"):GetTags(tool) == 0, "Game component tags must not activate on local clones")
         for _, node in ipairs(tool:GetDescendants()) do
             if node:IsA("WeldConstraint") then
@@ -38,6 +42,9 @@ return function(Equipment)
         end
         assert(source:FindFirstChildWhichIsA("ModuleScript") and handle.Anchored, "Source must stay intact")
         tool:Destroy()
+        local sword=assert(Equipment.clone(source,{id="1099",name="Bisento",category="Swords"}))
+        assert(not sword.Enabled and sword.ManualActivationOnly,"Cosmetic weapons must not activate")
+        sword:Destroy()
         assert(Equipment.clone(nil, {id = "1", name = "Missing", category = "Fruits"}) == nil, "An icon must not be passed off as a model")
     end)
     root:Destroy()

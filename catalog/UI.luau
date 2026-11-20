@@ -1,6 +1,7 @@
 local Catalog = require(script.Parent.Catalog)
 local Inventory = require(script.Parent.Inventory)
 local NativeItems = require(script.Parent.NativeItems)
+local NativeEquip = require(script.Parent.NativeEquip)
 local Equipment = require(script.Parent.Equipment)
 local FruitModels = require(script.Parent.FruitModels)
 local UI = {}
@@ -23,12 +24,11 @@ function UI.start()
         Swords = Color3.fromRGB(193, 133, 38), Guns = Color3.fromRGB(65, 125, 171), Skills = Color3.fromRGB(52, 142, 126)}
     local state = Inventory.new()
     local tab, category, query, page = "Inventory", "Fruits", "", 1
-    local flags = {Visual = true, Balance = true, ["Gift Perm"] = true, Icons = true, Preview3D = true, ["Fruit hotbar"] = true}
+    local flags = {Visual = true, Balance = true, ["Gift Perm"] = true, Icons = true, Preview3D = true}
     local models, connections, modal, render, refreshModels, updateQuantity = {}, {}, nil, nil, nil, nil
-    local renderFruitbar, selectFruitbar, resizePanel
-    local characterConnections = {}
     local fruitModels = FruitModels.new()
     local alive, scanning = true, false
+    local showFruitMenu
 
     local function make(class, parent, props)
         local object = Instance.new(class)
@@ -70,8 +70,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v5", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 5)
+    text(panel, "Title", "BLOX CATALOG v6", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 6)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -100,15 +100,18 @@ function UI.start()
         local source = sourceFor(item)
         if source then return source end
         if item.category == "Fruits" then return fruitModels:load(item) end
-    end, tell)
+    end, tell, function(item,tool) if showFruitMenu then showFruitMenu(item,tool) end end)
     state.removeEquipment = function(id) equipment:remove(id) end
     local function equip(item)
         local ok, err, mode = equipment:equip(item)
         tell(ok and ((mode == "existing" and "Equipped existing Tool: " or "Equipped local visual: ") .. item.name) or ("Equip unavailable: " .. tostring(err)))
         if not ok then warn("[Blox Catalog] Equip unavailable: " .. tostring(err)) end
-        if selectFruitbar then selectFruitbar() end
         return ok, err, mode
     end
+    local nativeEquip=NativeEquip.new(playerGui,state,equip)
+    task.spawn(function()
+        while alive do nativeEquip:refresh();task.wait(0.2) end
+    end)
     local function useVisual(item)
         if not Equipment.findExistingTool(player, item) and not state.items[item.id] then
             if not sourceFor(item) then
@@ -127,7 +130,8 @@ function UI.start()
         end
     end
     local function closeModal()
-        if modal then modal:Destroy(); modal = nil end
+        local current=modal;modal=nil
+        if current then current:Destroy() end
     end
     local function openModal(title)
         closeModal()
@@ -145,6 +149,49 @@ function UI.start()
             CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollBarThickness = 4})
         return scroll
     end
+    showFruitMenu = function(item,tool)
+        local main=playerGui:FindFirstChild("Main")
+        local template=main and main:FindFirstChild("Dialogue")
+        if not template or not template:IsA("GuiObject") then tell("Game dialogue template is unavailable; try again after the game UI loads.");return end
+        if template.Visible then tell("Finish the game's current dialogue first.");return end
+        closeModal()
+        local ok,copy=pcall(template.Clone,template)
+        if not ok or not copy then tell("Unable to clone the game dialogue template.");return end
+        for _,node in ipairs(copy:GetDescendants()) do
+            if node:IsA("LuaSourceContainer") or node:IsA("RemoteEvent") or node:IsA("RemoteFunction") or node:IsA("ViewportFrame") then node:Destroy()
+            else for _,tag in ipairs(game:GetService("CollectionService"):GetTags(node)) do game:GetService("CollectionService"):RemoveTag(node,tag) end end
+        end
+        for _,tag in ipairs(game:GetService("CollectionService"):GetTags(copy)) do game:GetService("CollectionService"):RemoveTag(copy,tag) end
+        modal=copy;copy.Name="FruitDialogue";copy.Visible=true;copy.Parent=gui
+        local title=copy:FindFirstChild("Title")
+        if title and title:IsA("TextLabel") then title.Text="Blox Fruit / Local visual";title.Visible=true end
+        local body=copy:FindFirstChild("TextFrame")
+        if body then
+            body:ClearAllChildren();body.Visible=true
+            text(body,"LocalScope","What do you wish to do with this local fruit visual?",UDim2.new(),UDim2.fromScale(1,1),24)
+        end
+        local function action(name,label,callback)
+            local control=copy:FindFirstChild(name)
+            if not control or not control:IsA("GuiButton") then return end
+            control.Visible=true;control.Active=true;control.Selectable=true
+            local caption=control:FindFirstChild("TextLabel")
+            if caption and caption:IsA("TextLabel") then caption.Text=label elseif control:IsA("TextButton") then control.Text=label end
+            control.Activated:Connect(callback)
+        end
+        action("Option1","Eat (real fruit only)",function()tell("Eating requires a real server-owned fruit; this visual grants no abilities.")end)
+        action("Option2","Drop (local)",function()
+            closeModal();local success,message=equipment:drop(item)
+            tell(success and "Dropped local visual. Use its pickup prompt to hold it again." or tostring(message))
+        end)
+        action("Option3","Store (local)",function()
+            closeModal();local success,message=equipment:store(item)
+            if success then updateQuantity();render() end
+            tell(success and "Local fruit returned to stock." or tostring(message))
+        end)
+        action("Cancel","Nevermind",closeModal)
+        local unequipped=tool.Unequipped:Connect(closeModal)
+        copy.Destroying:Connect(function()unequipped:Disconnect()end)
+    end
     local function image(parent, item, position, size)
         local label = make("ImageLabel", parent, {Name = "Icon", Image = item.icon, BackgroundTransparency = 1,
             Position = position, Size = size, ScaleType = Enum.ScaleType.Fit})
@@ -155,60 +202,6 @@ function UI.start()
         end
         return label
     end
-    local fruitbar = make("Frame", gui, {Name = "FruitHotbar", AnchorPoint = Vector2.new(0.5, 1),
-        Position = UDim2.new(0.5, 0, 1, -76), Size = UDim2.fromOffset(620, 94),
-        BackgroundColor3 = colors.background, BorderSizePixel = 0, Visible = false})
-    round(fruitbar, true)
-    text(fruitbar, "Title", "FRUITS / local visuals - click to hold", UDim2.fromOffset(8, 2), UDim2.new(1, -16, 0, 20), 11, true)
-    local fruitSlots = make("ScrollingFrame", fruitbar, {Name = "Slots", Position = UDim2.fromOffset(6, 24),
-        Size = UDim2.new(1, -12, 1, -28), BackgroundTransparency = 1, BorderSizePixel = 0,
-        AutomaticCanvasSize = Enum.AutomaticSize.X, CanvasSize = UDim2.new(), ScrollingDirection = Enum.ScrollingDirection.X,
-        ScrollBarThickness = 4, ScrollBarImageColor3 = colors.edge})
-    selectFruitbar = function()
-        for _, slot in ipairs(fruitSlots:GetChildren()) do
-            local item = Catalog.byId[slot:GetAttribute("ItemId")]
-            if item then
-                local row = state.items[item.id]
-                local tool = row and row.tool or Equipment.findExistingTool(player,item)
-                local selected = tool ~= nil and tool.Parent == player.Character
-                slot.BackgroundColor3 = selected and colors.green or colors.surface
-                slot:SetAttribute("Equipped",selected)
-            end
-        end
-    end
-    renderFruitbar = function()
-        local position = fruitSlots.CanvasPosition
-        fruitSlots:ClearAllChildren()
-        make("UIListLayout",fruitSlots,{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder})
-        local rows = {}
-        for _, row in pairs(state.items) do
-            if row.item.category == "Fruits" and row.count > 0 then table.insert(rows,row) end
-        end
-        table.sort(rows,function(a,b)return a.item.name:lower()<b.item.name:lower()end)
-        for index, row in ipairs(rows) do
-            local item = row.item
-            local slot = button(fruitSlots,"Fruit_"..item.id,"",UDim2.new(),UDim2.fromOffset(96,60),function() equip(item) end)
-            slot.LayoutOrder=index;slot:SetAttribute("ItemId",item.id)
-            image(slot,item,UDim2.fromOffset(28,2),UDim2.fromOffset(40,36))
-            text(slot,"Name",item.name,UDim2.fromOffset(4,38),UDim2.fromOffset(88,20),10)
-            text(slot,"Count","x"..row.count,UDim2.fromOffset(4,2),UDim2.fromOffset(25,16),10,true)
-        end
-        fruitbar.Visible = flags["Fruit hotbar"] and #rows > 0
-        fruitbar:SetAttribute("Count",#rows)
-        fruitSlots.CanvasPosition = position
-        selectFruitbar()
-        if resizePanel then resizePanel() end
-    end
-    local function watchCharacter(character)
-        for _, connection in ipairs(characterConnections) do connection:Disconnect() end
-        table.clear(characterConnections)
-        for _, signal in ipairs({character.ChildAdded,character.ChildRemoved}) do
-            table.insert(characterConnections,signal:Connect(function(node)
-                if node:IsA("Tool") then task.defer(function() if alive then selectFruitbar() end end) end
-            end))
-        end
-    end
-    if player.Character then watchCharacter(player.Character) end
     local function modelPreview(parent, item)
         local source = sourceFor(item)
         if not source or not source.Parent then return false end
@@ -242,7 +235,7 @@ function UI.start()
     end
     local function settings()
         local body = openModal("Utilities")
-        for index, key in ipairs({"Visual", "Balance", "Gift Perm", "Icons", "Preview3D", "Fruit hotbar"}) do
+        for index, key in ipairs({"Visual", "Balance", "Gift Perm", "Icons", "Preview3D"}) do
             local control
             control = button(body, "Toggle" .. key, key .. ": " .. (flags[key] and "ON" or "OFF"),
                 UDim2.fromOffset(4, (index - 1) * 52), UDim2.new(1, -8, 0, 44), function()
@@ -250,7 +243,7 @@ function UI.start()
                     control.Text = key .. ": " .. (flags[key] and "ON" or "OFF")
                     gui:SetAttribute("Enabled" .. key:gsub(" ", ""), flags[key])
                     if tab == key and not flags[key] then tab = "Inventory"; category = "Fruits" end
-                    if key == "Fruit hotbar" then renderFruitbar() else render() end
+                    render()
                 end)
         end
     end
@@ -271,7 +264,6 @@ function UI.start()
         local count = 0
         for _, row in pairs(state.items) do count += row.count end
         gui:SetAttribute("LocalQuantity", count)
-        renderFruitbar()
     end
 
     render = function()
@@ -478,8 +470,7 @@ function UI.start()
     table.insert(connections, search:GetPropertyChangedSignal("Text"):Connect(function()
         query = search.Text; page = 1; render()
     end))
-    table.insert(connections, player.CharacterAdded:Connect(function(character)
-        watchCharacter(character)
+    table.insert(connections, player.CharacterAdded:Connect(function()
         equipment:close()
         for _, row in pairs(state.items) do
             if state.native then
@@ -487,7 +478,6 @@ function UI.start()
                 if not ok then tell(tostring(err)) end
             end
         end
-        selectFruitbar()
         refreshModels()
     end))
     table.insert(connections, Input.InputBegan:Connect(function(key, processed)
@@ -516,11 +506,10 @@ function UI.start()
     table.insert(connections, Input.InputEnded:Connect(function(key)
         if key == dragging then dragging = nil end
     end))
-    resizePanel = function()
+    local function resize()
         local size = gui.AbsoluteSize
         local width = math.min(620, math.max(200, size.X - 20))
-        fruitbar.Size = UDim2.fromOffset(width,94)
-        panel.Size = UDim2.fromOffset(width, math.min(760, math.max(260, size.Y - (fruitbar.Visible and 180 or 20))))
+        panel.Size = UDim2.fromOffset(width, math.min(760, math.max(260, size.Y - 20)))
         local compact = size.Y < 540
         nav.Position = UDim2.fromOffset(12, 48); nav.Size = UDim2.new(1, -24, 0, compact and 30 or 38)
         info.Visible = not compact; info.Position = UDim2.fromOffset(14, 92); info.Size = UDim2.new(1, -28, 0, 18)
@@ -529,23 +518,23 @@ function UI.start()
         content.Position = UDim2.fromOffset(12, compact and 164 or 210); content.Size = UDim2.new(1, -24, 1, compact and -224 or -274)
         footer.Position = UDim2.new(0, 12, 1, -58); footer.Size = UDim2.new(1, -24, 0, 34)
         status.Position = UDim2.new(0, 14, 1, -22); status.Size = UDim2.new(1, -28, 0, 20)
-        panel.Position = moved and clamp(panel.Position) or UDim2.new(0.5,0,0.5,fruitbar.Visible and -88 or 0)
+        panel.Position = moved and clamp(panel.Position) or UDim2.fromScale(0.5,0.5)
         render()
     end
-    table.insert(connections, gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(resizePanel))
+    table.insert(connections, gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
     gui.Destroying:Connect(function()
         alive = false
         equipment:close()
         fruitModels:close()
+        nativeEquip:close()
         if state.native then
             local called, ok, err = pcall(state.native.close, state.native)
             if not called or not ok then warn("[Blox Catalog] Native restore failed: " .. tostring(called and err or ok)) end
         end
         for _, connection in ipairs(connections) do connection:Disconnect() end
-        for _, connection in ipairs(characterConnections) do connection:Disconnect() end
         table.clear(models)
     end)
-    resizePanel(); refreshModels()
+    resize(); refreshModels()
     return gui
 end
 
