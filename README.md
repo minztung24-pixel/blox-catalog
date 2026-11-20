@@ -14,6 +14,14 @@ The client, inventory entries, balance and gifts are local simulations. They do 
 
 ## v12.1 Model identity and visual feedback
 
+### Diagnostic comparison, 2026-11-21
+
+`tools/CompareFruitVisuals.client.luau` was run in the original experience against 50 local files. It found no changes in the compared mesh, surface, FX, attachment and rig properties after sanitization, allowing 1e-6 numerical normalization. Of 497 render asset references, 496 fetched successfully; Buddha's particle texture `6960307279` failed. PBR map images were requested explicitly. The raw files contained no scripts or tags; 53 sounds were intentionally removed by the existing clone sanitizer. These checks happen on private copies before equip, so they do not establish runtime FX activation, correct rig placement or current native model parity.
+
+The six user-confirmed good files contain authored particle effects. Kitsune's file has no ParticleEmitter/Beam/Trail; Magma has nine emitters that survive cloning. Gas's Eyes mesh survives and its mesh asset fetched successfully. Missing source FX and runtime activation/placement therefore require separate investigation. [Scoped diagnostic summary](data/fruit-visual-parity-summary-2026-11-21.json).
+
+The helper is available locally as `codex-fruit-visual-parity-v1.lua`; it uses `blox-catalog-sim-v12.lua` and the existing local model pack. It creates private copies, preloads render dependencies and saves `blox-fruits-visual-parity-<PlaceId>.json`. It never starts the UI, equips, plays scripts/animations or invokes game remotes. `tests/CompareFruitVisuals.spec.luau` exercises comparison, PBR image fetching, sound/script filtering and cleanup using injected inputs. This diagnostic does not change the production client or announce a new fix version.
+
 The Empyrean export without an ItemId has the root name `Galaxy Empyrean Kitsune Fruit`, matching the user's report that it displays the Galaxy skin. Import now rejects that mislabeled source for Empyrean (1041) with a specific error, instead of presenting Galaxy as Empyrean. A correctly named Empyrean source, genuine native templates, and Galaxy (1042) remain supported. A proper Empyrean model is still required; this patch does not supply it.
 
 [User visual feedback](data/fruit-user-feedback-2026-11-21.json) records 22 incomplete cases and six confirmed-good references. Control was reported as an outdated model. Gas lacks visible side eyes despite the local file containing an Eyes mesh. Missing FX, inactive authored FX, missing motion and absent models are tracked separately; absence of particles alone is not proof that the native fruit should have them. No FX is synthesized or enabled speculatively. The three-control and 34-model v12 tests measured pose changes, not complete current-game appearance or FX parity.

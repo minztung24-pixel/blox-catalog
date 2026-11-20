@@ -1,0 +1,764 @@
+{
+  "schemaVersion": 1,
+  "gameId": 994732206,
+  "placeId": 2753915549,
+  "placeVersion": 4632,
+  "complete": true,
+  "conclusiveVisualComparison": true,
+  "modelErrors": 0,
+  "comparisonReadErrors": 0,
+  "numericTolerance": 1e-06,
+  "scope": "Source-file versus sanitized-clone parity; no claim of current native visual parity",
+  "models": 50,
+  "visualDifferences": 0,
+  "assets": {
+    "tested": 497,
+    "success": 496,
+    "failed": [
+      {
+        "id": "rbxassetid://6960307279",
+        "uses": [
+          {
+            "file": "Buddha-Buddha.rbxm",
+            "property": "Texture",
+            "path": "Fruit/Aura1/Attachment/Particle_2"
+          }
+        ]
+      }
+    ]
+  },
+  "sourceBehavior": {
+    "scripts": 0,
+    "tags": 0,
+    "soundsRemoved": 53
+  },
+  "fruits": [
+    {
+      "file": "Arcsteel Magnet.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": true,
+          "name": "Arcsteel Magnet",
+          "itemId": "1525"
+        }
+      ],
+      "sourceParts": 3,
+      "sourceEmitters": 51,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Blade-Blade.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Blade",
+          "itemId": "1399"
+        }
+      ],
+      "sourceParts": 4,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Blizzard-Blizzard.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Blizzard",
+          "itemId": "1416"
+        }
+      ],
+      "sourceParts": 4,
+      "sourceEmitters": 8,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Bloodmoon Dragon (West).rbxm",
+      "matches": [],
+      "sourceParts": 7,
+      "sourceEmitters": 8,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Bomb-Bomb.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Bomb",
+          "itemId": "1397"
+        }
+      ],
+      "sourceParts": 5,
+      "sourceEmitters": 12,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Buddha-Buddha.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Buddha",
+          "itemId": "1393"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 2,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Control-Control.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Control",
+          "itemId": "1409"
+        }
+      ],
+      "sourceParts": 5,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Creation-Creation.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Creation",
+          "itemId": "1426"
+        }
+      ],
+      "sourceParts": 13,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Dark-Dark.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Dark",
+          "itemId": "1395"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Diamond-Diamond.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Diamond",
+          "itemId": "1421"
+        }
+      ],
+      "sourceParts": 5,
+      "sourceEmitters": 3,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Dough-Dough.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Dough",
+          "itemId": "1417"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 6,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Dragon (West)-Dragon (West).rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Dragon (West)",
+          "itemId": "884"
+        }
+      ],
+      "sourceParts": 7,
+      "sourceEmitters": 33,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Dragon-Dragon.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Dragon",
+          "itemId": "1447"
+        }
+      ],
+      "sourceParts": 7,
+      "sourceEmitters": 8,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Eagle-Eagle.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Eagle",
+          "itemId": "1425"
+        }
+      ],
+      "sourceParts": 3,
+      "sourceEmitters": 12,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Eclipse Dragon (West).rbxm",
+      "matches": [],
+      "sourceParts": 7,
+      "sourceEmitters": 8,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Ember Dragon (West).rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Ember",
+          "itemId": "1047"
+        }
+      ],
+      "sourceParts": 7,
+      "sourceEmitters": 8,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Empyrean (Kitsune)-Empyrean (Kitsune).rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Empyrean",
+          "itemId": "1041"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 3,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Flame-Flame.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Flame",
+          "itemId": "1394"
+        }
+      ],
+      "sourceParts": 8,
+      "sourceEmitters": 6,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Galaxy Empyrean Kitsune.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": true,
+          "name": "Galaxy",
+          "itemId": "1042"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 3,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Gas-Gas.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Gas",
+          "itemId": "1422"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 7,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Ghost-Ghost.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Ghost",
+          "itemId": "1412"
+        }
+      ],
+      "sourceParts": 3,
+      "sourceEmitters": 4,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Gravity-Gravity.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Gravity",
+          "itemId": "1405"
+        }
+      ],
+      "sourceParts": 8,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Heavenly Gravity.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Starlight Gravity",
+          "itemId": "1523"
+        }
+      ],
+      "sourceParts": 9,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Ice-Ice.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Ice",
+          "itemId": "1392"
+        }
+      ],
+      "sourceParts": 4,
+      "sourceEmitters": 10,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Kitsune-Kitsune.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Kitsune",
+          "itemId": "1423"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Light-Light.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Light",
+          "itemId": "1407"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Lightning-Lightning.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Lightning",
+          "itemId": "1427"
+        }
+      ],
+      "sourceParts": 8,
+      "sourceEmitters": 4,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Love-Love.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": true,
+          "name": "Love",
+          "itemId": "1408"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 3,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Magma-Magma.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Magma",
+          "itemId": "1391"
+        }
+      ],
+      "sourceParts": 4,
+      "sourceEmitters": 9,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Mammoth-Mammoth.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Mammoth",
+          "itemId": "1418"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Meme-Meme.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Meme",
+          "itemId": "1431"
+        }
+      ],
+      "sourceParts": 2,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Pain-Pain.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Pain",
+          "itemId": "1406"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Phoenix-Phoenix.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Phoenix",
+          "itemId": "1401"
+        }
+      ],
+      "sourceParts": 11,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Quake-Quake.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Quake",
+          "itemId": "1389"
+        }
+      ],
+      "sourceParts": 4,
+      "sourceEmitters": 5,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Rubber-Rubber.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Rubber",
+          "itemId": "1396"
+        }
+      ],
+      "sourceParts": 3,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Sand-Sand.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": true,
+          "name": "Sand",
+          "itemId": "1404"
+        }
+      ],
+      "sourceParts": 3,
+      "sourceEmitters": 5,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Shadow-Shadow.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": true,
+          "name": "Shadow",
+          "itemId": "1413"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 4,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Smoke-Smoke.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Smoke",
+          "itemId": "1400"
+        }
+      ],
+      "sourceParts": 4,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Sound-Sound.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Sound",
+          "itemId": "1419"
+        }
+      ],
+      "sourceParts": 7,
+      "sourceEmitters": 7,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Spider-Spider.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Spider",
+          "itemId": "1403"
+        }
+      ],
+      "sourceParts": 5,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Spike-Spike.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Spike",
+          "itemId": "1398"
+        }
+      ],
+      "sourceParts": 7,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Spin-Spin.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Spin",
+          "itemId": "1411"
+        }
+      ],
+      "sourceParts": 3,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Spirit-Spirit.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Spirit",
+          "itemId": "1415"
+        }
+      ],
+      "sourceParts": 11,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Spring-Spring.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Spring",
+          "itemId": "1402"
+        }
+      ],
+      "sourceParts": 4,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "T-Rex-T-Rex.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "T-Rex",
+          "itemId": "1420"
+        }
+      ],
+      "sourceParts": 3,
+      "sourceEmitters": 4,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Tiger-Tiger.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Tiger",
+          "itemId": "1430"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Violet Night Dragon (West).rbxm",
+      "matches": [],
+      "sourceParts": 7,
+      "sourceEmitters": 8,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Werewolf (Tiger)-Werewolf (Tiger).rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": false,
+          "name": "Werewolf (Tiger)",
+          "itemId": "814"
+        }
+      ],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Werewolf-Werewolf.rbxm",
+      "matches": [],
+      "sourceParts": 6,
+      "sourceEmitters": 0,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    },
+    {
+      "file": "Yeti-Yeti.rbxm",
+      "matches": [
+        {
+          "userConfirmedGood": true,
+          "name": "Yeti",
+          "itemId": "1424"
+        }
+      ],
+      "sourceParts": 5,
+      "sourceEmitters": 8,
+      "sourceBeams": 0,
+      "sourceTrails": 0,
+      "visualDifferences": 0
+    }
+  ],
+  "limits": "Compares imported files with private clones before equipping. Does not establish current native geometry, FX activation, runtime rig placement or full appearance parity. Successful image fetch does not prove correct PBR rendering."
+}
