@@ -16,6 +16,14 @@ The client, inventory entries, balance and gifts are local simulations. They do 
 
 ### Diagnostic comparison, 2026-11-21
 
+Next, capture the held runtime state with the existing observer's `visuals` mode. Add Arcsteel Magnet, Gas and Magma to the local Added tab first, run the line below, then Equip each one in that order for at least eight seconds. The observer reads all three tools for up to 90 seconds, stopping early when each has a held sample at six seconds. It records eye/mesh positions relative to Handle, bone transforms, weld frames, emitter origins and authored FX parameters. It does not equip or mutate the observed tools. Missing targets are reported explicitly as `targetsComplete=false`.
+
+```lua
+loadstring(readfile("codex-fruit-runtime-watch-v1.lua"))("visuals")
+```
+
+Copy `tools/WatchFruitRuntime.client.luau` to that workspace filename. Results are saved locally as `blox-fruits-held-visuals-<PlaceId>.json`. `tests/HeldVisualObserver.spec.luau` takes the observer source string; it verifies the three-tool transition, sampling, positions, FX flags and saved output with injected services and a clock. The default observer mode retains its older 40-second report format. Runtime capture is diagnostic, not a visual fix.
+
 `tools/CompareFruitVisuals.client.luau` was run in the original experience against 50 local files. It found no changes in the compared mesh, surface, FX, attachment and rig properties after sanitization, allowing 1e-6 numerical normalization. Of 497 render asset references, 496 fetched successfully; Buddha's particle texture `6960307279` failed. PBR map images were requested explicitly. The raw files contained no scripts or tags; 53 sounds were intentionally removed by the existing clone sanitizer. These checks happen on private copies before equip, so they do not establish runtime FX activation, correct rig placement or current native model parity.
 
 The six user-confirmed good files contain authored particle effects. Kitsune's file has no ParticleEmitter/Beam/Trail; Magma has nine emitters that survive cloning. Gas's Eyes mesh survives and its mesh asset fetched successfully. Missing source FX and runtime activation/placement therefore require separate investigation. [Scoped diagnostic summary](data/fruit-visual-parity-summary-2026-11-21.json).
