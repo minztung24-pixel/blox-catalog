@@ -10,7 +10,19 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/minztung24-pixel/blox
 
 Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Add a fruit, open Added, and press Equip. A fruit with a model becomes a local Tool; the game's own hotbar displays it. There is no separate catalog hotbar. Right Shift hides/shows the catalog panel; Tools enables/disables utilities.
 
-The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
+The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
+
+## v12.8 Visual Robux / Shop Gifts
+
+Balance now contains a Visual Robux input, APPLY BALANCE, an optional 10% visual discount and Reset. The previous Beli/Fragments editor is removed. The discount only changes the simulated checkout price, rounded up to whole visual Robux; it does not represent an account subscription.
+
+After applying, open the game's Shop → Permanent Fruit Shop → Gift, use its existing Server/Global search and select a player. The observed GiftWindow purchase control is replaced by a sanitized UI copy labeled Visual while preview mode is active. Clicking it records a local gift and deducts the current displayed quote from the visual balance, with the visual discount when enabled. The original price label is not rewritten. Unsupported products, unknown prices and unselected recipients remain blocked in preview mode. The adapter currently supports permanent-fruit names present in this Catalog, not every product in the game shop.
+
+No purchase API or server gift action is invoked by the preview adapter. Reset, disabling Balance in Tools, and closing the Catalog remove its copied controls and restore the original button. Gifts are not delivered and do not grant permanent ownership. The existing Gift Perm history also shows these local records.
+
+The implementation uses paths and context/price text measured from the user's GiftWindow report. tools/InspectShopGift.client.luau is a bounded read-only observer; it does not activate controls or copy text entered in TextBoxes. Its raw reports stay local.
+
+Validation: NativeShop and Simulation assertions cover observed context parsing, quotes, insufficient balance, the discount, unknown products, reset and cleanup. Existing NativeItems/NativeEquip checks and seven Python build tests pass. A Studio client playtest used actual UI clicks: applying 758796, enabling the discount, then clicking a fixture's Buddha gift deducted 1485 and recorded one simulated gift while the original purchase callback counter remained zero. Reset and cleanup passed; the Balance screen was visually inspected. Live Blox Fruits UI behavior after loading this version still needs user confirmation.
 
 ## v12.7 Equip from the game inventory
 

@@ -2,6 +2,7 @@ local Catalog = require(script.Parent.Catalog)
 local Inventory = require(script.Parent.Inventory)
 local NativeItems = require(script.Parent.NativeItems)
 local NativeEquip = require(script.Parent.NativeEquip)
+local NativeShop = require(script.Parent.NativeShop)
 local NativeDialogue = require(script.Parent.NativeDialogue)
 local Equipment = require(script.Parent.Equipment)
 local FruitModels = require(script.Parent.FruitModels)
@@ -72,8 +73,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.7", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.7)
+    text(panel, "Title", "BLOX CATALOG v12.8", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.8)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -123,8 +124,19 @@ function UI.start()
         return ok, err, mode
     end
     local nativeEquip=NativeEquip.new(playerGui,state,equip)
+    local shopGifts
+    local function balanceChanged(message)
+        gui:SetAttribute("VisualRobux",state.balance.robux)
+        gui:SetAttribute("ShopGiftsApplied",state.balance.applied)
+        gui:SetAttribute("VisualPlusDiscount",state.balance.plusDiscount)
+        gui:SetAttribute("GiftCount",#state.gifts)
+        if shopGifts then shopGifts:refresh()end
+        if tab=="Balance"then render()end
+        if message then tell(message)end
+    end
+    shopGifts=NativeShop.new(playerGui,state,balanceChanged,function()return flags.Balance end)
     task.spawn(function()
-        while alive do nativeEquip:refresh();task.wait(0.2) end
+        while alive do nativeEquip:refresh();shopGifts:refresh();task.wait(0.2) end
     end)
     local function useVisual(item)
         if not Equipment.findExistingTool(player, item) and not state.items[item.id] then
@@ -248,6 +260,7 @@ function UI.start()
                     flags[key] = not flags[key]
                     control.Text = key .. ": " .. (flags[key] and "ON" or "OFF")
                     gui:SetAttribute("Enabled" .. key:gsub(" ", ""), flags[key])
+                    shopGifts:refresh()
                     if tab == key and not flags[key] then tab = "Inventory"; category = "Fruits" end
                     render()
                 end)
@@ -289,21 +302,28 @@ function UI.start()
         end
         search.Visible = tab ~= "Balance"
         if tab == "Balance" then
-            text(content, "BalanceScope", "Balance simulation", UDim2.fromOffset(4, 0), UDim2.new(1, -8, 0, 26), 15)
-            text(content, "BeliLabel", "Beli", UDim2.fromOffset(4, 36), UDim2.new(1, -8, 0, 20), 12, true)
-            local beli = box(content, "Beli", "Beli", UDim2.fromOffset(4, 60), UDim2.new(1, -8, 0, 44))
-            text(content, "FragmentsLabel", "Fragments", UDim2.fromOffset(4, 116), UDim2.new(1, -8, 0, 20), 12, true)
-            local fragments = box(content, "Fragments", "Fragments", UDim2.fromOffset(4, 140), UDim2.new(1, -8, 0, 44))
-            beli.Text, fragments.Text = tostring(state.balance.beli), tostring(state.balance.fragments)
-            button(content, "SaveBalance", "Save local balance", UDim2.fromOffset(4, 204), UDim2.new(1, -8, 0, 44), function()
-                if Inventory.setBalance(state, beli.Text, fragments.Text) then
-                    gui:SetAttribute("Beli", state.balance.beli); gui:SetAttribute("Fragments", state.balance.fragments)
-                    tell("Simulation balance saved.")
+            text(content, "BalanceScope", "VISUAL ROBUX · SHOP GIFTS", UDim2.fromOffset(4, 0), UDim2.new(1, -8, 0, 28), 15)
+            text(content, "Instructions", "Apply a balance, then open Shop → Gift → select a player. Gifts use this local preview balance.",
+                UDim2.fromOffset(4, 38), UDim2.new(1, -8, 0, 58), 13, true)
+            text(content, "BalanceStatus", "Visual Robux: "..state.balance.robux..(state.balance.applied and " · Applied" or " · Not applied"),
+                UDim2.fromOffset(4, 106), UDim2.new(1, -8, 0, 26), 14)
+            local amount=box(content,"VisualRobux","Visual Robux",UDim2.fromOffset(4,144),UDim2.new(1,-8,0,44))
+            amount.Text=tostring(state.balance.robux)
+            button(content, "SaveBalance", "APPLY BALANCE", UDim2.fromOffset(4, 200), UDim2.new(1, -8, 0, 44), function()
+                if Inventory.setBalance(state, amount.Text) then
+                    balanceChanged("Visual balance applied.")
                 else tell("Enter whole numbers from 0 to 9007199254740991.") end
-            end, colors.green)
-            button(content, "ResetBalance", "Reset balance", UDim2.fromOffset(4, 262), UDim2.new(1, -8, 0, 44), function()
-                Inventory.setBalance(state, "0", "0"); gui:SetAttribute("Beli", 0); gui:SetAttribute("Fragments", 0); render()
+            end, Color3.fromRGB(123,85,239))
+            button(content,"PlusDiscount","Roblox Plus · 10% visual discount: "..(state.balance.plusDiscount and "ON" or "OFF"),
+                UDim2.fromOffset(4,256),UDim2.new(1,-8,0,44),function()
+                    state.balance.plusDiscount=not state.balance.plusDiscount
+                    balanceChanged("Visual discount updated.")
+                end,state.balance.plusDiscount and colors.edge or nil)
+            button(content, "ResetBalance", "Reset visual balance", UDim2.fromOffset(4, 312), UDim2.new(1, -8, 0, 44), function()
+                Inventory.resetBalance(state)
+                balanceChanged("Visual balance reset.")
             end)
+            text(content,"Scope","Local preview · Gifts are not delivered.",UDim2.fromOffset(4,368),UDim2.new(1,-8,0,30),12,true)
             return
         end
         local categoryTabs = tab == "Inventory" and {"Fruits", "Permanent", "Fruit Skins", "Premium"}
@@ -539,6 +559,7 @@ function UI.start()
         equipment:close(true)
         fruitModels:close()
         nativeEquip:close()
+        shopGifts:close()
         if nativeDialogue then nativeDialogue:close() end
         if state.native then
             local called, ok, err = pcall(state.native.close, state.native)

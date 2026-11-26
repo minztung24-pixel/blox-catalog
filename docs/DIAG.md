@@ -1,6 +1,16 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.7. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.8. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Visual Robux / Shop Gifts, v12.8
+
+Thay trình sửa Beli/Fragments bằng số dư Visual Robux, Apply, giảm giá hiển thị 10% và Reset. Dữ liệu UI được ghi trong báo cáo shop-gift-ui, complete=true, 14 snapshot. Các đường dẫn đã thấy: PlayerGui.GiftWindow.Window.Footer.Context và Window.Content.Buttons.Purchase.TextLabel. Native context có dạng Gifting [username] <Permanent Magnet}> với dấu } thừa; adapter chỉ khớp tên permanent có trong Catalog và giá đang hiển thị, không đoán giá khi thiếu.
+
+Khi Apply bật, NativeShop ẩn/vô hiệu hóa nút Purchase gốc và dùng một bản sao UI đã gỡ script, remote và tag. Callback của bản sao chỉ gọi Inventory.buyGift để ghi lịch sử và trừ số dư mô phỏng. Chưa chọn người nhận, tên sản phẩm chưa hỗ trợ hoặc giá không đọc được đều không mua trong chế độ này. Các tab Server/Global và tìm người vẫn là UI của game. Không gọi API mua hàng hay remote gift.
+
+Reset, tắt tiện ích Balance hoặc đóng Catalog trả lại trạng thái Visible/Interactable/Selectable của nút gốc và gỡ bản sao. Nhãn trạng thái đặt dưới Footer.Context để không tham gia layout của Window. Test NativeShop và Simulation qua; test luồng Equip hiện có qua; 7 test build Python qua. Playtest Client trong Studio đã bấm Apply, bật giảm giá, bấm Gift giả lập Buddha: 758796 trừ 1485 còn 757311, GiftCount=1, bộ đếm callback Purchase gốc=0; Reset về trạng thái chưa Apply và cleanup qua. Ảnh màn Balance đã được kiểm tra. Chưa xác nhận phiên bản mới trong Blox Fruits đang mở của người dùng.
+
+Đây là mô phỏng local, không cấp quyền Plus, không trao permanent hay gửi quà thật. Phạm vi sản phẩm hiện tại là permanent fruit khớp database; Global search tận dụng giao diện native, chưa có lượt chọn một tài khoản ngoài server trong playtest.
 
 ## Equip từ kho game, v12.7
 

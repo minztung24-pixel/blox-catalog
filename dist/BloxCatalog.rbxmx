@@ -1333,7 +1333,7 @@ end
 return FruitModels
 </ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">Inventory</string><ProtectedString name="Source">local Inventory = {}
 function Inventory.new()
-    return {items = {}, balance = {beli = 0, fragments = 0}, gifts = {}}
+    return {items = {}, balance = {robux = 0, applied = false, plusDiscount = false}, gifts = {}}
 end
 function Inventory.add(state, item)
     local row = state.items[item.id]
@@ -1388,16 +1388,20 @@ function Inventory.undoClear(state)
     state.lastClear = nil
     return true
 end
-function Inventory.setBalance(state, beli, fragments)
-    local function parse(text)
-        if not text:match("^%d+$") then return nil end
-        local value = tonumber(text)
-        return value and value &lt;= 9007199254740991 and value or nil
-    end
-    local money, shards = parse(beli), parse(fragments)
-    if not money or not shards then return false end
-    state.balance = {beli = money, fragments = shards}
+function Inventory.setBalance(state, text)
+    if type(text)~="string" or not text:match("^%d+$") then return false end
+    local value=tonumber(text)
+    if not value or value&gt;9007199254740991 then return false end
+    state.balance.robux=value
+    state.balance.applied=true
     return true
+end
+function Inventory.resetBalance(state)
+    state.balance={robux=0,applied=false,plusDiscount=false}
+end
+function Inventory.shopPrice(state,price)
+    if type(price)~="number" or price&lt;0 or price&gt;9007199254740991 or price%1~=0 then return nil end
+    return state.balance.plusDiscount and price-math.floor(price/10) or price
 end
 function Inventory.gift(state, item, username)
     username = username:match("^%s*(.-)%s*$")
@@ -1406,11 +1410,145 @@ function Inventory.gift(state, item, username)
     if #state.gifts &gt; 50 then table.remove(state.gifts) end
     return true
 end
+function Inventory.buyGift(state,item,username,price)
+    if not state.balance.applied then return false,"Apply a visual balance first." end
+    local cost=Inventory.shopPrice(state,price)
+    if not cost then return false,"Shop price unavailable." end
+    if cost&gt;state.balance.robux then return false,"Insufficient visual Robux." end
+    if not Inventory.gift(state,item,username) then return false,"Invalid gift item or recipient." end
+    state.balance.robux-=cost
+    state.gifts[1].cost=cost
+    return true
+end
 return Inventory
+</ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">NativeShop</string><ProtectedString name="Source">local Catalog = require(script.Parent.Catalog)
+local Inventory = require(script.Parent.Inventory)
+local Collection=game:GetService("CollectionService")
+local NativeShop={}
+
+function NativeShop.new(playerGui,state,onChange,enabled)
+    local binding={}
+    local original,overlay,badge,connection,savedVisible,savedInteractable,savedSelectable
+    local function window()
+        local gui=playerGui:FindFirstChild("GiftWindow")
+        local frame=gui and gui:FindFirstChild("Window")
+        if not frame or not frame:IsA("GuiObject") then return nil end
+        local node=frame
+        while node and node~=playerGui do
+            if node:IsA("GuiObject") and not node.Visible or node:IsA("ScreenGui") and not node.Enabled then return nil end
+            node=node.Parent
+        end
+        return frame
+    end
+    local function selection(frame)
+        local footer=frame:FindFirstChild("Footer")
+        local context=footer and footer:FindFirstChild("Context")
+        local content=frame:FindFirstChild("Content")
+        local buttons=content and content:FindFirstChild("Buttons")
+        local button=buttons and buttons:FindFirstChild("Purchase")
+        local label=button and button:FindFirstChild("TextLabel")
+        if not button or not button:IsA("GuiButton") or not label or not label:IsA("TextLabel") then return nil end
+        local username,name
+        if context and context:IsA("TextLabel")then
+            username=context.Text:match("^Gifting%s*%[([A-Za-z0-9_]+)%]")
+            name=context.Text:match("&lt;([^&lt;&gt;]+)&gt;%s*$")
+            -- The observed native context appends a literal } inside the product delimiter.
+            if name then name=name:gsub("}%s*$",""):match("^%s*(.-)%s*$")end
+        end
+        local item
+        for _,candidate in ipairs(Catalog.search("","Permanent"))do
+            if candidate.name==name then
+                if item then item=nil;break end
+                item=candidate
+            end
+        end
+        local plain=label.Text:gsub("&lt;[^&gt;]*&gt;","")
+        local digits=plain:match("(%d[%d,%s]*)%s*$")
+        local price=digits and tonumber((digits:gsub("[,%s]","")))
+        return button,label,item,username,price
+    end
+    local function clear()
+        if connection then connection:Disconnect();connection=nil end
+        if overlay then overlay:Destroy();overlay=nil end
+        if badge then badge:Destroy();badge=nil end
+        if original and original.Parent then
+            original.Visible=savedVisible;original.Interactable=savedInteractable;original.Selectable=savedSelectable
+        end
+        original=nil
+    end
+    local function active()
+        return not binding.closed and state.balance.applied and enabled()
+    end
+    function binding:buy()
+        local frame=active() and window()
+        if not frame then return false end
+        local button,_,item,username,price=selection(frame)
+        local ok,message=false,"Select a player and a supported permanent fruit."
+        if button==original and item and username then
+            ok,message=Inventory.buyGift(state,item,username,price)
+            if ok then message="Simulated gift: "..item.name.." → "..username..". Not delivered." end
+        end
+        if badge then badge.Text=message end
+        onChange(message)
+        return ok,message
+    end
+    function binding:refresh()
+        local frame=active() and window()
+        if not frame then clear();return end
+        local button,label,item,username,price=selection(frame)
+        if not button then clear();return end
+        if original~=button or not overlay or not overlay.Parent then
+            clear()
+            local clone=button:Clone()
+            if not clone then return end
+            for _,node in ipairs(clone:GetDescendants())do
+                if node:IsA("LuaSourceContainer") or node:IsA("RemoteEvent") or node:IsA("RemoteFunction")
+                    or node:IsA("BindableEvent") or node:IsA("BindableFunction")then node:Destroy()end
+            end
+            for _,node in ipairs(clone:GetDescendants())do
+                for _,tag in ipairs(Collection:GetTags(node))do Collection:RemoveTag(node,tag)end
+            end
+            for _,tag in ipairs(Collection:GetTags(clone))do Collection:RemoveTag(clone,tag)end
+            original=button;overlay=clone
+            savedVisible,savedInteractable,savedSelectable=button.Visible,button.Interactable,button.Selectable
+            overlay.Name="BloxCatalogVisualPurchase"
+            overlay:SetAttribute("LocalSimulation",true)
+            overlay.Interactable=true;overlay.Active=true;overlay.Selectable=true
+            overlay.Parent=button.Parent
+            connection=overlay.Activated:Connect(function()self:buy()end)
+            badge=Instance.new("TextLabel")
+            badge.Name="BloxCatalogGiftStatus";badge.Position=UDim2.new(0,0,1,4);badge.Size=UDim2.new(1,0,0,42)
+            badge.BackgroundColor3=Color3.fromRGB(20,20,25);badge.BackgroundTransparency=.1
+            badge.TextColor3=Color3.fromRGB(255,226,79);badge.Font=Enum.Font.GothamMedium
+            badge.TextSize=12;badge.TextWrapped=true;badge.ZIndex=frame.ZIndex+6
+            badge.Text="Visual R$: "..state.balance.robux.." · Local preview only"
+            badge.Parent=frame.Footer.Context
+        end
+        original.Visible=false;original.Interactable=false;original.Selectable=false
+        overlay.Visible=savedVisible
+        overlay.Position=button.Position;overlay.Size=button.Size;overlay.AnchorPoint=button.AnchorPoint
+        overlay.Rotation=button.Rotation;overlay.ZIndex=button.ZIndex+1
+        overlay.BackgroundColor3=button.BackgroundColor3;overlay.BackgroundTransparency=button.BackgroundTransparency
+        local trans=button:FindFirstChild("Trans")
+        local copy=overlay:FindFirstChild("Trans")
+        if trans and copy and trans:IsA("Frame") and copy:IsA("Frame")then
+            copy.BackgroundColor3=trans.BackgroundColor3;copy.BackgroundTransparency=trans.BackgroundTransparency
+        end
+        local cost=Inventory.shopPrice(state,price)
+        overlay.TextLabel.Text=item and username and cost and (label.Text:gsub("%d[%d,%s]*%s*$",tostring(cost).." · Visual"))
+            or "Select gift / player · Visual"
+    end
+    function binding:close()
+        self.closed=true;clear()
+    end
+    return binding
+end
+return NativeShop
 </ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">UI</string><ProtectedString name="Source">local Catalog = require(script.Parent.Catalog)
 local Inventory = require(script.Parent.Inventory)
 local NativeItems = require(script.Parent.NativeItems)
 local NativeEquip = require(script.Parent.NativeEquip)
+local NativeShop = require(script.Parent.NativeShop)
 local NativeDialogue = require(script.Parent.NativeDialogue)
 local Equipment = require(script.Parent.Equipment)
 local FruitModels = require(script.Parent.FruitModels)
@@ -1481,8 +1619,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.7", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.7)
+    text(panel, "Title", "BLOX CATALOG v12.8", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.8)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -1532,8 +1670,19 @@ function UI.start()
         return ok, err, mode
     end
     local nativeEquip=NativeEquip.new(playerGui,state,equip)
+    local shopGifts
+    local function balanceChanged(message)
+        gui:SetAttribute("VisualRobux",state.balance.robux)
+        gui:SetAttribute("ShopGiftsApplied",state.balance.applied)
+        gui:SetAttribute("VisualPlusDiscount",state.balance.plusDiscount)
+        gui:SetAttribute("GiftCount",#state.gifts)
+        if shopGifts then shopGifts:refresh()end
+        if tab=="Balance"then render()end
+        if message then tell(message)end
+    end
+    shopGifts=NativeShop.new(playerGui,state,balanceChanged,function()return flags.Balance end)
     task.spawn(function()
-        while alive do nativeEquip:refresh();task.wait(0.2) end
+        while alive do nativeEquip:refresh();shopGifts:refresh();task.wait(0.2) end
     end)
     local function useVisual(item)
         if not Equipment.findExistingTool(player, item) and not state.items[item.id] then
@@ -1657,6 +1806,7 @@ function UI.start()
                     flags[key] = not flags[key]
                     control.Text = key .. ": " .. (flags[key] and "ON" or "OFF")
                     gui:SetAttribute("Enabled" .. key:gsub(" ", ""), flags[key])
+                    shopGifts:refresh()
                     if tab == key and not flags[key] then tab = "Inventory"; category = "Fruits" end
                     render()
                 end)
@@ -1698,21 +1848,28 @@ function UI.start()
         end
         search.Visible = tab ~= "Balance"
         if tab == "Balance" then
-            text(content, "BalanceScope", "Balance simulation", UDim2.fromOffset(4, 0), UDim2.new(1, -8, 0, 26), 15)
-            text(content, "BeliLabel", "Beli", UDim2.fromOffset(4, 36), UDim2.new(1, -8, 0, 20), 12, true)
-            local beli = box(content, "Beli", "Beli", UDim2.fromOffset(4, 60), UDim2.new(1, -8, 0, 44))
-            text(content, "FragmentsLabel", "Fragments", UDim2.fromOffset(4, 116), UDim2.new(1, -8, 0, 20), 12, true)
-            local fragments = box(content, "Fragments", "Fragments", UDim2.fromOffset(4, 140), UDim2.new(1, -8, 0, 44))
-            beli.Text, fragments.Text = tostring(state.balance.beli), tostring(state.balance.fragments)
-            button(content, "SaveBalance", "Save local balance", UDim2.fromOffset(4, 204), UDim2.new(1, -8, 0, 44), function()
-                if Inventory.setBalance(state, beli.Text, fragments.Text) then
-                    gui:SetAttribute("Beli", state.balance.beli); gui:SetAttribute("Fragments", state.balance.fragments)
-                    tell("Simulation balance saved.")
+            text(content, "BalanceScope", "VISUAL ROBUX · SHOP GIFTS", UDim2.fromOffset(4, 0), UDim2.new(1, -8, 0, 28), 15)
+            text(content, "Instructions", "Apply a balance, then open Shop → Gift → select a player. Gifts use this local preview balance.",
+                UDim2.fromOffset(4, 38), UDim2.new(1, -8, 0, 58), 13, true)
+            text(content, "BalanceStatus", "Visual Robux: "..state.balance.robux..(state.balance.applied and " · Applied" or " · Not applied"),
+                UDim2.fromOffset(4, 106), UDim2.new(1, -8, 0, 26), 14)
+            local amount=box(content,"VisualRobux","Visual Robux",UDim2.fromOffset(4,144),UDim2.new(1,-8,0,44))
+            amount.Text=tostring(state.balance.robux)
+            button(content, "SaveBalance", "APPLY BALANCE", UDim2.fromOffset(4, 200), UDim2.new(1, -8, 0, 44), function()
+                if Inventory.setBalance(state, amount.Text) then
+                    balanceChanged("Visual balance applied.")
                 else tell("Enter whole numbers from 0 to 9007199254740991.") end
-            end, colors.green)
-            button(content, "ResetBalance", "Reset balance", UDim2.fromOffset(4, 262), UDim2.new(1, -8, 0, 44), function()
-                Inventory.setBalance(state, "0", "0"); gui:SetAttribute("Beli", 0); gui:SetAttribute("Fragments", 0); render()
+            end, Color3.fromRGB(123,85,239))
+            button(content,"PlusDiscount","Roblox Plus · 10% visual discount: "..(state.balance.plusDiscount and "ON" or "OFF"),
+                UDim2.fromOffset(4,256),UDim2.new(1,-8,0,44),function()
+                    state.balance.plusDiscount=not state.balance.plusDiscount
+                    balanceChanged("Visual discount updated.")
+                end,state.balance.plusDiscount and colors.edge or nil)
+            button(content, "ResetBalance", "Reset visual balance", UDim2.fromOffset(4, 312), UDim2.new(1, -8, 0, 44), function()
+                Inventory.resetBalance(state)
+                balanceChanged("Visual balance reset.")
             end)
+            text(content,"Scope","Local preview · Gifts are not delivered.",UDim2.fromOffset(4,368),UDim2.new(1,-8,0,30),12,true)
             return
         end
         local categoryTabs = tab == "Inventory" and {"Fruits", "Permanent", "Fruit Skins", "Premium"}
@@ -1948,6 +2105,7 @@ function UI.start()
         equipment:close(true)
         fruitModels:close()
         nativeEquip:close()
+        shopGifts:close()
         if nativeDialogue then nativeDialogue:close() end
         if state.native then
             local called, ok, err = pcall(state.native.close, state.native)

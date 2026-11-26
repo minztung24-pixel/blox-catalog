@@ -1,6 +1,6 @@
 local Inventory = {}
 function Inventory.new()
-    return {items = {}, balance = {beli = 0, fragments = 0}, gifts = {}}
+    return {items = {}, balance = {robux = 0, applied = false, plusDiscount = false}, gifts = {}}
 end
 function Inventory.add(state, item)
     local row = state.items[item.id]
@@ -55,22 +55,36 @@ function Inventory.undoClear(state)
     state.lastClear = nil
     return true
 end
-function Inventory.setBalance(state, beli, fragments)
-    local function parse(text)
-        if not text:match("^%d+$") then return nil end
-        local value = tonumber(text)
-        return value and value <= 9007199254740991 and value or nil
-    end
-    local money, shards = parse(beli), parse(fragments)
-    if not money or not shards then return false end
-    state.balance = {beli = money, fragments = shards}
+function Inventory.setBalance(state, text)
+    if type(text)~="string" or not text:match("^%d+$") then return false end
+    local value=tonumber(text)
+    if not value or value>9007199254740991 then return false end
+    state.balance.robux=value
+    state.balance.applied=true
     return true
+end
+function Inventory.resetBalance(state)
+    state.balance={robux=0,applied=false,plusDiscount=false}
+end
+function Inventory.shopPrice(state,price)
+    if type(price)~="number" or price<0 or price>9007199254740991 or price%1~=0 then return nil end
+    return state.balance.plusDiscount and price-math.floor(price/10) or price
 end
 function Inventory.gift(state, item, username)
     username = username:match("^%s*(.-)%s*$")
     if item.category ~= "Permanent" or #username < 3 or #username > 20 or not username:match("^[A-Za-z0-9_]+$") then return false end
     table.insert(state.gifts, 1, {id = item.id, name = item.name, recipient = username})
     if #state.gifts > 50 then table.remove(state.gifts) end
+    return true
+end
+function Inventory.buyGift(state,item,username,price)
+    if not state.balance.applied then return false,"Apply a visual balance first." end
+    local cost=Inventory.shopPrice(state,price)
+    if not cost then return false,"Shop price unavailable." end
+    if cost>state.balance.robux then return false,"Insufficient visual Robux." end
+    if not Inventory.gift(state,item,username) then return false,"Invalid gift item or recipient." end
+    state.balance.robux-=cost
+    state.gifts[1].cost=cost
     return true
 end
 return Inventory
