@@ -154,7 +154,8 @@ local ok,failure=pcall(function()
         if not file or file:find("..",1,true)then continue end
         if #report.models>=80 or os.clock()-started>100 then report.limits.models=true;break end
         local row={file=file,matches={}}
-        for _,item in ipairs(modules.Catalog.databases.Fruits)do
+        for _,item in pairs(modules.Catalog.byId)do
+            if not (item.category=="Fruits" or item.isPhysicalFruit) then continue end
             if file==item.storageKey..".rbxm" or file==item.name..".rbxm"then
                 table.insert(row.matches,{itemId=item.id,name=item.name,userConfirmedGood=good[item.id]==true})
             end

@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.4 Base fruits and skins
+
+Catalog classification now follows Skin.Physical and Skin.IsDefault. Thirty physical skin variants, including Arcsteel Magnet and Galaxy, appear in Fruit Skins. Default appearances, including Magnet and Yeti, stay in Fruits. The matching ownership-skin definitions remain addressable by their original IDs and share the physical item's visible card. Searching by the linked skin ID finds that physical card.
+
+There are 51 base-fruit cards and 83 skin/redeemable cards. The latter includes 30 physical variants, 31 skins without a Physical reference and 22 redeemables. All 351 source IDs are retained. Add, Equip, animations, menus and Drop continue to recognize physical fruit models across both tabs.
+
+Of the 35 physical appearances without local files, 9 are base fruits and 26 are skins. Reclassification supplies no new mesh or animation asset. See the per-ID [asset audit](docs/ASSET_AUDIT.md) and [diagnostics](docs/DIAG.md). The Arcsteel/Galaxy and default Magnet regressions were verified alongside model loading and Equipment tests in Studio.
+
 ## v12.3 Dropped fruit ground contact
 
 Dropped local fruits now use an invisible collision box fitted to the visible parts. An oversized Handle no longer holds the visible fruit above the floor. The collider is disabled while equipped and reused on subsequent drops. Models that contain only a Handle keep Handle collision.

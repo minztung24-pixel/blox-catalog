@@ -19,14 +19,14 @@ for _, category in ipairs(Catalog.categories) do
     end
 end
 function Catalog.matches(item, query)
-    local text = table.concat({item.name, item.id, item.rarity, item.title, item.storageKey}, " "):lower()
+    local text = table.concat({item.name, item.id, item.rarity, item.title, item.storageKey, item.skinId or ""}, " "):lower()
     query = query:match("^%s*(.-)%s*$"):lower()
     return text:find(query, 1, true) ~= nil
 end
 function Catalog.search(query, category)
     local result = {}
     for _, item in ipairs(Database[category] or {}) do
-        if Catalog.matches(item, query) then table.insert(result, item) end
+        if not item.hiddenInCatalog and Catalog.matches(item, query) then table.insert(result, item) end
     end
     return result
 end

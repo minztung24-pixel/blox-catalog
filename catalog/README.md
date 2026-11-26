@@ -1,4 +1,4 @@
-# Blox Catalog simulator — v12.1
+# Blox Catalog simulator — v12.4
 
 Giao diện quản lý/mô phỏng chạy trên client. Nguồn: báo cáo `blox-fruits-catalog-data-v1-2753915549.json`, place version 4632. File chạy chứa sẵn database, không cần chạy script mẫu hoặc helper trước mỗi lần mở.
 
@@ -24,9 +24,9 @@ Add/Clear/Clear Whole Inventory/Undo Clear đồng bộ kho mô phỏng với ca
 
 | Database | Bản ghi | Thiếu rarity | Thiếu icon |
 |---|---:|---:|---:|
-| Fruits | 81 | 0 | 0 |
+| Fruits | 51 | 0 | 0 |
 | Permanent | 46 | 0 | 0 |
-| Fruit Skins | 99 | 0 | 0 |
+| Fruit Skins | 129 | 0 | 0 |
 | Premium | 30 | 0 | 7 |
 | Swords | 42 | 1 | 1 |
 | Guns | 14 | 0 | 0 |
@@ -34,7 +34,7 @@ Add/Clear/Clear Whole Inventory/Undo Clear đồng bộ kho mô phỏng với ca
 
 `Data/` chứa bảy ModuleScript database; `Data/init.luau` tổng hợp chúng. `Catalog.luau` tìm kiếm bằng chuỗi thường theo tên/ID/rarity; `Inventory.luau` quản lý trạng thái mô phỏng; `NativeItems.luau` nối cache và bảo vệ native action; `Equipment.luau` tạo/equip/dọn Tool cục bộ; `FruitModels.luau` nhập model trái từ file cục bộ; `FruitAnimations.luau` đối chiếu animation đã kiểm chứng; `UI.luau` dựng giao diện; `Main.client.luau` khởi chạy. Bản `dist/catalog.json` chứa dữ liệu dễ đọc và thống kê nguồn.
 
-Phân loại dựa trên Index.IdType và Display.Category thực tế. Permanent được xác định bằng RibbonText hoặc tên Permanent trong nhóm Blox Fruit/Redeemable; không biến mọi Redeemable thành Permanent. Wenlock's Rocket Fruit không có dấu hiệu đó nên không được gán nhầm. Skin và vé redeem skin giữ ID riêng của game. Skills bao gồm Fighting Style, Ability và Admin Ability theo danh mục gốc; sự hiện diện trong database không đồng nghĩa có thể sở hữu hoặc sử dụng.
+Phân loại dùng Index.IdType, Display.Category và quan hệ Skin.Physical/Skin.IsDefault. 30 trái vật phẩm mang skin nằm ở Fruit Skins. 46 định nghĩa skin có bản vật phẩm tương ứng được ẩn khỏi kết quả tìm kiếm để bỏ default và thẻ trùng, nên tab Fruit Skins có 83 thẻ hiển thị trên 129 bản ghi. Các ID gốc được giữ để tra cứu. Permanent được xác định bằng RibbonText hoặc tên Permanent trong nhóm Blox Fruit/Redeemable; không biến mọi Redeemable thành Permanent. Wenlock's Rocket Fruit không có dấu hiệu đó nên không được gán nhầm. Skin và vé redeem skin giữ ID riêng của game. Skills bao gồm Fighting Style, Ability và Admin Ability theo danh mục gốc; sự hiện diện trong database không đồng nghĩa có thể sở hữu hoặc sử dụng.
 
 Tên ưu tiên Display.Name, nếu thiếu dùng Index.StorageKey và ghi `nameSource`. ID là **ItemId của game**, khác ID của hình ảnh hoặc game pass. Icon giữ ImageRectOffset/ImageRectSize từ sprite atlas. Metadata không có trong nguồn được đánh dấu trong trường `missing`, hiển thị Unknown hoặc dấu hỏi; không tự đoán rarity hay ghép icon theo tên.
 

@@ -7,7 +7,7 @@
     "items": 351,
     "categories": {
       "Fruits": {
-        "items": 81,
+        "items": 51,
         "missingRarity": 0,
         "missingIcon": 0
       },
@@ -17,7 +17,7 @@
         "missingIcon": 0
       },
       "Fruit Skins": {
-        "items": 99,
+        "items": 129,
         "missingRarity": 0,
         "missingIcon": 0
       },
@@ -47,52 +47,6 @@
   "databases": {
     "Fruits": [
       {
-        "id": "1525",
-        "name": "Arcsteel Magnet",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Arcsteel Magnet",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://107963440655746",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1525",
-        "iconRectOffset": [
-          1,
-          1
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "512",
-        "name": "Azura Bomb",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Azura Bomb",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Common",
-        "icon": "rbxassetid://98614986419454",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:512",
-        "iconRectOffset": [
-          1,
-          1
-        ],
-        "iconRectSize": [
-          130,
-          142
-        ]
-      },
-      {
         "id": "1399",
         "name": "Blade",
         "category": "Fruits",
@@ -113,7 +67,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1539",
+        "isDefaultSkin": true
       },
       {
         "id": "1416",
@@ -136,7 +93,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1397",
@@ -159,7 +117,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "527",
+        "isDefaultSkin": true
       },
       {
         "id": "1393",
@@ -182,30 +143,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "539",
-        "name": "Celebration Bomb",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Celebration Bomb",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Common",
-        "icon": "rbxassetid://73607799898606",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:539",
-        "iconRectOffset": [
-          1,
-          1
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1428",
@@ -228,30 +167,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "498",
-        "name": "Celestial Pain",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Celestial Pain",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://73607799898606",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:498",
-        "iconRectOffset": [
-          1,
-          609
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1409",
@@ -274,7 +191,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1426",
@@ -297,7 +215,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1395",
@@ -320,7 +239,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1421",
@@ -343,30 +263,10 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "1048",
-        "name": "Divine",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Divine Portal",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://73607799898606",
-        "title": "Divine <Portal>",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1048",
-        "iconRectOffset": [
-          153,
-          1
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true,
+        "skinId": "452",
+        "isDefaultSkin": true
       },
       {
         "id": "1417",
@@ -389,7 +289,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1447",
@@ -412,7 +313,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "885",
@@ -435,7 +337,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "272",
+        "isDefaultSkin": true
       },
       {
         "id": "884",
@@ -458,7 +363,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "289",
+        "isDefaultSkin": true
       },
       {
         "id": "1425",
@@ -481,53 +389,10 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "1047",
-        "name": "Ember",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Ember Dragon (West)",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://98614986419454",
-        "title": "Ember <Dragon (West)>",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1047",
-        "iconRectOffset": [
-          1,
-          297
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "471",
-        "name": "Emerald Diamond",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Emerald Diamond",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Uncommon",
-        "icon": "rbxassetid://107963440655746",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:471",
-        "iconRectOffset": [
-          609,
-          1
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true,
+        "skinId": "406",
+        "isDefaultSkin": true
       },
       {
         "id": "1041",
@@ -550,7 +415,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1045",
+        "isDefaultSkin": true
       },
       {
         "id": "1060",
@@ -573,7 +441,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1063",
+        "isDefaultSkin": true
       },
       {
         "id": "1394",
@@ -596,53 +467,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "492",
-        "name": "Frustration Pain",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Frustration Pain",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://73607799898606",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:492",
-        "iconRectOffset": [
-          153,
-          305
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "1042",
-        "name": "Galaxy",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Galaxy Empyrean Kitsune",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://73607799898606",
-        "title": "Galaxy <Empyrean (Kitsune)>",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1042",
-        "iconRectOffset": [
-          153,
-          457
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1422",
@@ -665,7 +491,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1412",
@@ -688,30 +515,10 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "496",
-        "name": "Glacier Eagle",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Glacier Eagle",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Uncommon",
-        "icon": "rbxassetid://107963440655746",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:496",
-        "iconRectOffset": [
-          153,
-          305
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true,
+        "skinId": "1535",
+        "isDefaultSkin": true
       },
       {
         "id": "1405",
@@ -734,30 +541,10 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "462",
-        "name": "Green Lightning",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Green Lightning",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://77505335507737",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:462",
-        "iconRectOffset": [
-          305,
-          153
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true,
+        "skinId": "1533",
+        "isDefaultSkin": true
       },
       {
         "id": "1601",
@@ -780,7 +567,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1604",
+        "isDefaultSkin": true
       },
       {
         "id": "1392",
@@ -803,7 +593,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1423",
@@ -826,7 +617,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1407",
@@ -849,7 +641,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1427",
@@ -872,30 +665,10 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "1526",
-        "name": "Lime Blade",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Lime Blade",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Rare",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1526",
-        "iconRectOffset": [
-          1,
-          153
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true,
+        "skinId": "461",
+        "isDefaultSkin": true
       },
       {
         "id": "1408",
@@ -918,7 +691,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1391",
@@ -941,7 +715,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1516",
@@ -964,7 +739,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1537",
+        "isDefaultSkin": true
       },
       {
         "id": "1418",
@@ -987,30 +765,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "502",
-        "name": "Matrix Eagle",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Matrix Eagle",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Uncommon",
-        "icon": "rbxassetid://107963440655746",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:502",
-        "iconRectOffset": [
-          153,
-          609
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1431",
@@ -1033,30 +789,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "508",
-        "name": "Nuclear Bomb",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Nuclear Bomb",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Common",
-        "icon": "rbxassetid://98614986419454",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:508",
-        "iconRectOffset": [
-          265,
-          1
         ],
-        "iconRectSize": [
-          130,
-          142
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1429",
@@ -1079,30 +813,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "463",
-        "name": "Orange Portal",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Orange Portal",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://98614986419454",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:463",
-        "iconRectOffset": [
-          1,
-          601
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1406",
@@ -1125,7 +837,10 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "480",
+        "isDefaultSkin": true
       },
       {
         "id": "1401",
@@ -1148,30 +863,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "458",
-        "name": "Pink Portal",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Pink Portal",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:458",
-        "iconRectOffset": [
-          609,
-          305
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1414",
@@ -1194,30 +887,10 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "460",
-        "name": "Purple Lightning",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Purple Lightning",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:460",
-        "iconRectOffset": [
-          609,
-          153
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true,
+        "skinId": "466",
+        "isDefaultSkin": true
       },
       {
         "id": "1389",
@@ -1240,53 +913,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "540",
-        "name": "Red Lightning",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Red Lightning",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:540",
-        "iconRectOffset": [
-          305,
-          305
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "495",
-        "name": "Requiem Eagle",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Requiem Eagle",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Uncommon",
-        "icon": "rbxassetid://107963440655746",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:495",
-        "iconRectOffset": [
-          153,
-          761
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1390",
@@ -1309,30 +937,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "470",
-        "name": "Rose Quartz Diamond",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Rose Quartz Diamond",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Uncommon",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:470",
-        "iconRectOffset": [
-          305,
-          1
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1396",
@@ -1355,76 +961,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "468",
-        "name": "Ruby Diamond",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Ruby Diamond",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Rare",
-        "icon": "rbxassetid://77505335507737",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:468",
-        "iconRectOffset": [
-          609,
-          305
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "1522",
-        "name": "Runic Fiend",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Sealed Fiend",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1522",
-        "iconRectOffset": [
-          153,
-          761
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "479",
-        "name": "Sadness Pain",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Sadness Pain",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://98614986419454",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:479",
-        "iconRectOffset": [
-          609,
-          605
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1404",
@@ -1447,30 +985,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "1524",
-        "name": "Scarlet Ghost",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Red Ghost",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Rare",
-        "icon": "rbxassetid://77505335507737",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1524",
-        "iconRectOffset": [
-          153,
-          305
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1413",
@@ -1493,7 +1009,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1400",
@@ -1516,7 +1033,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1419",
@@ -1539,7 +1057,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1403",
@@ -1562,7 +1081,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1398",
@@ -1585,7 +1105,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1411",
@@ -1608,7 +1129,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1415",
@@ -1631,7 +1153,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "1402",
@@ -1654,53 +1177,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "1523",
-        "name": "Starlight Gravity",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Heavenly Gravity",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://77505335507737",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1523",
-        "iconRectOffset": [
-          153,
-          761
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "541",
-        "name": "Super Spirit Pain",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Super Spirit Pain",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://107963440655746",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:541",
-        "iconRectOffset": [
-          457,
-          305
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1420",
@@ -1723,30 +1201,8 @@
         "iconRectSize": [
           150,
           149
-        ]
-      },
-      {
-        "id": "511",
-        "name": "Thermite Bomb",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Thermite Bomb",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Common",
-        "icon": "rbxassetid://98614986419454",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:511",
-        "iconRectOffset": [
-          529,
-          1
         ],
-        "iconRectSize": [
-          130,
-          142
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1430",
@@ -1769,53 +1225,8 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "469",
-        "name": "Topaz Diamond",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Topaz Diamond",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Uncommon",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:469",
-        "iconRectOffset": [
-          153,
-          153
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
-      },
-      {
-        "id": "491",
-        "name": "Torment Pain",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Torment Pain",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://107963440655746",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:491",
-        "iconRectOffset": [
-          305,
-          761
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true
       },
       {
         "id": "1410",
@@ -1838,7 +1249,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       },
       {
         "id": "814",
@@ -1861,30 +1273,10 @@
         "iconRectSize": [
           150,
           150
-        ]
-      },
-      {
-        "id": "450",
-        "name": "Yellow Lightning",
-        "category": "Fruits",
-        "nameSource": "Index.StorageKey",
-        "storageKey": "Yellow Lightning",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Legendary",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:450",
-        "iconRectOffset": [
-          305,
-          609
         ],
-        "iconRectSize": [
-          150,
-          150
-        ]
+        "isPhysicalFruit": true,
+        "skinId": "818",
+        "isDefaultSkin": true
       },
       {
         "id": "1424",
@@ -1907,7 +1299,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isPhysicalFruit": true
       }
     ],
     "Permanent": [
@@ -2993,7 +2386,9 @@
           150,
           150
         ],
-        "physicalId": 1406
+        "physicalId": 1406,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "1538",
@@ -3017,7 +2412,35 @@
           150,
           150
         ],
-        "physicalId": 1525
+        "physicalId": 1525,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "1525",
+        "name": "Arcsteel Magnet",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Arcsteel Magnet",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://107963440655746",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1525",
+        "iconRectOffset": [
+          1,
+          1
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1538",
+        "isDefaultSkin": false
       },
       {
         "id": "529",
@@ -3041,7 +2464,35 @@
           130,
           142
         ],
-        "physicalId": 512
+        "physicalId": 512,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "512",
+        "name": "Azura Bomb",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Azura Bomb",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Common",
+        "icon": "rbxassetid://98614986419454",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:512",
+        "iconRectOffset": [
+          1,
+          1
+        ],
+        "iconRectSize": [
+          130,
+          142
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "529",
+        "isDefaultSkin": false
       },
       {
         "id": "263",
@@ -3064,7 +2515,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "278",
@@ -3087,7 +2539,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "947",
@@ -3157,7 +2610,9 @@
           150,
           150
         ],
-        "physicalId": 1399
+        "physicalId": 1399,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "273",
@@ -3180,7 +2635,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "286",
@@ -3203,7 +2659,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "269",
@@ -3226,7 +2683,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "283",
@@ -3249,7 +2707,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "461",
@@ -3273,7 +2732,9 @@
           150,
           150
         ],
-        "physicalId": 1427
+        "physicalId": 1427,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "466",
@@ -3297,7 +2758,9 @@
           150,
           150
         ],
-        "physicalId": 1414
+        "physicalId": 1414,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "953",
@@ -3366,7 +2829,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "997",
@@ -3413,7 +2877,9 @@
           150,
           150
         ],
-        "physicalId": 1397
+        "physicalId": 1397,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "536",
@@ -3437,7 +2903,35 @@
           150,
           150
         ],
-        "physicalId": 539
+        "physicalId": 539,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "539",
+        "name": "Celebration Bomb",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Celebration Bomb",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Common",
+        "icon": "rbxassetid://73607799898606",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:539",
+        "iconRectOffset": [
+          1,
+          1
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "536",
+        "isDefaultSkin": false
       },
       {
         "id": "500",
@@ -3461,7 +2955,35 @@
           150,
           150
         ],
-        "physicalId": 498
+        "physicalId": 498,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "498",
+        "name": "Celestial Pain",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Celestial Pain",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://73607799898606",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:498",
+        "iconRectOffset": [
+          1,
+          609
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "500",
+        "isDefaultSkin": false
       },
       {
         "id": "1045",
@@ -3485,7 +3007,9 @@
           150,
           150
         ],
-        "physicalId": 1041
+        "physicalId": 1041,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "452",
@@ -3509,7 +3033,35 @@
           150,
           150
         ],
-        "physicalId": 1421
+        "physicalId": 1421,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "1048",
+        "name": "Divine",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Divine Portal",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://73607799898606",
+        "title": "Divine <Portal>",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1048",
+        "iconRectOffset": [
+          153,
+          1
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1049",
+        "isDefaultSkin": false
       },
       {
         "id": "1049",
@@ -3533,7 +3085,9 @@
           150,
           150
         ],
-        "physicalId": 1048
+        "physicalId": 1048,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
       },
       {
         "id": "406",
@@ -3557,7 +3111,9 @@
           150,
           150
         ],
-        "physicalId": 1425
+        "physicalId": 1425,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "271",
@@ -3580,7 +3136,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "281",
@@ -3603,7 +3160,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "264",
@@ -3626,7 +3184,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "298",
@@ -3650,7 +3209,35 @@
           150,
           150
         ],
-        "physicalId": 1047
+        "physicalId": 1047,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "1047",
+        "name": "Ember",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Ember Dragon (West)",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://98614986419454",
+        "title": "Ember <Dragon (West)>",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1047",
+        "iconRectOffset": [
+          1,
+          297
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "298",
+        "isDefaultSkin": false
       },
       {
         "id": "256",
@@ -3673,7 +3260,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "300",
@@ -3696,7 +3284,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "456",
@@ -3720,7 +3309,9 @@
           150,
           150
         ],
-        "physicalId": 471
+        "physicalId": 471,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
       },
       {
         "id": "940",
@@ -3769,6 +3360,32 @@
         ]
       },
       {
+        "id": "471",
+        "name": "Emerald Diamond",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Emerald Diamond",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Uncommon",
+        "icon": "rbxassetid://107963440655746",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:471",
+        "iconRectOffset": [
+          609,
+          1
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "456",
+        "isDefaultSkin": false
+      },
+      {
         "id": "408",
         "name": "Falcon",
         "category": "Fruit Skins",
@@ -3789,7 +3406,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "995",
@@ -3836,7 +3454,9 @@
           150,
           150
         ],
-        "physicalId": 1060
+        "physicalId": 1060,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "261",
@@ -3859,7 +3479,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "290",
@@ -3882,7 +3503,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "945",
@@ -3952,7 +3574,61 @@
           150,
           150
         ],
-        "physicalId": 492
+        "physicalId": 492,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "492",
+        "name": "Frustration Pain",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Frustration Pain",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://73607799898606",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:492",
+        "iconRectOffset": [
+          153,
+          305
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "489",
+        "isDefaultSkin": false
+      },
+      {
+        "id": "1042",
+        "name": "Galaxy",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Galaxy Empyrean Kitsune",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://73607799898606",
+        "title": "Galaxy <Empyrean (Kitsune)>",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1042",
+        "iconRectOffset": [
+          153,
+          457
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1046",
+        "isDefaultSkin": false
       },
       {
         "id": "1046",
@@ -3976,7 +3652,9 @@
           150,
           150
         ],
-        "physicalId": 1042
+        "physicalId": 1042,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
       },
       {
         "id": "1535",
@@ -4000,7 +3678,9 @@
           150,
           150
         ],
-        "physicalId": 1412
+        "physicalId": 1412,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "499",
@@ -4024,7 +3704,35 @@
           150,
           150
         ],
-        "physicalId": 496
+        "physicalId": 496,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "496",
+        "name": "Glacier Eagle",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Glacier Eagle",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Uncommon",
+        "icon": "rbxassetid://107963440655746",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:496",
+        "iconRectOffset": [
+          153,
+          305
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "499",
+        "isDefaultSkin": false
       },
       {
         "id": "405",
@@ -4047,7 +3755,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "992",
@@ -4094,7 +3803,9 @@
           150,
           150
         ],
-        "physicalId": 1405
+        "physicalId": 1405,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "272",
@@ -4118,7 +3829,9 @@
           150,
           150
         ],
-        "physicalId": 885
+        "physicalId": 885,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "289",
@@ -4142,7 +3855,9 @@
           150,
           150
         ],
-        "physicalId": 884
+        "physicalId": 884,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "465",
@@ -4166,7 +3881,35 @@
           150,
           150
         ],
-        "physicalId": 462
+        "physicalId": 462,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "462",
+        "name": "Green Lightning",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Green Lightning",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://77505335507737",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:462",
+        "iconRectOffset": [
+          305,
+          153
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "465",
+        "isDefaultSkin": false
       },
       {
         "id": "1604",
@@ -4190,7 +3933,9 @@
           150,
           150
         ],
-        "physicalId": 1601
+        "physicalId": 1601,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "1540",
@@ -4214,7 +3959,35 @@
           150,
           150
         ],
-        "physicalId": 1526
+        "physicalId": 1526,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "1526",
+        "name": "Lime Blade",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Lime Blade",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Rare",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1526",
+        "iconRectOffset": [
+          1,
+          153
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1540",
+        "isDefaultSkin": false
       },
       {
         "id": "1537",
@@ -4238,7 +4011,9 @@
           150,
           150
         ],
-        "physicalId": 1516
+        "physicalId": 1516,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "497",
@@ -4262,7 +4037,35 @@
           150,
           150
         ],
-        "physicalId": 502
+        "physicalId": 502,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "502",
+        "name": "Matrix Eagle",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Matrix Eagle",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Uncommon",
+        "icon": "rbxassetid://107963440655746",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:502",
+        "iconRectOffset": [
+          153,
+          609
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "497",
+        "isDefaultSkin": false
       },
       {
         "id": "506",
@@ -4286,7 +4089,35 @@
           130,
           142
         ],
-        "physicalId": 508
+        "physicalId": 508,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "508",
+        "name": "Nuclear Bomb",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Nuclear Bomb",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Common",
+        "icon": "rbxassetid://98614986419454",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:508",
+        "iconRectOffset": [
+          265,
+          1
+        ],
+        "iconRectSize": [
+          130,
+          142
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "506",
+        "isDefaultSkin": false
       },
       {
         "id": "295",
@@ -4309,7 +4140,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "297",
@@ -4332,7 +4164,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "457",
@@ -4356,7 +4189,9 @@
           150,
           150
         ],
-        "physicalId": 463
+        "physicalId": 463,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
       },
       {
         "id": "981",
@@ -4425,7 +4260,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "996",
@@ -4451,6 +4287,32 @@
         ]
       },
       {
+        "id": "463",
+        "name": "Orange Portal",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Orange Portal",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://98614986419454",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:463",
+        "iconRectOffset": [
+          1,
+          601
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "457",
+        "isDefaultSkin": false
+      },
+      {
         "id": "404",
         "name": "Parrot",
         "category": "Fruit Skins",
@@ -4471,7 +4333,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "991",
@@ -4517,7 +4380,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "274",
@@ -4540,7 +4404,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "453",
@@ -4564,7 +4429,35 @@
           150,
           150
         ],
-        "physicalId": 458
+        "physicalId": 458,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "458",
+        "name": "Pink Portal",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Pink Portal",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:458",
+        "iconRectOffset": [
+          609,
+          305
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "453",
+        "isDefaultSkin": false
       },
       {
         "id": "291",
@@ -4587,7 +4480,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "293",
@@ -4610,7 +4504,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "464",
@@ -4634,7 +4529,9 @@
           150,
           150
         ],
-        "physicalId": 460
+        "physicalId": 460,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
       },
       {
         "id": "975",
@@ -4683,6 +4580,32 @@
         ]
       },
       {
+        "id": "460",
+        "name": "Purple Lightning",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Purple Lightning",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:460",
+        "iconRectOffset": [
+          609,
+          153
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "464",
+        "isDefaultSkin": false
+      },
+      {
         "id": "294",
         "name": "Red",
         "category": "Fruit Skins",
@@ -4703,7 +4626,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "301",
@@ -4726,7 +4650,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "537",
@@ -4750,7 +4675,9 @@
           150,
           150
         ],
-        "physicalId": 540
+        "physicalId": 540,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
       },
       {
         "id": "985",
@@ -4799,6 +4726,32 @@
         ]
       },
       {
+        "id": "540",
+        "name": "Red Lightning",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Red Lightning",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:540",
+        "iconRectOffset": [
+          305,
+          305
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "537",
+        "isDefaultSkin": false
+      },
+      {
         "id": "501",
         "name": "Requiem",
         "category": "Fruit Skins",
@@ -4820,7 +4773,35 @@
           150,
           150
         ],
-        "physicalId": 495
+        "physicalId": 495,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "495",
+        "name": "Requiem Eagle",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Requiem Eagle",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Uncommon",
+        "icon": "rbxassetid://107963440655746",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:495",
+        "iconRectOffset": [
+          153,
+          761
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "501",
+        "isDefaultSkin": false
       },
       {
         "id": "472",
@@ -4844,7 +4825,35 @@
           150,
           150
         ],
-        "physicalId": 470
+        "physicalId": 470,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "470",
+        "name": "Rose Quartz Diamond",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Rose Quartz Diamond",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Uncommon",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:470",
+        "iconRectOffset": [
+          305,
+          1
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "472",
+        "isDefaultSkin": false
       },
       {
         "id": "455",
@@ -4868,7 +4877,35 @@
           150,
           150
         ],
-        "physicalId": 468
+        "physicalId": 468,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "468",
+        "name": "Ruby Diamond",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Ruby Diamond",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Rare",
+        "icon": "rbxassetid://77505335507737",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:468",
+        "iconRectOffset": [
+          609,
+          305
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "455",
+        "isDefaultSkin": false
       },
       {
         "id": "1532",
@@ -4892,7 +4929,35 @@
           150,
           150
         ],
-        "physicalId": 1522
+        "physicalId": 1522,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "1522",
+        "name": "Runic Fiend",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Sealed Fiend",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1522",
+        "iconRectOffset": [
+          153,
+          761
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1532",
+        "isDefaultSkin": false
       },
       {
         "id": "474",
@@ -4916,7 +4981,35 @@
           150,
           150
         ],
-        "physicalId": 479
+        "physicalId": 479,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "479",
+        "name": "Sadness Pain",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Sadness Pain",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://98614986419454",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:479",
+        "iconRectOffset": [
+          609,
+          605
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "474",
+        "isDefaultSkin": false
       },
       {
         "id": "1536",
@@ -4940,7 +5033,35 @@
           150,
           150
         ],
-        "physicalId": 1524
+        "physicalId": 1524,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "1524",
+        "name": "Scarlet Ghost",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Red Ghost",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Rare",
+        "icon": "rbxassetid://77505335507737",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1524",
+        "iconRectOffset": [
+          153,
+          305
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1536",
+        "isDefaultSkin": false
       },
       {
         "id": "1534",
@@ -4964,7 +5085,35 @@
           150,
           150
         ],
-        "physicalId": 1523
+        "physicalId": 1523,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "1523",
+        "name": "Starlight Gravity",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Heavenly Gravity",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://77505335507737",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1523",
+        "iconRectOffset": [
+          153,
+          761
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1534",
+        "isDefaultSkin": false
       },
       {
         "id": "538",
@@ -4988,7 +5137,35 @@
           150,
           150
         ],
-        "physicalId": 541
+        "physicalId": 541,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "541",
+        "name": "Super Spirit Pain",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Super Spirit Pain",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://107963440655746",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:541",
+        "iconRectOffset": [
+          457,
+          305
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "538",
+        "isDefaultSkin": false
       },
       {
         "id": "528",
@@ -5012,7 +5189,35 @@
           130,
           142
         ],
-        "physicalId": 511
+        "physicalId": 511,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "511",
+        "name": "Thermite Bomb",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Thermite Bomb",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Common",
+        "icon": "rbxassetid://98614986419454",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:511",
+        "iconRectOffset": [
+          529,
+          1
+        ],
+        "iconRectSize": [
+          130,
+          142
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "528",
+        "isDefaultSkin": false
       },
       {
         "id": "473",
@@ -5036,7 +5241,35 @@
           150,
           150
         ],
-        "physicalId": 469
+        "physicalId": 469,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "469",
+        "name": "Topaz Diamond",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Topaz Diamond",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Uncommon",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:469",
+        "iconRectOffset": [
+          153,
+          153
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "473",
+        "isDefaultSkin": false
       },
       {
         "id": "490",
@@ -5060,7 +5293,35 @@
           150,
           150
         ],
-        "physicalId": 491
+        "physicalId": 491,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
+      },
+      {
+        "id": "491",
+        "name": "Torment Pain",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Torment Pain",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://107963440655746",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:491",
+        "iconRectOffset": [
+          305,
+          761
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "490",
+        "isDefaultSkin": false
       },
       {
         "id": "407",
@@ -5083,7 +5344,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "994",
@@ -5129,7 +5391,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "299",
@@ -5152,7 +5415,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "818",
@@ -5176,7 +5440,9 @@
           150,
           150
         ],
-        "physicalId": 814
+        "physicalId": 814,
+        "isDefaultSkin": true,
+        "hiddenInCatalog": true
       },
       {
         "id": "257",
@@ -5199,7 +5465,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "267",
@@ -5222,7 +5489,8 @@
         "iconRectSize": [
           150,
           150
-        ]
+        ],
+        "isDefaultSkin": false
       },
       {
         "id": "451",
@@ -5246,7 +5514,9 @@
           150,
           150
         ],
-        "physicalId": 450
+        "physicalId": 450,
+        "isDefaultSkin": false,
+        "hiddenInCatalog": true
       },
       {
         "id": "941",
@@ -5293,6 +5563,32 @@
           150,
           150
         ]
+      },
+      {
+        "id": "450",
+        "name": "Yellow Lightning",
+        "category": "Fruit Skins",
+        "nameSource": "Index.StorageKey",
+        "storageKey": "Yellow Lightning",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Legendary",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:450",
+        "iconRectOffset": [
+          305,
+          609
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "451",
+        "isDefaultSkin": false
       }
     ],
     "Premium": [

@@ -45,6 +45,32 @@ class BuildCatalogTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.module.normalize({"Index": {"ItemId": float("nan")}, "Display": {"Category": "Sword"}})
 
+    def test_physical_skin_appears_once_in_skin_tab_and_default_stays_fruit(self):
+        configs = [
+            {"Index": {"ItemId": 1516, "IdType": "PhysicalMoveset", "StorageKey": "Magnet-Magnet"},
+             "Display": {"Name": "Magnet", "Category": "Blox Fruit"}},
+            {"Index": {"ItemId": 1525, "IdType": "PhysicalMoveset", "StorageKey": "Arcsteel Magnet"},
+             "Display": {"Name": "Arcsteel Magnet", "Category": "Blox Fruit"}},
+            {"Index": {"ItemId": 1537, "IdType": "Skin", "StorageKey": "MAGNETSKINdefault"},
+             "Display": {"Name": "Magnet", "Category": "Fruit Skin"},
+             "Skin": {"Type": "Fruit", "Physical": 1516, "IsDefault": True}},
+            {"Index": {"ItemId": 1538, "IdType": "Skin", "StorageKey": "MAGNETSKINarksteel"},
+             "Display": {"Name": "Arcsteel", "Category": "Fruit Skin"},
+             "Skin": {"Type": "Fruit", "Physical": 1525, "IsDefault": False}},
+        ]
+        groups = {name: [] for name in self.module.CATEGORIES}
+        for config in configs:
+            item = self.module.normalize(config)
+            groups[item["category"]].append(item)
+        self.module.classify_fruit_skins(groups, configs)
+        self.assertEqual([item["id"] for item in groups["Fruits"]], ["1516"])
+        visible = [item for item in groups["Fruit Skins"] if not item.get("hiddenInCatalog")]
+        self.assertEqual([item["id"] for item in visible], ["1525"])
+        self.assertTrue(visible[0]["isPhysicalFruit"])
+        self.assertEqual(visible[0]["skinId"], "1538")
+        self.assertEqual(sum(len(rows) for rows in groups.values()), 4)
+        self.assertEqual(visible[0]["storageKey"], "Arcsteel Magnet")
+
     def test_studio_package_contains_required_fruit_model_module(self):
         folder = Path(__file__).parents[1] / "catalog"
         sources = {name: (folder / (name + ".luau")).read_text(encoding="utf-8")

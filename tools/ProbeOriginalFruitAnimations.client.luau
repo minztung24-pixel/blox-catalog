@@ -56,7 +56,7 @@ local function test(target)
     assert(type(target.itemId)=="string" and target.itemId:match("^%d+$") and type(target.animationId)=="string"
         and target.animationId:match("^rbxassetid://%d+$"),"Invalid candidate ID")
     local item=modules.Catalog.byId[target.itemId]
-    assert(item and item.category=="Fruits" and item.name==target.name,"Candidate does not match catalog")
+    assert(item and (item.category=="Fruits" or item.isPhysicalFruit) and item.name==target.name,"Candidate does not match catalog")
     local row={itemId=item.id,name=item.name,animationId=target.animationId,control=target.control==true,file=models:path(item)}
     local template,message=models:load(item)
     if not template then row.status="MissingModel";row.error=tostring(message);return row end

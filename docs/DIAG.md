@@ -2,6 +2,14 @@
 
 Ngày 26/11/2026. Catalog v12.1. Trong 81 mục, **45 có model qua đối chiếu, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
 
+## Phân loại ngày 27/11/2026, v12.4
+
+Lỗi trước đây là dùng PhysicalMoveset làm điều kiện đưa tất cả trái vật phẩm vào Fruits. Các skin như Arcsteel và Galaxy cũng có bản vật phẩm PhysicalMoveset riêng. Điều đó làm tab Fruits lẫn skin, đồng thời tab Fruit Skins hiển thị thêm định nghĩa skin mặc định như Magnet.
+
+Bản mới dùng quan hệ Skin.Physical cùng Skin.IsDefault. Có 30 trái vật phẩm mang skin được chuyển sang Fruit Skins. Những định nghĩa Skin đã được thể hiện bằng thẻ vật phẩm được ẩn khỏi kết quả tìm kiếm, nhưng ID gốc vẫn còn trong Catalog.byId. Tìm theo skinId cũng ra được thẻ vật phẩm tương ứng. Add/Equip/menu/Drop và nạp model dùng cờ isPhysicalFruit, nên vẫn hoạt động khi mục nằm ở Fruit Skins.
+
+51 fruit gốc còn 9 mục thiếu file. 30 trái mang skin có 26 mục thiếu file. Arcsteel, Galaxy, Ember và Starlight Gravity là bốn mục skin có file đã tìm thấy. Chuyển tab không bổ sung các file còn thiếu và chưa sửa được lỗi tải animation. Thống kê 81 mục bên dưới là nhóm trái vật phẩm của bản cũ, bao gồm cả skin.
+
 ## Model có file nhưng không dùng được hoặc hiển thị chưa đúng
 
 - **Empyrean (1041)** có file đúng storageKey nhưng root là Galaxy Empyrean Kitsune Fruit và thiếu ItemId. [FruitModels.luau](../catalog/FruitModels.luau#L60) chặn khi mở file. Thẻ có thể vẫn báo Equip vì [UI.luau](../catalog/UI.luau#L372) dùng việc tìm thấy đường dẫn như một điều kiện tô xanh. Galaxy (1042) có file riêng đã đo rig.

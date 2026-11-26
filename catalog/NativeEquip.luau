@@ -17,7 +17,7 @@ function NativeEquip.new(playerGui,state,onEquip)
         local match
         for _,row in pairs(state.items) do
             local entry=state.native and state.native.entries[tonumber(row.item.id)]
-            if row.item.category=="Fruits" and entry and not (typeof(entry.original)=="number" and entry.original>0)
+            if (row.item.category=="Fruits" or row.item.isPhysicalFruit) and entry and not (typeof(entry.original)=="number" and entry.original>0)
                 and normalized(row.item.name)==name then
                 if match then return nil end
                 match=row.item

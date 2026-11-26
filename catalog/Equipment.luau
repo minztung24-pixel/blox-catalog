@@ -3,7 +3,7 @@ local Equipment = {}
 function Equipment.findExistingTool(player, item)
     local function normalized(name) return name:lower():gsub("%s", "") end
     local names = {}
-    local suffix = item.category == "Fruits" and " Fruit" or ""
+    local suffix = (item.category == "Fruits" or item.isPhysicalFruit) and " Fruit" or ""
     names[normalized(item.name .. suffix)] = true
     names[normalized((item.storageKey or item.name) .. suffix)] = true
     local fallback
@@ -82,9 +82,10 @@ function Equipment.clone(source, item)
             visit(part)
         end
     end
-    tool.Name = item.name; tool.ToolTip = item.category
+    local physicalFruit=item.category=="Fruits" or item.isPhysicalFruit==true
+    tool.Name = item.name; tool.ToolTip = physicalFruit and "Fruits" or item.category
     tool.RequiresHandle = true; tool.CanBeDropped = false
-    tool.Enabled = item.category == "Fruits"; tool.ManualActivationOnly = item.category ~= "Fruits"
+    tool.Enabled = physicalFruit; tool.ManualActivationOnly = not physicalFruit
     tool:SetAttribute("BloxCatalogOwned", true); tool:SetAttribute("ItemId", tonumber(item.id))
     return tool
 end
@@ -369,7 +370,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
             return false, tostring(err or "Character did not equip the local Tool")
         end
         row.equipped = true
-        if item.category == "Fruits" and not self.animations[item.id] then
+        if (item.category == "Fruits" or item.isPhysicalFruit) and not self.animations[item.id] then
             self.animations[item.id] = Equipment.fruitMotion(tool,notify,function(animator,animation)
                 return animationLoader:load(animator,animation)
             end)
@@ -388,7 +389,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
             end
             self.bindings[item.id] = {tool.Equipped:Connect(changed), tool.Unequipped:Connect(changed), tool.AncestryChanged:Connect(changed),
                 tool.Destroying:Connect(function() if motion then motion:close() end end)}
-            if item.category=="Fruits" and onFruitActivated then
+            if (item.category=="Fruits" or item.isPhysicalFruit) and onFruitActivated then
                 table.insert(self.bindings[item.id],tool.Activated:Connect(function()
                     if tool.Parent==player.Character then onFruitActivated(item,tool) end
                 end))

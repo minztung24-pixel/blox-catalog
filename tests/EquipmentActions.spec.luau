@@ -3,7 +3,7 @@ return function(Equipment)
     local character=Instance.new("Model",root)
     local humanoidRoot=Instance.new("Part",character);humanoidRoot.Name="HumanoidRootPart";humanoidRoot.CFrame=CFrame.new(0,10,0)
     local source=Instance.new("Tool",root);Instance.new("Part",source).Name="Handle"
-    local item={id="1525",name="Arcsteel Magnet",category="Fruits"}
+    local item={id="1525",name="Arcsteel Magnet",category="Fruit Skins",isPhysicalFruit=true}
     local tool=assert(Equipment.clone(source,item));tool.Parent=character
     local row={item=item,count=2,tool=tool,equipped=true}
     local deny=true

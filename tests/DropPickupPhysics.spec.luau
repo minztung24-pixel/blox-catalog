@@ -12,7 +12,7 @@ originalHandle.Transparency=1
 originalHandle.Size=Vector3.new(6,6,6)
 local body=Instance.new("Part",source);body.Name="Body";body.Size=Vector3.new(2,2,2)
 body.CFrame=originalHandle.CFrame*CFrame.new(0,2,0)
-local item={id="999001",name="Drop test",category="Fruits"}
+local item={id="999001",name="Drop test",category="Fruit Skins",isPhysicalFruit=true}
 local tool=assert(Equipment.clone(source,item));tool.Parent=character
 local row={item=item,count=1,tool=tool,equipped=true}
 local player={Character=character,FindFirstChildOfClass=function(_,class)if class=="Backpack"then return backpack end end}

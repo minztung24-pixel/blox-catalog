@@ -1,5 +1,5 @@
 return function(FruitAnimations)
-    local item={id="fixture",category="Fruits"}
+    local item={id="fixture",category="Fruit Skins",isPhysicalFruit=true}
     local tool=Instance.new("Tool")
     local handle=Instance.new("Part",tool);handle.Name="Handle"
     local fruit=Instance.new("Model",tool);fruit.Name="Fruit"

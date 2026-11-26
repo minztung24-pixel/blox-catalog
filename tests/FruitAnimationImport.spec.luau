@@ -1,5 +1,5 @@
 return function(FruitModels,Equipment,FruitAnimations)
-    local item={id="990000",name="Fixture",storageKey="Fixture",category="Fruits"}
+    local item={id="990000",name="Fixture",storageKey="Fixture",category="Fruit Skins",isPhysicalFruit=true}
     local parent=Instance.new("Folder")
     local function fixture()
         local tool=Instance.new("Tool",parent);tool:SetAttribute("ItemId",tonumber(item.id))

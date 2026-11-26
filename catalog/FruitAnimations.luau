@@ -60,7 +60,7 @@ end
 
 function FruitAnimations.apply(tool,item)
     local reference=FruitAnimations.references[item.id]
-    if item.category~="Fruits" or not reference then return false end
+    if not (item.category=="Fruits" or item.isPhysicalFruit) or not reference then return false end
     local fruit=tool:FindFirstChild("Fruit")
     if not fruit or not fruit:FindFirstChildOfClass("AnimationController") then return false end
     local animation=fruit:FindFirstChild("Idle") or fruit:FindFirstChild("Animation")

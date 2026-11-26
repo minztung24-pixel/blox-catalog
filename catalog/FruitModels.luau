@@ -10,7 +10,7 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     root.Name = "BloxCatalogLocalFruitModels"
     local cache = {models = {}, native = {}, loading = {}, closed = false}
     function cache:capture(item, tool)
-        if self.closed or item.category ~= "Fruits" or not tool:IsA("Tool") or not tool.Parent
+        if self.closed or not (item.category=="Fruits" or item.isPhysicalFruit) or not tool:IsA("Tool") or not tool.Parent
             or tool:GetAttribute("BloxCatalogOwned") or tool:GetAttribute("ClientCatalogOwned")
             or tostring(tool:GetAttribute("ItemId")) ~= item.id then return nil end
         if self.native[item.id] == tool then return self.models[item.id] end
@@ -26,7 +26,7 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         return clean
     end
     function cache:path(item)
-        if self.closed or item.category ~= "Fruits" or not fileExists or not assetUri then return nil end
+        if self.closed or not (item.category=="Fruits" or item.isPhysicalFruit) or not fileExists or not assetUri then return nil end
         for _, name in ipairs({item.storageKey, item.name}) do
             if name and name ~= "" and not name:find("[/\\:]") and not name:find("..",1,true) then
                 local path = "codex_fruit_studio/models/" .. name .. ".rbxm"

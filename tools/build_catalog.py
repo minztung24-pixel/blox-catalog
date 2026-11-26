@@ -77,6 +77,42 @@ def lua(value):
     raise TypeError(type(value))
 
 
+def classify_fruit_skins(groups, configs):
+    items = {item["id"]: item for rows in groups.values() for item in rows}
+    configs_by_id = {str(int(config["Index"]["ItemId"])): config for config in configs}
+    linked = set()
+    for item in list(groups["Fruits"]):
+        item["isPhysicalFruit"] = True
+    for skin_item in groups["Fruit Skins"][:]:
+        config = configs_by_id[skin_item["id"]]
+        skin = mapping(config.get("Skin"))
+        if skin_item["idType"] != "Skin" or skin.get("Type") != "Fruit":
+            continue
+        if not isinstance(skin.get("IsDefault"), bool):
+            raise ValueError("Skin default flag is missing")
+        skin_item["isDefaultSkin"] = skin["IsDefault"]
+        physical_id = skin.get("Physical")
+        if physical_id is None:
+            continue
+        if (isinstance(physical_id, bool) or not isinstance(physical_id, (int, float))
+                or not math.isfinite(physical_id) or physical_id != int(physical_id)):
+            raise ValueError("Invalid skin Physical reference")
+        physical = items.get(str(int(physical_id)))
+        if not physical or not physical.get("isPhysicalFruit"):
+            raise ValueError("Skin references an unknown physical fruit")
+        if physical["id"] in linked:
+            raise ValueError("Physical fruit has multiple skin definitions")
+        linked.add(physical["id"])
+        physical["skinId"] = skin_item["id"]
+        physical["isDefaultSkin"] = skin_item["isDefaultSkin"]
+        # Keep ownership IDs addressable while showing one physical appearance per card.
+        skin_item["hiddenInCatalog"] = True
+        if not physical["isDefaultSkin"]:
+            groups["Fruits"].remove(physical)
+            physical["category"] = "Fruit Skins"
+            groups["Fruit Skins"].append(physical)
+
+
 def package_xml(sources, data_sources):
     root = ET.Element("roblox", version="4")
     folder = ET.SubElement(root, "Item", {"class": "Folder"})
@@ -106,7 +142,7 @@ def bundle(snapshot_version=None):
     data_sources = {name: (ROOT / "catalog" / "Data" / (name + ".luau")).read_text(encoding="utf-8") for name in CATEGORIES.values()}
     sources = {name: (ROOT / "catalog" / ("Data/init.luau" if name == "Data" else name + (".client.luau" if name == "Main" else ".luau"))).read_text(encoding="utf-8")
                for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "UI", "Main")}
-    parts = ["-- Blox Catalog v12.3 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
+    parts = ["-- Blox Catalog v12.4 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
     for name, text in data_sources.items():
         parts.append("local Data" + name + " = (function()\n" + text + "\nend)()\n")
     for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "UI"):
@@ -145,6 +181,7 @@ def build(source):
                 raise ValueError("Duplicate ItemId: " + item["id"])
             seen.add(item["id"])
             groups[item["category"]].append(item)
+    classify_fruit_skins(groups, [mapping(row.get("data")) for row in section["records"]])
     data_dir, output = ROOT / "catalog" / "Data", ROOT / "dist"
     data_dir.mkdir(parents=True, exist_ok=True)
     output.mkdir(exist_ok=True)

@@ -1,5 +1,5 @@
 return function(FruitModels, Equipment)
-    local item = {id = "1525", name = "Arcsteel Magnet", storageKey = "Arcsteel Magnet", category = "Fruits"}
+    local item = {id = "1525", name = "Arcsteel Magnet", storageKey = "Arcsteel Magnet", category = "Fruit Skins", isPhysicalFruit = true}
     local path = "codex_fruit_studio/models/Arcsteel Magnet.rbxm"
     local cache, reads, originals = nil, 0, {}
     local function objects(uri)
