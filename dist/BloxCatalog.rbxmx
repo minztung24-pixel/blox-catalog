@@ -432,6 +432,7 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
     local keys = assert(service.KEYS, "Native item keys unavailable")
     local quantityKey = assert(keys.QUANTITY, "Native quantity key unavailable")
     local bridge = {entries = {}}
+    local pending = {}
     local function read(id) return service:ReadItem(quantityKey, id, nil) end
     local function scalar(value)
         local kind = typeof(value)
@@ -514,7 +515,13 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         -- RemoteUtil returns Future&lt;Result&gt;; synthetic actions stay entirely local.
         return Future.from(function()
             if equipActions[action] then
-                local called, ok, err = pcall(onEquip, entry.item)
+                if bridge.closed then return Result.err("Catalog closed") end
+                if #pending&gt;=16 then return Result.err("Equip queue is busy; try again") end
+                local request={item=entry.item}
+                table.insert(pending,request)
+                while not request.result and not bridge.closed do task.wait() end
+                if not request.result then return Result.err("Catalog closed") end
+                local called, ok, err = table.unpack(request.result,1,request.result.n)
                 if called and ok then return Result.ok() end
                 return Result.err(tostring(called and err or ok))
             end
@@ -524,6 +531,8 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
     if hook then original = hook(target, handler); assert(typeof(original) == "function", "Action hook failed")
     else remote.invokeAction = handler end
     function bridge:close()
+        self.closed=true
+        table.clear(pending)
         local items = {}
         for _, entry in pairs(self.entries) do table.insert(items, entry.item) end
         for _, item in ipairs(items) do
@@ -536,6 +545,14 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         end)
         return ok, err
     end
+    -- Native action hooks inherit the game callback context; import local files on the script-created worker.
+    task.spawn(function()
+        while not bridge.closed do
+            local request=table.remove(pending,1)
+            if request then request.result=table.pack(pcall(onEquip,request.item)) end
+            task.wait(.03)
+        end
+    end)
     return bridge
 end
 
@@ -1464,8 +1481,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.6", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.6)
+    text(panel, "Title", "BLOX CATALOG v12.7", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.7)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

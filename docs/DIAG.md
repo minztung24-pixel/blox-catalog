@@ -1,6 +1,31 @@
 # DIAG — Model và chuyển động của Fruits
 
-Ngày 26/11/2026. Catalog v12.1. Trong 81 mục, **45 có model qua đối chiếu, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.7. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Equip từ kho game, v12.7
+
+Người dùng xác nhận Equip trên panel được nhưng nhiều trái bấm Equip trong kho game không được; Shadow vẫn dùng được. Ảnh có lỗi Local model load failed: GetObjects is not a valid member of DataModel. NativeItems gọi onEquip ngay trong Future của callback game; FruitModels.load tra GetObjects tại đó, còn mẫu đã có trong cache không cần gọi API này. Đây là đường lỗi được sửa, chưa phải bằng chứng tất cả nút kho đã hoạt động trên máy người dùng.
+
+NativeItems chuyển yêu cầu Equip mô phỏng sang worker được tạo từ script Catalog và chờ kết quả Future<Result>. Giữ nguyên đường game cho kho thật và bản có NetworkedUID. Hàng đợi giới hạn 16 yêu cầu; lỗi callback vẫn được trả về, đóng Catalog giải phóng các yêu cầu đang đợi. Test bắt được bản cũ chạy importer trong cùng coroutine với callback và kiểm tra bản sửa chạy ở worker; chưa kiểm chứng lại quyền API trong phiên game thật sau sửa.
+
+## Đo riêng Fruit và Fruit Skins ngày 27/11/2026
+
+Báo cáo blox-catalog-fruit-skin-audit-100117331123089.json, GameId 994732206, complete=true, processed=134, thời gian 87.8 giây. Có 47 thẻ Fruits và 87 thẻ Fruit Skins; 53 thẻ chỉ có metadata, không tính là thiếu model vật phẩm.
+
+Trong 81 trái vật phẩm: 40 fruit và 5 skin nạp được model; thiếu 7 fruit và 28 skin; Empyrean bị chặn vì nguồn là Galaxy. Các mẫu nạp từ file, không có Tool thật được capture trong lượt này. 35 rig đổi pose trên bản sao riêng; 8 rig lỗi tải clip; Diamond và Ice không có idle animation trong nguồn. Đây không phải phép thử cầm/hotbar hay đối chiếu hình ảnh của toàn bộ trái thật.
+
+| Mục | ItemId | Clip trong file | Kết quả mới |
+|---|---|---|---|
+| Dragon | 1447 | 89485756852231 | Preload Failure, không có khớp chuyển động được đo |
+| Dragon (West) | 884 | 89485756852231 | Preload Failure, không có khớp chuyển động được đo |
+| Flame | 1394 | 92872930988510 | Preload Failure, không có khớp chuyển động được đo |
+| Lightning | 1427 | 74759006007335 | Preload Failure, không có khớp chuyển động được đo |
+| Quake | 1389 | 87225712156404 | Preload Failure, không có khớp chuyển động được đo |
+| Tiger | 1430 | 119940442528522 | Preload Failure, đã có mẫu mới trong lượt này |
+| Ember | 1047 | 96038340477884 | Preload Failure, không có khớp chuyển động được đo |
+| Werewolf (Tiger) | 814 | 133333989918142 | Preload Failure, không có khớp chuyển động được đo |
+
+Tham chiếu render duy nhất báo tải lỗi trong lượt này là VFX texture Buddha rbxassetid://6960307279. Các VFX được kiểm kê theo cấu hình nguồn trước khi bị tắt trên bản sao ẩn để đo chuyển động; chưa xác nhận hình ảnh chạy đúng game. Control đổi pose nhưng phản hồi model cũ vẫn chưa được giải quyết. Không thay ID animation hay tạo VFX thay thế từ số đo này.
 
 ## Nhận diện file trước lần Equip đầu, v12.6
 
@@ -8,7 +33,7 @@ Meme và nhiều trái khác có file local nhưng thẻ v12.5 vẫn báo No mod
 
 FruitModels.available hiện nhận diện cả file local chưa nạp. Lỗi nhập file được lưu theo ItemId và đường dẫn để file đã bị từ chối không báo khả dụng. Rescan cho thử lại file đã sửa. Nạp thành công hoặc capture một mẫu native hợp lệ xóa lỗi trước đó. Equip cập nhật lại thẻ sau kết quả tải.
 
-tools/AuditFruitAndSkins.client.luau là phép kiểm tra mới cho cả Fruits và Fruit Skins, dùng đúng 81 ItemId vật phẩm cùng các mục metadata của hai tab. Báo cáo có tên blox-catalog-fruit-skin-audit-PLACEID.json. Nó ghi trạng thái model, mesh/texture fetch, clip hiện tại, khớp đổi pose và VFX có trong nguồn. Chưa chạy phép đo mới trong phiên của người dùng, nên các kết quả asset bên dưới vẫn giữ ngày đo cũ.
+tools/AuditFruitAndSkins.client.luau kiểm tra cả Fruits và Fruit Skins, dùng đúng 81 ItemId vật phẩm cùng các mục metadata của hai tab. Báo cáo có tên blox-catalog-fruit-skin-audit-PLACEID.json. Lượt đo mới đã hoàn thành, tóm tắt ở trên; các phần lịch sử bên dưới giữ ngày đo cũ.
 
 ## Phân loại bổ sung ngày 27/11/2026, v12.5
 

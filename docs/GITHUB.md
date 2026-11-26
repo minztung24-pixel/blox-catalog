@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.7 Equip from the game inventory
+
+Local-only inventory actions now enqueue Equip on a worker created by the catalog script. The native action callback waits for that result instead of importing local files in the game's callback context, where GetObjects was reported unavailable. Errors still return through Future<Result>; the queue is bounded, and closing releases waiting requests. Genuine stock and networked copies retain the game's original action path. The panel Equip path is unchanged.
+
+The completed v12.6 grouped audit in Blox Fruits checked all 134 visible fruit/skin rows in 87.8 seconds: 45 models loaded, 35 physical appearances had no local file, one Empyrean file was rejected as Galaxy, and 53 rows were metadata only. Thirty-five private rigs changed pose, eight animation clips failed fetch, and Diamond/Ice contained no idle animation. A Buddha VFX texture still failed fetch. These measurements do not establish current-game visual parity or validate each native Equip click. See docs/DIAG.md and docs/ASSET_AUDIT.md for dated evidence.
+
+Validation: NativeItems assertions reproduce the native-callback import regression, then verify worker execution, Future error propagation, real-item forwarding and closure during a yielding import.
+
 ## v12.6 Model availability before first Equip
 
 The card's availability check now recognizes local model files before they are imported. This restores green cards and the Equip label for items such as Meme on a fresh session. Import errors are remembered separately, so a rejected file becomes unavailable until Rescan clears its error for a retry. Successful native capture clears the error, and Equip refreshes the card after loading.

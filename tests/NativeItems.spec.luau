@@ -1,6 +1,7 @@
 return function(NativeItems)
     local values = {[1113] = {Quantity = 1, IsOwned = true}, [1393] = {Quantity = 3, IsOwned = true}}
     local writes, forwarded, equipped = 0, 0, 0
+    local nativeCaller, failEquip, holdEquip, equipStarted
     local failKey, ignoreKey, coerceOnce, failAfterWrite
     local service = {IS_CLIENT = true, IsInitialized = true, KEYS = {
         QUANTITY = "Quantity", IS_OWNED = "IsOwned", IS_STOCKED = "IsStocked", IS_EQUIPPED = "IsEquipped",
@@ -30,6 +31,9 @@ return function(NativeItems)
     local original = function() forwarded += 1; return {original = true} end
     local remote = {invokeAction = original}
     local bridge = NativeItems.new(service, remote, Future, Result, {[equipAction] = true}, function()
+        assert(coroutine.running()~=nativeCaller,"Local imports must run outside the native action callback thread")
+        if failEquip then error("fixture Equip failed") end
+        if holdEquip then equipStarted=true;while holdEquip do task.wait() end end
         equipped += 1; return true
     end)
     local item = {id = "1393", name = "Buddha", category = "Fruits"}
@@ -45,8 +49,14 @@ return function(NativeItems)
     assert(bridge:restore(item) and values[1393].Quantity == 20, "Clear must restore the observed baseline")
     local empty = {id = "1525", name = "Arcsteel Magnet", category = "Fruits"}
     assert(bridge:sync(empty, 1, false, false) and values[1525].Quantity == 1)
+    nativeCaller=coroutine.running()
     local localResponse = remote.invokeAction(equipAction, 1525)
+    assert(localResponse.value.ok,localResponse.value.error)
     assert(localResponse.future and localResponse.value.ok and equipped == 1 and forwarded == 3, "An added-only item must use local Equip and return Future<Result>")
+    failEquip=true
+    local failed=remote.invokeAction(equipAction,1525)
+    assert(not failed.value.ok and failed.value.error:find("fixture Equip failed",1,true),"Queued import errors must reach the native Future<Result>")
+    failEquip=nil
     assert(bridge:sync(empty, 1, true, true) and values[1525].Quantity == nil, "Equipping the final copy must accept the game's zero-to-nil normalization")
     assert(bridge:restore(empty) and values[1525].Quantity == nil)
     failKey = "Quantity"
@@ -61,7 +71,20 @@ return function(NativeItems)
     assert(not bridge:sync(item, 1, false, false) and values[1393].Quantity == 20, "A mismatched value written by the setter must be rolled back")
     failAfterWrite = true
     assert(not bridge:sync(item, 1, false, false) and values[1393].Quantity == 20, "A setter that throws after updating must also roll back")
+    assert(bridge:sync(empty,1,false,false))
+    holdEquip=true
+    local pendingResponse
+    task.spawn(function()pendingResponse=remote.invokeAction(equipAction,1525)end)
+    local deadline=os.clock()+1
+    while not equipStarted and os.clock()<deadline do task.wait()end
+    assert(equipStarted,"Worker must accept a request before closure")
     assert(bridge:close() and remote.invokeAction == original)
+    deadline=os.clock()+1
+    while not pendingResponse and os.clock()<deadline do task.wait()end
+    assert(pendingResponse and not pendingResponse.value.ok and pendingResponse.value.error=="Catalog closed",
+        "Closing must release a native Future even while its importer is still yielding")
+    holdEquip=false
+    task.wait(.05)
     local bad = table.clone(service); bad.ReadItem = function() return nil end
     local before = writes
     assert(not pcall(NativeItems.new, bad, remote, Future, Result, {}, function() end) and writes == before)
