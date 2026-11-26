@@ -4,6 +4,20 @@ Cập nhật ngày 27/11/2026, Catalog v12.8. Trong 81 trái vật phẩm, **45 
 
 ## Visual Robux / Shop Gifts, v12.8
 
+### Điều tra checkout gốc sau v12.8, ngày 27/11/2026
+
+Yêu cầu đã được làm rõ: chỉ mô phỏng số dư/giảm giá và kết quả local, không chi Robux hay gửi quà thật; vẫn phải dùng UI gốc và đủ các bước Processing Purchase → Buy item → Purchase completed → OK. Người dùng không đồng ý tái tạo cửa xác nhận từ ảnh. V12.8 chưa có luồng này, vẫn chỉ ghi local gift và trừ số dư preview.
+
+Đã chạy các lượt đọc trực tiếp qua Potassium, không bấm Buy hay gọi giao dịch:
+
+- Báo cáo gift-checkout v1 bị giới hạn scan trước module chính. Lượt v2 ưu tiên module đã load và Controllers, đọc được Controllers.UI.GiftWindow, Modules.Asset.WrapPurchase, Notification và React.Components.ConfirmationDialog.Controller.
+- GiftWindow gốc hiện Processing Purchase, sau đó gọi WrapPurchase; nhánh Gift trong wrapper chuyển tiếp sang luồng server buyRobuxShop. Hoàn tất thật đóng cửa qua tín hiệu MarketplaceService hoặc RobuxPurchaseSuccess. Các đường giao dịch/tín hiệu này chưa được gọi, giả lập hoặc thay thế.
+- PurchasePromptApp tồn tại. Khi người dùng mở Buy Robux and item và giữ nguyên, bản đọc UI ghi được RobuxUpsellContainer cùng khung; không ghi được nội dung sản phẩm/nút Buy của cửa thanh toán đó. Bản sao unparented không đủ làm checkout tương tác. Không suy ra nhánh Buy item/Purchase completed đã được capture từ kết quả này.
+- Lượt checkout-modules tìm thấy 1112 module có tên/path liên quan purchase/robux. Tám module được thử decompile chỉ trả chuỗi `-- Empty bytecode`; không coi đó là mã nguồn có thể sử dụng.
+- Lượt checkout-test-api đọc các export của Test.MockStore, Test.MockNetwork, Test.UnitTestContainer, Components.ProductPurchase.ProductPurchasePrompt và Components.PurchasePromptApp. Cả năm đều tồn tại nhưng require trả `Cannot require a RobloxScript module from a non RobloxScript context`. Không đổi identity, không sửa CoreScript hay bật cờ mock toàn cục để vượt lỗi này.
+
+Kết luận hiện tại: đã xác nhận luồng và module gốc, nhưng chưa có cách đã kiểm chứng để render checkout gốc trong ngữ cảnh mô phỏng độc lập của Catalog. Chưa tích hợp native confirmation/success, chưa phát hành client thay thế v12.8. Các probe mới chỉ phục vụ chẩn đoán, raw report và source game giữ local.
+
 Thay trình sửa Beli/Fragments bằng số dư Visual Robux, Apply, giảm giá hiển thị 10% và Reset. Dữ liệu UI được ghi trong báo cáo shop-gift-ui, complete=true, 14 snapshot. Các đường dẫn đã thấy: PlayerGui.GiftWindow.Window.Footer.Context và Window.Content.Buttons.Purchase.TextLabel. Native context có dạng Gifting [username] <Permanent Magnet}> với dấu } thừa; adapter chỉ khớp tên permanent có trong Catalog và giá đang hiển thị, không đoán giá khi thiếu.
 
 Khi Apply bật, NativeShop ẩn/vô hiệu hóa nút Purchase gốc và dùng một bản sao UI đã gỡ script, remote và tag. Callback của bản sao chỉ gọi Inventory.buyGift để ghi lịch sử và trừ số dư mô phỏng. Chưa chọn người nhận, tên sản phẩm chưa hỗ trợ hoặc giá không đọc được đều không mua trong chế độ này. Các tab Server/Global và tìm người vẫn là UI của game. Không gọi API mua hàng hay remote gift.

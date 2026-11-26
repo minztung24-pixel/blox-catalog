@@ -14,6 +14,8 @@ The client, inventory entries, Visual Robux balance and gifts are local simulati
 
 ## v12.8 Visual Robux / Shop Gifts
 
+**Follow-up investigation (27 November 2026):** this version still performs an immediate local gift record; it does not implement the native Buy item → Purchase completed checkout. The user requires native UI only and declined a recreated dialog. Native purchase components and their test mocks were found, but all five attempted export loads failed with `Cannot require a RobloxScript module from a non RobloxScript context`. The UI capture of the real Robux upsell contained shells rather than usable checkout controls. See [DIAG](docs/DIAG.md) for the bounded probes and exact scope. No replacement client or complete native mock checkout is claimed.
+
 Balance now contains a Visual Robux input, APPLY BALANCE, an optional 10% visual discount and Reset. The previous Beli/Fragments editor is removed. The discount only changes the simulated checkout price, rounded up to whole visual Robux; it does not represent an account subscription.
 
 After applying, open the game's Shop → Permanent Fruit Shop → Gift, use its existing Server/Global search and select a player. The observed GiftWindow purchase control is replaced by a sanitized UI copy labeled Visual while preview mode is active. Clicking it records a local gift and deducts the current displayed quote from the visual balance, with the visual discount when enabled. The original price label is not rewritten. Unsupported products, unknown prices and unselected recipients remain blocked in preview mode. The adapter currently supports permanent-fruit names present in this Catalog, not every product in the game shop.
