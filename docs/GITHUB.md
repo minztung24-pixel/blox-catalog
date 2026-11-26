@@ -12,6 +12,20 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.6 Model availability before first Equip
+
+The card's availability check now recognizes local model files before they are imported. This restores green cards and the Equip label for items such as Meme on a fresh session. Import errors are remembered separately, so a rejected file becomes unavailable until Rescan clears its error for a retry. Successful native capture clears the error, and Equip refreshes the card after loading.
+
+The grouped audit in tools/AuditFruitAndSkins.client.luau checks the 47 base-fruit cards and 87 skin/redeemable cards. It labels metadata-only entries separately from the 81 physical appearances. It inspects existing local files and player Tools, preloads typed render dependencies and PBR maps, and measures pose changes on hidden sanitized copies with the current animation IDs. It records authored VFX settings before disabling effects on those copies. It saves a local JSON report and cleans up its temporary objects. An asset-fetch result and a pose change do not establish full visual parity with the current game.
+
+Prepare the current bundle as blox-catalog-sim-v12.6.lua and the audit helper as codex-fruit-skin-audit-v1.lua in the Potassium workspace, then run:
+
+```lua
+loadstring(readfile("codex-fruit-skin-audit-v1.lua"))()
+```
+
+Wait for the saved-report message. The audit does not require manually equipping or dropping real fruit.
+
 ## v12.5 Default appearances of variants
 
 Empyrean, Fiend (Yeti), Hellfire (Gas) and Werewolf (Tiger) now appear in Fruit Skins, linked to Kitsune, Yeti, Gas and Tiger respectively. These user-confirmed relationships are stored in data/fruit-variant-relations.json. The source IsDefault flag describes an appearance within a variant and is preserved separately from its UI classification.

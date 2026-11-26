@@ -2,6 +2,14 @@
 
 Ngày 26/11/2026. Catalog v12.1. Trong 81 mục, **45 có model qua đối chiếu, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
 
+## Nhận diện file trước lần Equip đầu, v12.6
+
+Meme và nhiều trái khác có file local nhưng thẻ v12.5 vẫn báo No model vì sourceFor chỉ trả model đã nằm trong cache. Bước thực sự nạp file nằm trong luồng Equip. Bỏ kiểm tra đường dẫn mà chưa thay bằng trạng thái file chưa nạp đã gây ra lỗi này.
+
+FruitModels.available hiện nhận diện cả file local chưa nạp. Lỗi nhập file được lưu theo ItemId và đường dẫn để file đã bị từ chối không báo khả dụng. Rescan cho thử lại file đã sửa. Nạp thành công hoặc capture một mẫu native hợp lệ xóa lỗi trước đó. Equip cập nhật lại thẻ sau kết quả tải.
+
+tools/AuditFruitAndSkins.client.luau là phép kiểm tra mới cho cả Fruits và Fruit Skins, dùng đúng 81 ItemId vật phẩm cùng các mục metadata của hai tab. Báo cáo có tên blox-catalog-fruit-skin-audit-PLACEID.json. Nó ghi trạng thái model, mesh/texture fetch, clip hiện tại, khớp đổi pose và VFX có trong nguồn. Chưa chạy phép đo mới trong phiên của người dùng, nên các kết quả asset bên dưới vẫn giữ ngày đo cũ.
+
 ## Phân loại bổ sung ngày 27/11/2026, v12.5
 
 Người dùng xác nhận thêm bốn skin mặc định của biến thể. Quan hệ được lưu rõ trong data/fruit-variant-relations.json và được kiểm tra tên, ItemId cùng fruit gốc khi build. Empyrean (1041) thuộc Kitsune (1423), Fiend (Yeti) (1060) thuộc Yeti (1424), Hellfire (Gas) (1601) thuộc Gas (1422), Werewolf (Tiger) (814) thuộc Tiger (1430). IsDefault vẫn được giữ đúng dữ liệu gốc để mô tả diện mạo mặc định trong biến thể.

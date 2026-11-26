@@ -8,7 +8,7 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     getObjects = getObjects or function(uri) return game:GetObjects(uri) end
     local root = Instance.new("Folder")
     root.Name = "BloxCatalogLocalFruitModels"
-    local cache = {models = {}, native = {}, loading = {}, closed = false}
+    local cache = {models = {}, native = {}, loading = {}, errors = {}, closed = false}
     function cache:capture(item, tool)
         if self.closed or not (item.category=="Fruits" or item.isPhysicalFruit) or not tool:IsA("Tool") or not tool.Parent
             or tool:GetAttribute("BloxCatalogOwned") or tool:GetAttribute("ClientCatalogOwned")
@@ -21,6 +21,7 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         clean.Parent = root
         local previous = self.models[item.id]
         self.models[item.id] = clean
+        self.errors[item.id] = nil
         self.native[item.id] = tool
         if previous then previous:Destroy() end
         return clean
@@ -83,15 +84,30 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         self.loading[item.id] = nil
         if not ok then
             if clean then clean:Destroy() end
-            return nil,"Local model load failed: " .. tostring(message)
+            local reason="Local model load failed: " .. tostring(message)
+            self.errors[item.id]={path=path,message=reason}
+            return nil,reason
         end
+        self.errors[item.id]=nil
         return self.models[item.id]
+    end
+    function cache:available(item)
+        if self.closed then return false end
+        local model=self.models[item.id]
+        if model and model.Parent then return true end
+        local path=self:path(item)
+        local failure=self.errors[item.id]
+        return path~=nil and (not failure or failure.path~=path)
+    end
+    function cache:clearErrors()
+        table.clear(self.errors)
     end
     function cache:close()
         self.closed = true
         root:Destroy()
         table.clear(self.models)
         table.clear(self.native)
+        table.clear(self.errors)
     end
     return cache
 end

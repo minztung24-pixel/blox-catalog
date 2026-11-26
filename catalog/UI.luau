@@ -72,8 +72,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.5", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.5)
+    text(panel, "Title", "BLOX CATALOG v12.6", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.6)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -119,6 +119,7 @@ function UI.start()
         end
         tell(animationError or (ok and (prefix..item.name) or ("Equip unavailable: "..tostring(err))))
         if not ok then warn("[Blox Catalog] Equip unavailable: " .. tostring(err)) end
+        render()
         return ok, err, mode
     end
     local nativeEquip=NativeEquip.new(playerGui,state,equip)
@@ -370,7 +371,7 @@ function UI.start()
             local source = sourceFor(item)
             local stock = state.items[item.id]
             local available = (source and source.Parent and source:FindFirstChildWhichIsA("BasePart", true))
-                or Equipment.findExistingTool(player, item) or (stock and stock.tool and stock.tool.Parent)
+                or Equipment.findExistingTool(player, item) or (stock and stock.tool and stock.tool.Parent) or fruitModels:available(item)
             local card = make("Frame", content, {Name = "Item_" .. item.id, LayoutOrder = index,
                 BackgroundColor3 = available and colors.available or colors.surface, BorderSizePixel = 0})
             card:SetAttribute("ItemId", item.id); round(card, false)
@@ -412,6 +413,7 @@ function UI.start()
 
     refreshModels = function()
         if scanning or not alive then return end
+        fruitModels:clearErrors()
         scanning = true
         task.spawn(function()
             if not state.native then
