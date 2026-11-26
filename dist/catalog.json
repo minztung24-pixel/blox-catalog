@@ -7,7 +7,7 @@
     "items": 351,
     "categories": {
       "Fruits": {
-        "items": 51,
+        "items": 47,
         "missingRarity": 0,
         "missingIcon": 0
       },
@@ -17,7 +17,7 @@
         "missingIcon": 0
       },
       "Fruit Skins": {
-        "items": 129,
+        "items": 133,
         "missingRarity": 0,
         "missingIcon": 0
       },
@@ -395,58 +395,6 @@
         "isDefaultSkin": true
       },
       {
-        "id": "1041",
-        "name": "Empyrean",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Empyrean (Kitsune)-Empyrean (Kitsune)",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://98614986419454",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1041",
-        "iconRectOffset": [
-          305,
-          297
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ],
-        "isPhysicalFruit": true,
-        "skinId": "1045",
-        "isDefaultSkin": true
-      },
-      {
-        "id": "1060",
-        "name": "Fiend (Yeti)",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Fiend (Yeti)-Fiend (Yeti)",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://80555823838184",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:1060",
-        "iconRectOffset": [
-          153,
-          457
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ],
-        "isPhysicalFruit": true,
-        "skinId": "1063",
-        "isDefaultSkin": true
-      },
-      {
         "id": "1394",
         "name": "Flame",
         "category": "Fruits",
@@ -544,32 +492,6 @@
         ],
         "isPhysicalFruit": true,
         "skinId": "1533",
-        "isDefaultSkin": true
-      },
-      {
-        "id": "1601",
-        "name": "Hellfire (Gas)",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Hellfire (Gas)-Hellfire (Gas)",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://98614986419454",
-        "title": "",
-        "description": "Allows the user to unleash hellish flames and transform into an infernal revenant wielding a blazing chainsaw.",
-        "missing": [],
-        "source": "ItemConfig:1601",
-        "iconRectOffset": [
-          1,
-          449
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ],
-        "isPhysicalFruit": true,
-        "skinId": "1604",
         "isDefaultSkin": true
       },
       {
@@ -1251,32 +1173,6 @@
           150
         ],
         "isPhysicalFruit": true
-      },
-      {
-        "id": "814",
-        "name": "Werewolf (Tiger)",
-        "category": "Fruits",
-        "nameSource": "Display.Name",
-        "storageKey": "Werewolf (Tiger)-Werewolf (Tiger)",
-        "idType": "PhysicalMoveset",
-        "gameCategory": "Blox Fruit",
-        "rarity": "Mythical",
-        "icon": "rbxassetid://73607799898606",
-        "title": "",
-        "description": "",
-        "missing": [],
-        "source": "ItemConfig:814",
-        "iconRectOffset": [
-          609,
-          457
-        ],
-        "iconRectSize": [
-          150,
-          150
-        ],
-        "isPhysicalFruit": true,
-        "skinId": "818",
-        "isDefaultSkin": true
       },
       {
         "id": "1424",
@@ -3386,6 +3282,34 @@
         "isDefaultSkin": false
       },
       {
+        "id": "1041",
+        "name": "Empyrean",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Empyrean (Kitsune)-Empyrean (Kitsune)",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://98614986419454",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1041",
+        "iconRectOffset": [
+          305,
+          297
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1045",
+        "isDefaultSkin": true,
+        "baseFruitId": "1423",
+        "baseFruitName": "Kitsune"
+      },
+      {
         "id": "408",
         "name": "Falcon",
         "category": "Fruit Skins",
@@ -3457,6 +3381,34 @@
         "physicalId": 1060,
         "isDefaultSkin": true,
         "hiddenInCatalog": true
+      },
+      {
+        "id": "1060",
+        "name": "Fiend (Yeti)",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Fiend (Yeti)-Fiend (Yeti)",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://80555823838184",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:1060",
+        "iconRectOffset": [
+          153,
+          457
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1063",
+        "isDefaultSkin": true,
+        "baseFruitId": "1424",
+        "baseFruitName": "Yeti"
       },
       {
         "id": "261",
@@ -3936,6 +3888,34 @@
         "physicalId": 1601,
         "isDefaultSkin": true,
         "hiddenInCatalog": true
+      },
+      {
+        "id": "1601",
+        "name": "Hellfire (Gas)",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Hellfire (Gas)-Hellfire (Gas)",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://98614986419454",
+        "title": "",
+        "description": "Allows the user to unleash hellish flames and transform into an infernal revenant wielding a blazing chainsaw.",
+        "missing": [],
+        "source": "ItemConfig:1601",
+        "iconRectOffset": [
+          1,
+          449
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "1604",
+        "isDefaultSkin": true,
+        "baseFruitId": "1422",
+        "baseFruitName": "Gas"
       },
       {
         "id": "1540",
@@ -5443,6 +5423,34 @@
         "physicalId": 814,
         "isDefaultSkin": true,
         "hiddenInCatalog": true
+      },
+      {
+        "id": "814",
+        "name": "Werewolf (Tiger)",
+        "category": "Fruit Skins",
+        "nameSource": "Display.Name",
+        "storageKey": "Werewolf (Tiger)-Werewolf (Tiger)",
+        "idType": "PhysicalMoveset",
+        "gameCategory": "Blox Fruit",
+        "rarity": "Mythical",
+        "icon": "rbxassetid://73607799898606",
+        "title": "",
+        "description": "",
+        "missing": [],
+        "source": "ItemConfig:814",
+        "iconRectOffset": [
+          609,
+          457
+        ],
+        "iconRectSize": [
+          150,
+          150
+        ],
+        "isPhysicalFruit": true,
+        "skinId": "818",
+        "isDefaultSkin": true,
+        "baseFruitId": "1430",
+        "baseFruitName": "Tiger"
       },
       {
         "id": "257",

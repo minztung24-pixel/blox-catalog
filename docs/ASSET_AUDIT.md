@@ -11,17 +11,19 @@ Kiểm kê ngày 26/11/2026. Phạm vi là 81 mục trong tab Fruits của Catal
 - **Đo lại trong Blox Fruits ngày 26/11:** Dragon, Dragon (West), Ember, Flame, Lightning, Quake và Werewolf (Tiger) đều có 4 mẫu Tool đang cầm, trạng thái cuối Failed do preload trả Failure và không có track đang chạy. Báo cáo kết thúc bình thường nhưng thiếu Tiger (1430).
 
 
-## Sửa phân loại ngày 27/11/2026, v12.4
+## Phân loại cập nhật ngày 27/11/2026, v12.5
 
-Phép kiểm kê file trong bảng bao gồm **81 trái vật phẩm**, hiện chia thành **51 mục Fruits** và **30 mục Fruit Skins**. Dữ liệu Skin.Physical và Skin.IsDefault liên kết skin với ItemId của model vật phẩm. Arcsteel (1525) và Galaxy (1042) sang tab Fruit Skins. Magnet (1516) và Yeti (1424) ở Fruits. Thẻ skin mặc định Magnet (1537) được ẩn, còn bản ghi gốc vẫn truy cập được bằng ID trong database.
+Bảng bên dưới bao gồm **81 trái vật phẩm**, hiện chia thành **47 mục Fruits** và **34 mục Fruit Skins**. Arcsteel và Galaxy thuộc nhóm skin. Empyrean → Kitsune, Fiend (Yeti) → Yeti, Hellfire (Gas) → Gas và Werewolf (Tiger) → Tiger được phân loại theo xác nhận của người dùng, lưu trong data/fruit-variant-relations.json. IsDefault chỉ xác định diện mạo mặc định trong một biến thể, không chứng minh đó là fruit gốc.
 
-Trong **35 mục thiếu file**, có **9 fruit gốc** và **26 skin**. Danh sách fruit gốc thiếu file gồm Celestial, Dragon (East), Fiend (Yeti), Hellfire (Gas), Magnet, Oni, Portal, Rocket, Venom. Tổng số file và kết quả đo tài nguyên trước đó vẫn theo bộ 50 file đã kiểm kê. Empyrean (1041) còn bị chặn vì file chứa nhầm Galaxy.
+**Fruit gốc** có 40 file khớp và **7 mục thiếu file**, gồm Celestial, Dragon (East), Magnet, Oni, Portal, Rocket, Venom. **Trái mang skin** có 5 file được chấp nhận, **28 mục thiếu file**, và Empyrean có file chứa sai Galaxy nên bị chặn. Tổng vẫn là 45 nguồn qua đối chiếu, 35 mục thiếu file và 1 nguồn bị chặn.
 
-Tab Fruit Skins hiển thị 83 thẻ, gồm 30 trái vật phẩm mang skin, 31 skin chưa có Physical và 22 bản redeemable. 46 định nghĩa skin đã có bản vật phẩm tương ứng được giữ trong database để tra ID, nhưng dùng chung một thẻ với bản vật phẩm, nên không có thêm thẻ default hoặc trùng ngoại hình. Dữ liệu gốc vẫn có 351 ItemId riêng biệt.
+Tab Fruit Skins có 87 thẻ, gồm 34 trái vật phẩm mang skin, 31 skin chưa có Physical và 22 bản redeemable. 46 định nghĩa skin có bản vật phẩm tương ứng được ẩn khỏi kết quả tìm kiếm để tránh thẻ trùng. Cả 351 ItemId vẫn có trong database. Model và tham chiếu animation của skin tiếp tục gắn với ItemId riêng, không lấy file của fruit gốc thay vào.
+
+Lỗi chuyển động được báo ở cả hai nhóm. Fruit gốc gồm Dragon, Dragon (West), Flame, Lightning, Quake và Tiger. Skin gồm Ember và Werewolf (Tiger). Phép đo mới ghi được 7/8 mục đang cầm nhưng preload thất bại, riêng Tiger chưa có mẫu mới. VFX trong bảng ghi cấu trúc file và phản hồi đã có, chưa xác nhận toàn bộ hình ảnh đúng với game hiện tại.
 
 Cột **Mesh** ghi số MeshPart và số tham chiếu mesh tải thành công / tổng trong báo cáo. **Texture** đếm các tham chiếu bề mặt và texture ngoài VFX. **VFX** ghi số ParticleEmitter/Beam/Trail bật / tổng trong file, sau đó là tỷ lệ tải texture của chúng. Tài nguyên dùng chung có thể xuất hiện ở nhiều dòng. **0 ref.** nghĩa là phép đo không ghi được tham chiếu thuộc nhóm đó. VFX không xuất hiện trong file hoặc chưa được người dùng nhìn thấy chưa đủ để kết luận có lỗi.
 
-| Fruit | ID | Tab v12.4 | Model trong Work Potassium | Mesh | Texture | Cầm / Equip | Animation | VFX | Ghi chú |
+| Fruit | ID | Tab v12.5 | Model trong Work Potassium | Mesh | Texture | Cầm / Equip | Animation | VFX | Ghi chú |
 |---|---|---|---|---|---|---|---|---|---|
 | Arcsteel Magnet | 1525 | Fruit Skins | Có model · Arcsteel Magnet.rbxm | 3 · 3/3 | 7/7 | Đã thấy cầm | Rig chạy · 47 khớp · 90561160320604 | 9/51 bật · 33/33 | — |
 | Azura Bomb | 512 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
@@ -44,8 +46,8 @@ Cột **Mesh** ghi số MeshPart và số tham chiếu mesh tải thành công /
 | Eagle | 1425 | Fruits | Có model · Eagle-Eagle.rbxm | 3 · 3/3 | 4/4 | Có BasePart · chưa thử cầm | Rig chạy · 50 khớp · 77885466312115 | 0/12 bật · 7/7 | Eagle được thêm clip đã đo |
 | Ember | 1047 | Fruit Skins | Có model · Ember Dragon (West).rbxm | 7 · 7/7 | 1/1 | Đã đo cầm · 4 mẫu · 26/11 | 96038340477884 · Preload Failure · 0 track · 26/11 | 8/8 bật · 7/7 | Người dùng thấy đứng yên; đã thấy VFX |
 | Emerald Diamond | 471 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Empyrean | 1041 | Fruits | Sai model · chặn · Empyrean (Kitsune)-Empyrean (Kitsune).rbxm | 6 · 6/6 | 2/2 | Bị chặn | — | 3/3 bật · 2/2 | Root Galaxy, thiếu ItemId |
-| Fiend (Yeti) | 1060 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
+| Empyrean | 1041 | Fruit Skins | Sai model · chặn · Empyrean (Kitsune)-Empyrean (Kitsune).rbxm | 6 · 6/6 | 2/2 | Bị chặn | — | 3/3 bật · 2/2 | Root Galaxy, thiếu ItemId |
+| Fiend (Yeti) | 1060 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Flame | 1394 | Fruits | Có model · Flame-Flame.rbxm | 8 · 8/8 | 4/4 | Đã đo cầm · 4 mẫu · 26/11 | 92872930988510 · Preload Failure · 0 track · 26/11 | 6/6 bật · 5/5 | Người dùng thấy đứng yên; đã thấy VFX; Clip thử trước đó tải được nhưng 0 khớp chạy |
 | Frustration Pain | 492 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Galaxy | 1042 | Fruit Skins | Có model · Galaxy Empyrean Kitsune.rbxm | 6 · 6/6 | 2/2 | Người dùng đã xem · chưa đo Equip | Rig chạy · 102 khớp · 121051622257427 | 3/3 bật · 2/2 | — |
@@ -54,7 +56,7 @@ Cột **Mesh** ghi số MeshPart và số tham chiếu mesh tải thành công /
 | Glacier Eagle | 496 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Gravity | 1405 | Fruits | Có model · Gravity-Gravity.rbxm | 8 · 8/8 | 3/3 | Có BasePart · chưa thử cầm | Rig chạy · 8 khớp · 15123633312 | 0/0 bật · 0 ref. | — |
 | Green Lightning | 462 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Hellfire (Gas) | 1601 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
+| Hellfire (Gas) | 1601 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Ice | 1392 | Fruits | Có model · Ice-Ice.rbxm | 4 · 4/4 | 3/3 | Có BasePart · chưa thử cầm | File thiếu clip và controller | 10/10 bật · 8/8 | — |
 | Kitsune | 1423 | Fruits | Có model · Kitsune-Kitsune.rbxm | 6 · 6/6 | 4/4 | Người dùng đã xem · chưa đo Equip | Rig chạy · 128 khớp · 15487764876 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
 | Light | 1407 | Fruits | Có model · Light-Light.rbxm | 6 · 6/6 | 3/3 | Có BasePart · chưa thử cầm | Rig chạy · 32 khớp · 15123640714 | 0/0 bật · 0 ref. | — |
@@ -101,7 +103,7 @@ Cột **Mesh** ghi số MeshPart và số tham chiếu mesh tải thành công /
 | Topaz Diamond | 469 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Torment Pain | 491 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Venom | 1410 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Werewolf (Tiger) | 814 | Fruits | Có model · Werewolf (Tiger)-Werewolf (Tiger).rbxm | 6 · 6/6 | 3/3 | Đã đo cầm · 4 mẫu · 26/11 | 133333989918142 · Preload Failure · 0 track · 26/11 | 0/0 bật · 0 ref. | Người dùng thấy đứng yên; đã thấy VFX |
+| Werewolf (Tiger) | 814 | Fruit Skins | Có model · Werewolf (Tiger)-Werewolf (Tiger).rbxm | 6 · 6/6 | 3/3 | Đã đo cầm · 4 mẫu · 26/11 | 133333989918142 · Preload Failure · 0 track · 26/11 | 0/0 bật · 0 ref. | Người dùng thấy đứng yên; đã thấy VFX |
 | Yellow Lightning | 450 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Yeti | 1424 | Fruits | Có model · Yeti-Yeti.rbxm | 5 · 5/5 | 4/4 | Người dùng đã xem · chưa đo Equip | Rig chạy · 108 khớp · 115276580506154 | 8/8 bật · 6/6 | — |
 

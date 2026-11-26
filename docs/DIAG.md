@@ -2,6 +2,16 @@
 
 Ngày 26/11/2026. Catalog v12.1. Trong 81 mục, **45 có model qua đối chiếu, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
 
+## Phân loại bổ sung ngày 27/11/2026, v12.5
+
+Người dùng xác nhận thêm bốn skin mặc định của biến thể. Quan hệ được lưu rõ trong data/fruit-variant-relations.json và được kiểm tra tên, ItemId cùng fruit gốc khi build. Empyrean (1041) thuộc Kitsune (1423), Fiend (Yeti) (1060) thuộc Yeti (1424), Hellfire (Gas) (1601) thuộc Gas (1422), Werewolf (Tiger) (814) thuộc Tiger (1430). IsDefault vẫn được giữ đúng dữ liệu gốc để mô tả diện mạo mặc định trong biến thể.
+
+Hiện có 47 mục Fruits và 34 trái vật phẩm trong Fruit Skins. Fruit gốc thiếu 7 file, skin thiếu 28 file. Empyrean còn có file sai model. Các lỗi preload và VFX ở cả hai nhóm chưa được giải quyết bằng việc phân loại.
+
+Thẻ có file nhưng bị trình nạp từ chối sẽ không còn tô xanh và hiện Equip chỉ vì đường dẫn tồn tại. UI dùng model nạp được hoặc Tool thực tế để xác định khả năng Equip. Trường hợp Empyrean vẫn giữ thông báo nguồn Galaxy bị gán nhầm.
+
+Các kiểm kê và phép đo v12/v12.4 bên dưới là bằng chứng tại thời điểm đó, không phải số lượng thẻ mới.
+
 ## Phân loại ngày 27/11/2026, v12.4
 
 Lỗi trước đây là dùng PhysicalMoveset làm điều kiện đưa tất cả trái vật phẩm vào Fruits. Các skin như Arcsteel và Galaxy cũng có bản vật phẩm PhysicalMoveset riêng. Điều đó làm tab Fruits lẫn skin, đồng thời tab Fruit Skins hiển thị thêm định nghĩa skin mặc định như Magnet.

@@ -1,0 +1,9 @@
+{
+  "source": "User classification confirmed 2026-11-27",
+  "variants": {
+    "1041": {"name": "Empyrean", "baseId": "1423", "baseName": "Kitsune"},
+    "1060": {"name": "Fiend (Yeti)", "baseId": "1424", "baseName": "Yeti"},
+    "1601": {"name": "Hellfire (Gas)", "baseId": "1422", "baseName": "Gas"},
+    "814": {"name": "Werewolf (Tiger)", "baseId": "1430", "baseName": "Tiger"}
+  }
+}

@@ -10,6 +10,12 @@ return function(Inventory, Catalog)
     assert(Catalog.byId["1525"].category=="Fruit Skins" and Catalog.byId["1525"].isPhysicalFruit)
     assert(Catalog.byId["1042"].category=="Fruit Skins" and Catalog.byId["1042"].isPhysicalFruit)
     assert(Catalog.byId["1516"].category=="Fruits" and Catalog.byId["1424"].category=="Fruits")
+    for id,base in pairs({["1041"]="1423",["1060"]="1424",["1601"]="1422",["814"]="1430"})do
+        local variant=Catalog.byId[id]
+        assert(variant.category=="Fruit Skins" and variant.isPhysicalFruit and variant.baseFruitId==base)
+        assert(Catalog.byId[base].category=="Fruits")
+        assert(#Catalog.search(id,"Fruits")==0,"Variant must not remain in base-fruit search")
+    end
     assert(Catalog.byId["1537"].hiddenInCatalog and Catalog.byId["1538"].hiddenInCatalog)
     assert(#Catalog.search("1537","Fruit Skins")==0,"Default Magnet skin is represented by its base fruit")
     local arcsteel=Catalog.search("1538","Fruit Skins")

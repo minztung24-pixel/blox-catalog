@@ -83,6 +83,26 @@ class BuildCatalogTests(unittest.TestCase):
         self.assertIn("NativeEquip", names, "Studio package must include the legacy Equip adapter")
         self.assertIn("NativeDialogue", names, "Studio package must include the native menu adapter")
 
+    def test_default_appearance_of_variant_is_still_a_skin(self):
+        configs = [
+            {"Index": {"ItemId": item_id, "IdType": "PhysicalMoveset", "StorageKey": name},
+             "Display": {"Name": name, "Category": "Blox Fruit"}}
+            for item_id, name in [(1423, "Kitsune"), (1041, "Empyrean")]
+        ]
+        configs.append({"Index": {"ItemId": 1045, "IdType": "Skin", "StorageKey": "EMPYREANSKINdefault"},
+                        "Display": {"Name": "Crimson", "Category": "Fruit Skin"},
+                        "Skin": {"Type": "Fruit", "Physical": 1041, "IsDefault": True}})
+        groups = {name: [] for name in self.module.CATEGORIES}
+        for config in configs:
+            item = self.module.normalize(config)
+            groups[item["category"]].append(item)
+        self.module.classify_fruit_skins(groups, configs)
+        self.assertEqual([x["id"] for x in groups["Fruits"]], ["1423"])
+        variant = next(x for x in groups["Fruit Skins"] if x["id"] == "1041")
+        self.assertTrue(variant["isDefaultSkin"])
+        self.assertTrue(variant["isPhysicalFruit"])
+        self.assertEqual(variant["baseFruitId"], "1423")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -111,6 +111,21 @@ def classify_fruit_skins(groups, configs):
             groups["Fruits"].remove(physical)
             physical["category"] = "Fruit Skins"
             groups["Fruit Skins"].append(physical)
+    variants = json.loads((ROOT / "data" / "fruit-variant-relations.json").read_text(encoding="utf-8"))["variants"]
+    for item_id, relation in variants.items():
+        item = items.get(item_id)
+        if item is None:
+            continue
+        base = items.get(relation["baseId"])
+        if (not item.get("isPhysicalFruit") or item["name"] != relation["name"]
+                or not base or not base.get("isPhysicalFruit") or base["name"] != relation["baseName"]):
+            raise ValueError("Fruit variant relation does not match the catalog")
+        item["baseFruitId"] = base["id"]
+        item["baseFruitName"] = base["name"]
+        if item["category"] == "Fruits":
+            groups["Fruits"].remove(item)
+            item["category"] = "Fruit Skins"
+            groups["Fruit Skins"].append(item)
 
 
 def package_xml(sources, data_sources):
@@ -142,7 +157,7 @@ def bundle(snapshot_version=None):
     data_sources = {name: (ROOT / "catalog" / "Data" / (name + ".luau")).read_text(encoding="utf-8") for name in CATEGORIES.values()}
     sources = {name: (ROOT / "catalog" / ("Data/init.luau" if name == "Data" else name + (".client.luau" if name == "Main" else ".luau"))).read_text(encoding="utf-8")
                for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "UI", "Main")}
-    parts = ["-- Blox Catalog v12.4 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
+    parts = ["-- Blox Catalog v12.5 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
     for name, text in data_sources.items():
         parts.append("local Data" + name + " = (function()\n" + text + "\nend)()\n")
     for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "UI"):

@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.5 Default appearances of variants
+
+Empyrean, Fiend (Yeti), Hellfire (Gas) and Werewolf (Tiger) now appear in Fruit Skins, linked to Kitsune, Yeti, Gas and Tiger respectively. These user-confirmed relationships are stored in data/fruit-variant-relations.json. The source IsDefault flag describes an appearance within a variant and is preserved separately from its UI classification.
+
+The catalog now has 47 base fruits and 34 physical skin variants. The skins tab displays 87 cards including the remaining skin definitions and redeemables. All 351 source IDs are retained. Cards no longer advertise an equip-ready model solely because a file path exists when the model loader has rejected that file.
+
+The current audit finds 7 base fruits and 28 skins without local model files, plus the mislabeled Empyrean export that remains blocked. Animation preload and unresolved VFX findings remain tracked for both tabs.
+
 ## v12.4 Base fruits and skins
 
 Catalog classification now follows Skin.Physical and Skin.IsDefault. Thirty physical skin variants, including Arcsteel Magnet and Galaxy, appear in Fruit Skins. Default appearances, including Magnet and Yeti, stay in Fruits. The matching ownership-skin definitions remain addressable by their original IDs and share the physical item's visible card. Searching by the linked skin ID finds that physical card.
