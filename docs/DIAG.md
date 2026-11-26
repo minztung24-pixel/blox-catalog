@@ -68,3 +68,11 @@ Kết quả `LoadFailed` nghĩa là clip không tải được. `NoMotionObserve
 - **Arcsteel Magnet, Gas, Magma và Control** có mẫu ghi nhận Tool mô phỏng đang được cầm. Có BasePart hoặc rig chạy riêng chưa đủ để ghi đã thử Equip. Gas được người dùng chấp nhận và mắt không còn nằm trong phạm vi sửa.
 
 Ưu tiên các trái đã có đúng model nhưng thiếu chuyển động trong bảng trên. Flame cần clip có chuyển động đo được trên chính rig của nó. Các trái thiếu file, Control và Empyrean cần model đúng ItemId mà dự án có quyền dùng. Kết quả hiện tại chưa xác nhận được nguồn thay thế cho các mục này.
+
+## Drop ngày 27/11/2026
+
+Bản v1 đã ghi được Spin Fruit (1411) từ Character sang Workspace. Lúc thả, khớp RightGrip với tay biến mất, Handle cách phía trước nhân vật khoảng 5 studs, CanCollide=true, Massless=false, vận tốc tuyến tính (0, 1, 0), vận tốc góc bằng 0. Mẫu không có ProximityPrompt. Báo cáo ghi dropObserved=true. Người dùng cho biết người khác đã nhặt trái, còn công cụ không quan sát được pickup của người dùng.
+
+v12.2 sửa Drop của Tool mô phỏng theo dữ liệu ban đầu đã ghi. Bỏ prompt nhặt bằng E, gỡ khớp với tay, bảo toàn khớp trong model, đặt vị trí và vận tốc thả. Nhặt bằng tiếp xúc được triển khai cho mô phỏng và kiểm tra riêng trong Studio. Không suy diễn các mẫu sau khi vật phẩm đã bị người khác nhặt thành vật lý rơi bình thường.
+
+Kiểm tra Studio đã qua thao tác tiếp xúc của nhân vật, bỏ qua tiếp xúc của vật ngoài nhân vật, thả lại và dọn kết nối khi Clear. Chưa kiểm tra hình ảnh bản v12.2 trong phiên Blox Fruits của người dùng.

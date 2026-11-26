@@ -72,8 +72,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.1", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.1)
+    text(panel, "Title", "BLOX CATALOG v12.2", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.2)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -184,7 +184,7 @@ function UI.start()
             Eat=function()tell("Eating requires a real server-owned fruit; this visual grants no abilities.")end,
             Drop=function()
                 local success,err=equipment:drop(item)
-                tell(success and "Dropped local visual. Use its pickup prompt to hold it again." or tostring(err))
+                tell(success and "Dropped local visual. Walk into it to pick it up." or tostring(err))
             end,
             Store=function()
                 local success,err=equipment:store(item)

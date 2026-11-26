@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.2 Drop and contact pickup
+
+Drop now releases the local Tool's external hand grip, keeps its internal rig joints, and places its Handle five studs ahead of the character with initial velocity (0, 1, 0). The Handle has collision and mass while dropped. Walking into the dropped local fruit picks it up after a short contact cooldown. The custom pickup prompt has been removed. Pickup restores held collision/touch settings, and Clear/Store disconnect the pickup listener.
+
+The November 27 Spin observation recorded the hand grip being removed, the initial placement and velocity. Another player collected the genuine fruit, so the report does not verify pickup by the observer. Contact pickup for the local simulator was tested separately in Studio with fixture parts, including foreign-contact rejection, repeated Drop and Clear cleanup. Original fruit Tools are excluded by the existing ownership guard.
+
+Validation includes Equipment action assertions and a physics playtest in Studio. This release changes local Drop behavior. Fruit animation preload failures remain unresolved.
+
 ## v12.1 Model identity and visual feedback
 
 ### Diagnostic comparison, 2026-11-21

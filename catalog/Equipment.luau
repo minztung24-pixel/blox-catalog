@@ -228,9 +228,10 @@ function Equipment.fruitMotion(tool, notify, loadAnimation, timeout)
 end
 
 function Equipment.new(state, player, getSource, notify, onFruitActivated)
-    local controller = {bindings = {}, animations = {}}
+    local controller = {bindings = {}, animations = {}, dropBindings = {}}
     local animationLoader = Equipment.animationLoader()
     function controller:remove(id)
+        if self.dropBindings[id] then self.dropBindings[id]:Disconnect(); self.dropBindings[id] = nil end
         if self.animations[id] then self.animations[id]:close(); self.animations[id] = nil end
         for _, connection in ipairs(self.bindings[id] or {}) do connection:Disconnect() end
         self.bindings[id] = nil
@@ -259,25 +260,34 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
         local handle=tool and tool:FindFirstChild("Handle")
         if not tool or not tool:GetAttribute("BloxCatalogOwned") or tool.Parent~=character
             or not root or not handle or not handle:IsA("BasePart") then return false,"Hold the local fruit first" end
+        -- Release only this Tool's external grip before moving its assembly.
+        for _,joint in ipairs(handle:GetJoints()) do
+            if joint:IsA("JointInstance") and (joint.Part0==handle or joint.Part1==handle)
+                and (not joint.Part0 or not joint.Part0:IsDescendantOf(tool)
+                    or not joint.Part1 or not joint.Part1:IsDescendantOf(tool)) then
+                joint:Destroy()
+            end
+        end
+        handle.CanTouch=false
         tool.Parent=workspace
-        handle.CFrame=root.CFrame*CFrame.new(0,0,-4)
+        handle.CFrame=root.CFrame*CFrame.new(0,0,-5)
         handle.CanCollide=true
+        handle.Massless=false
+        handle.AssemblyLinearVelocity=Vector3.new(0,1,0)
+        handle.AssemblyAngularVelocity=Vector3.zero
         row.equipped=false
         local prompt=handle:FindFirstChild("BloxCatalogPickup")
-        if not prompt then
-            prompt=Instance.new("ProximityPrompt")
-            prompt.Name="BloxCatalogPickup";prompt.ActionText="Pick up visual";prompt.ObjectText=item.name.." (local)"
-            prompt.HoldDuration=0;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false
-            prompt.Parent=handle
-            self.bindings[item.id]=self.bindings[item.id] or {}
-            table.insert(self.bindings[item.id],prompt.Triggered:Connect(function(who)
-                if who==player and tool.Parent==workspace then
-                    local ok,message=self:equip(item)
-                    if not ok then notify(tostring(message)) end
-                end
-            end))
-        end
-        prompt.Enabled=true
+        if prompt then prompt:Destroy() end
+        if self.dropBindings[item.id] then self.dropBindings[item.id]:Disconnect() end
+        local readyAt=os.clock()+.5
+        self.dropBindings[item.id]=handle.Touched:Connect(function(hit)
+            local currentCharacter=player.Character
+            if os.clock()<readyAt or tool.Parent~=workspace or state.items[item.id]~=row or row.tool~=tool
+                or not currentCharacter or not hit:IsDescendantOf(currentCharacter) then return end
+            local ok,message=self:equip(item)
+            if not ok then notify(tostring(message)) end
+        end)
+        handle.CanTouch=true
         return true
     end
     function controller:equip(item)
@@ -314,6 +324,8 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
         end
         tool.Parent = backpack
         tool.Handle.CanCollide=false
+        tool.Handle.CanTouch=false
+        tool.Handle.Massless=true
         local pickup=tool.Handle:FindFirstChild("BloxCatalogPickup")
         if pickup then pickup.Enabled=false end
         local equipped, err = pcall(humanoid.EquipTool, humanoid, tool)
