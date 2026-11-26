@@ -1,4 +1,4 @@
--- Blox Catalog v12.2 simulator. Snapshot place version 4632.
+-- Blox Catalog v12.3 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -982,6 +982,36 @@ function Equipment.fruitMotion(tool, notify, loadAnimation, timeout)
     return motion
 end
 
+local function dropCollider(tool,handle)
+    local low=Vector3.new(math.huge,math.huge,math.huge)
+    local high=Vector3.new(-math.huge,-math.huge,-math.huge)
+    local collider=tool:FindFirstChild("BloxCatalogDropCollider")
+    for _,part in ipairs(tool:GetDescendants()) do
+        if part:IsA("BasePart") and part~=handle and part~=collider and part.Transparency<1 then
+            local relative=handle.CFrame:ToObjectSpace(part.CFrame)
+            local half=part.Size*.5
+            for x=-1,1,2 do for y=-1,1,2 do for z=-1,1,2 do
+                local point=relative:PointToWorldSpace(Vector3.new(half.X*x,half.Y*y,half.Z*z))
+                low=low:Min(point);high=high:Max(point)
+            end end end
+        end
+    end
+    if low.X==math.huge then return handle end
+    if not collider then
+        collider=Instance.new("Part")
+        collider.Name="BloxCatalogDropCollider"
+        collider.Transparency=1;collider.CanCollide=false;collider.CanTouch=false;collider.CanQuery=false;collider.Massless=true
+        collider.Parent=tool
+    end
+    local previous=collider:FindFirstChildOfClass("WeldConstraint")
+    if previous then previous:Destroy() end
+    collider.Size=(high-low):Max(Vector3.new(.05,.05,.05))
+    collider.CFrame=handle.CFrame*CFrame.new((low+high)*.5)
+    local weld=Instance.new("WeldConstraint")
+    weld.Part0=handle;weld.Part1=collider;weld.Parent=collider
+    return collider
+end
+
 function Equipment.new(state, player, getSource, notify, onFruitActivated)
     local controller = {bindings = {}, animations = {}, dropBindings = {}}
     local animationLoader = Equipment.animationLoader()
@@ -1024,9 +1054,11 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
             end
         end
         handle.CanTouch=false
+        local collider=dropCollider(tool,handle)
         tool.Parent=workspace
         handle.CFrame=root.CFrame*CFrame.new(0,0,-5)
-        handle.CanCollide=true
+        handle.CanCollide=collider==handle
+        collider.CanCollide=true
         handle.Massless=false
         handle.AssemblyLinearVelocity=Vector3.new(0,1,0)
         handle.AssemblyAngularVelocity=Vector3.zero
@@ -1081,6 +1113,8 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
         tool.Handle.CanCollide=false
         tool.Handle.CanTouch=false
         tool.Handle.Massless=true
+        local collider=tool:FindFirstChild("BloxCatalogDropCollider")
+        if collider then collider.CanCollide=false end
         local pickup=tool.Handle:FindFirstChild("BloxCatalogPickup")
         if pickup then pickup.Enabled=false end
         local equipped, err = pcall(humanoid.EquipTool, humanoid, tool)
@@ -1462,8 +1496,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.2", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.2)
+    text(panel, "Title", "BLOX CATALOG v12.3", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.3)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

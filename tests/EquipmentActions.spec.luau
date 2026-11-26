@@ -15,7 +15,7 @@ return function(Equipment)
     local controller=Equipment.new(state,player,function()end,function()end)
     local hand=Instance.new("Part",character);hand.Name="RightHand"
     local grip=Instance.new("Weld",hand);grip.Name="RightGrip";grip.Part0=hand;grip.Part1=tool.Handle
-    local internal=Instance.new("Part",tool)
+    local internal=Instance.new("Part",tool);internal.Transparency=1
     local weld=Instance.new("Weld",tool.Handle);weld.Part0=tool.Handle;weld.Part1=internal
     local ok,err=pcall(function()
         assert(not controller:store(item) and row.tool==tool and tool.Parent==character,"Failed stock sync must preserve held Tool")

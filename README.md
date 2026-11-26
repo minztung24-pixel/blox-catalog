@@ -12,6 +12,12 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.3 Dropped fruit ground contact
+
+Dropped local fruits now use an invisible collision box fitted to the visible parts. An oversized Handle no longer holds the visible fruit above the floor. The collider is disabled while equipped and reused on subsequent drops. Models that contain only a Handle keep Handle collision.
+
+The Studio physics regression reproduces an oversized invisible Handle and a visible body offset above it. v12.2 fails the floor-contact assertion. v12.3 places the body's lower edge within 0.15 studs of the floor and passes the contact pickup, foreign-contact, repeated Drop and Clear checks. This is a box approximation of visible part bounds, including skinned MeshPart bounds. In-game visual confirmation is still pending.
+
 ## v12.2 Drop and contact pickup
 
 Drop now releases the local Tool's external hand grip, keeps its internal rig joints, and places its Handle five studs ahead of the character with initial velocity (0, 1, 0). The Handle has collision and mass while dropped. Walking into the dropped local fruit picks it up after a short contact cooldown. The custom pickup prompt has been removed. Pickup restores held collision/touch settings, and Clear/Store disconnect the pickup listener.

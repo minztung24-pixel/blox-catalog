@@ -76,3 +76,5 @@ Bản v1 đã ghi được Spin Fruit (1411) từ Character sang Workspace. Lúc
 v12.2 sửa Drop của Tool mô phỏng theo dữ liệu ban đầu đã ghi. Bỏ prompt nhặt bằng E, gỡ khớp với tay, bảo toàn khớp trong model, đặt vị trí và vận tốc thả. Nhặt bằng tiếp xúc được triển khai cho mô phỏng và kiểm tra riêng trong Studio. Không suy diễn các mẫu sau khi vật phẩm đã bị người khác nhặt thành vật lý rơi bình thường.
 
 Kiểm tra Studio đã qua thao tác tiếp xúc của nhân vật, bỏ qua tiếp xúc của vật ngoài nhân vật, thả lại và dọn kết nối khi Clear. Chưa kiểm tra hình ảnh bản v12.2 trong phiên Blox Fruits của người dùng.
+
+Người dùng xác nhận v12.2 thả và nhặt được, nhưng ảnh Arcsteel cho thấy thân trái ở cao hơn mặt đất. Studio tái hiện được với Handle vô hình quá lớn và thân nhìn thấy nằm lệch phía trên Handle. v12.3 dùng một hộp va chạm theo các góc của BasePart nhìn thấy trong hệ tọa độ Handle, bỏ qua các phần hoàn toàn trong suốt. Collider này chỉ va chạm khi đã thả. Phép đo tiếp đất của thân trong fixture nằm trong sai số 0.15 studs so với mặt sàn. Box theo biên MeshPart chưa đánh giá được mọi biến dạng của mesh skinned trong animation.
