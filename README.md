@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.20 Preserve native dropped-fruit clearance
+
+Physical fruits with the game's invisible **2.25×2.25×2.25 Handle** now collide using that Handle. The previous visible-mesh collider forced the fruit's visible bottom onto the floor and removed the native clearance. An inherited Catalog collider is removed for these canonical Handles; imported models with oversized/noncanonical Handles retain the prior bounded-mesh fallback. No arbitrary hover offset or replacement animation is added.
+
+The live Rocket drop yielded 24 settled observations: Handle center 1.105–1.121 studs above the floor, matching a 2.25-stud collision box. Yeti's existing Handle is already 2.25 studs; its extra Catalog collider was the mismatch. Bomb's Handle was also observed at that size, but samples after another player picked up a fruit are excluded from settled-ground measurements. No further real-fruit drops are needed.
+
+Validation: the new native-clearance assertion fails on v12.19 and passes after the change. Studio physics checks cover native clearance, contact pickup, repeated Drop without recreating a collider, the oversized-Handle fallback, foreign-contact rejection and cleanup. Equipment/action assertions and seven Python build tests pass. The new Yeti Drop appearance still needs the user's visual confirmation; no native model/VFX assets were added.
+
 ## v12.19 Native Mastery and ability slots without models
 
 **Visual → Skills → Equip** now previews a native fighting style in hotbar **slot 1** without requiring a 3D model. **Inventory → Permanent → + Add** equips the corresponding fruit ability in **slot 2**; selecting another permanent replaces that ability. Added → Equip also supports these previews. These are separate from physical fruit Tools and their model/VFX pipeline.

@@ -1160,9 +1160,14 @@ function Equipment.fruitMotion(tool, notify, loadAnimation, timeout)
 end
 
 local function dropCollider(tool,handle)
+    local collider=tool:FindFirstChild("BloxCatalogDropCollider")
+    -- Genuine Rocket/Bomb/Spin Tools use this invisible 2.25-stud collision Handle.
+    if handle.Transparency==1 and (handle.Size-Vector3.one*2.25).Magnitude&lt;.001 then
+        if collider then collider:Destroy()end
+        return handle
+    end
     local low=Vector3.new(math.huge,math.huge,math.huge)
     local high=Vector3.new(-math.huge,-math.huge,-math.huge)
-    local collider=tool:FindFirstChild("BloxCatalogDropCollider")
     for _,part in ipairs(tool:GetDescendants()) do
         if part:IsA("BasePart") and part~=handle and part~=collider and part.Transparency&lt;1 then
             local relative=handle.CFrame:ToObjectSpace(part.CFrame)
@@ -2277,8 +2282,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.19", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.19")
+    text(panel, "Title", "BLOX CATALOG v12.20", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.20")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

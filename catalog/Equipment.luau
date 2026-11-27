@@ -229,9 +229,14 @@ function Equipment.fruitMotion(tool, notify, loadAnimation, timeout)
 end
 
 local function dropCollider(tool,handle)
+    local collider=tool:FindFirstChild("BloxCatalogDropCollider")
+    -- Genuine Rocket/Bomb/Spin Tools use this invisible 2.25-stud collision Handle.
+    if handle.Transparency==1 and (handle.Size-Vector3.one*2.25).Magnitude<.001 then
+        if collider then collider:Destroy()end
+        return handle
+    end
     local low=Vector3.new(math.huge,math.huge,math.huge)
     local high=Vector3.new(-math.huge,-math.huge,-math.huge)
-    local collider=tool:FindFirstChild("BloxCatalogDropCollider")
     for _,part in ipairs(tool:GetDescendants()) do
         if part:IsA("BasePart") and part~=handle and part~=collider and part.Transparency<1 then
             local relative=handle.CFrame:ToObjectSpace(part.CFrame)

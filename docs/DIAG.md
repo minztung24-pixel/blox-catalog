@@ -1,6 +1,16 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.19. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.20. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Khoảng hở khi Drop, v12.20
+
+Ảnh mới cho thấy trái thật có khoảng hở dưới hình ảnh, trái script chạm sàn. Nguyên nhân là dropCollider v12.3 tính hộp từ biên BasePart nhìn thấy và bắt hộp đó chạm sàn, thay thế va chạm của Handle ngay cả khi Handle đã đúng cấu hình game.
+
+Đo mới trong Blox Fruits: Rocket thật có Handle vô hình 2.25×2.25×2.25, CanCollide=true khi thả. Có 24 mẫu vận tốc dưới 0.05, tâm Handle cách sàn 1.10495–1.12057 studs. Trước đó Spin cũng có Handle cùng kích thước; Bomb mới ghi được Handle 2.25 nhưng không có mẫu ổn định đủ điều kiện trong báo cáo này. Mẫu khi vật phẩm đã vào tay người khác không được xem là trạng thái tiếp đất. User báo hai trái thật bị người khác nhặt; không yêu cầu thêm mẫu thật.
+
+Yeti script hiện có Handle chuẩn 2.25; collider Catalog thêm có Size khoảng (2.991,2.219,2.120), tâm tương đối khoảng (0.039,0.218,-0.146). Hộp này ép biên nhìn thấy xuống mặt sàn. Nay Handle vô hình có Size chuẩn trong sai số 0.001 dùng trực tiếp làm va chạm, xóa collider Catalog cũ. Không thêm một hằng số nâng model hoặc vòng hover giả. Các model nhập có Handle không chuẩn vẫn dùng fallback biên mesh để tránh tái phát lỗi Handle quá lớn của v12.2.
+
+Kiểm chứng: assertion mới thất bại trên mã cũ, sau sửa pass trong Client Play: tâm Handle ~1.125 trên sàn, hình ảnh còn khoảng hở, nhặt bằng tiếp xúc vật lý, Drop lại không tạo collider mới; fixture Handle 6 studs vẫn tiếp đất theo biên nhìn thấy, bỏ qua vật chạm ngoài nhân vật và dọn listener khi Clear. Fixture dùng Backpack thật và có Head để Humanoid:EquipTool hoạt động đúng trong Play; root có chuyển động vật lý cho phép thử Touched của Handle đang nghỉ. Equipment/EquipmentActions và 7 test Python build đạt. Chưa kiểm tra hình ảnh Yeti sau sửa trong live game; không đổi animation, model, VFX hay ASSET_AUDIT. Báo cáo thô giữ private.
 
 ## Mastery và hai slot khả năng, v12.19
 
