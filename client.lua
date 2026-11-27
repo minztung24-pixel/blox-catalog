@@ -1,4 +1,4 @@
--- Blox Catalog v12.20 simulator. Snapshot place version 4632.
+-- Blox Catalog v12.21 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -910,6 +910,8 @@ function NativeDialogue.new(controller)
             local dialogue=controller.new()
             self.dialogue=dialogue
             dialogue:setTitle("Blox Fruit")
+            -- The native cinematic layout bypasses the account's DialogueV1 legacy theme.
+            dialogue:setLayout({Cinematic=true})
             dialogue:addPage(function(page)
                 page:addText("What do you wish to do with this Blox Fruit?<AnimateYield=3>")
                 for _,name in ipairs({"Eat","Drop","Store"}) do
@@ -2340,8 +2342,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.20", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.20")
+    text(panel, "Title", "BLOX CATALOG v12.21", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.21")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

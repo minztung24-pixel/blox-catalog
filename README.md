@@ -12,6 +12,12 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.21 Consistent native fruit dialogue
+
+The fruit menu now explicitly selects the game's cinematic layout. The current native controller otherwise selects a legacy theme when the account's `DialogueV1` test group is absent or `Legacy`, explaining the plain gray menu seen on both real and local fruit. The per-dialogue `Cinematic=true` flag selects the native speech-bubble buttons and gold title treatment without changing the account's test-group attribute or replacing the game's UI.
+
+Validation: the regression fails without the layout flag and passes with it; existing ownership, cancellation, error cleanup and delayed-action assertions still pass. A temporary native menu in the connected Blox Fruits session visibly showed the requested icons, rounded options and gold title, then closed automatically without Eat/Drop/Store actions. Seven Python build tests pass. The renderer is supplied by the live game; future native UI changes may require another check. Real-fruit menus and other NPC dialogues keep their original behavior.
+
 ## v12.20 Preserve native dropped-fruit clearance
 
 Physical fruits with the game's invisible **2.25×2.25×2.25 Handle** now collide using that Handle. The previous visible-mesh collider forced the fruit's visible bottom onto the floor and removed the native clearance. An inherited Catalog collider is removed for these canonical Handles; imported models with oversized/noncanonical Handles retain the prior bounded-mesh fallback. No arbitrary hover offset or replacement animation is added.

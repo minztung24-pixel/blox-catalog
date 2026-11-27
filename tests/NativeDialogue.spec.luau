@@ -6,6 +6,7 @@ return function(NativeDialogue)
     function native.new()
         local dialogue={}
         function dialogue:setTitle(value)self.title=value end
+        function dialogue:setLayout(value)self.layout=value end
         function dialogue:setSubtitle(value)self.subtitle=value end
         function dialogue:addPage(build)self.buildPage=build end
         function dialogue:build()self.built=true end
@@ -14,6 +15,7 @@ return function(NativeDialogue)
     function native.startForTool()error("Cannot require a non-RobloxScript module from a RobloxScript")end
     function native.start(dialogue)
         assert(dialogue.built and dialogue.title=="Blox Fruit" and dialogue.subtitle==nil)
+        assert(dialogue.layout and dialogue.layout.Cinematic==true,"Fruit menu must select the native cinematic theme regardless of DialogueV1 group")
         starts+=1;current={_dialogue=dialogue}
         local page={options={}}
         function page:addText(value)self.text=value end

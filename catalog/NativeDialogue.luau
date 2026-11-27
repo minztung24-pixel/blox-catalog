@@ -23,6 +23,8 @@ function NativeDialogue.new(controller)
             local dialogue=controller.new()
             self.dialogue=dialogue
             dialogue:setTitle("Blox Fruit")
+            -- The native cinematic layout bypasses the account's DialogueV1 legacy theme.
+            dialogue:setLayout({Cinematic=true})
             dialogue:addPage(function(page)
                 page:addText("What do you wish to do with this Blox Fruit?<AnimateYield=3>")
                 for _,name in ipairs({"Eat","Drop","Store"}) do

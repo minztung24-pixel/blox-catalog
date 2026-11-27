@@ -1,6 +1,14 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.20. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.21. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Hai kiểu menu trái, v12.21
+
+User xác nhận cả trái thật đôi lúc cũng hiện menu xám phẳng. Probe trong phiên kết nối mới thấy DialogueController đã đổi cấu trúc từ Dialogue/ReactComponents sang Builder.Dialogue và React.Components.DialogueSession. Root mới đọc nhóm thử nghiệm DialogueV1: nil hoặc Legacy bật LegacyThemeProvider, trừ khi riêng dialogue có layout.Cinematic=true. Phiên đo có isLegacyTheme()=true. Window/ContextLayer/usePageProps xác nhận layout được truyền đến chính bộ dựng UI gốc; kích thước, font, nền và icon tùy theo native theme, không phải do model trái thiếu tài nguyên.
+
+Sửa đúng một điểm chung NativeDialogue.show: gọi dialogue:setLayout({Cinematic=true}) sau setTitle, trước build/start. Không sửa attribute nhóm thử nghiệm, không hook renderer, không sao chép hoặc tự dựng các nút. Menu NPC/trái thật không bị can thiệp. Bản game cũ đã đọc trước đó cũng có API setLayout.
+
+Regression mới thất bại trước sửa và đạt sau sửa; các kiểm tra giữ quyền sở hữu menu, từ chối đè menu khác, Nevermind, lỗi render và đóng khi đang mở vẫn đạt. Phép thử menu native 15 giây trong Blox Fruits đã hiện icon Chat/Leave, nút đen bo góc và dải vàng Blox Fruit giống ảnh 2; không thực hiện Eat/Drop/Store. Kiểm tra build Python đạt 7 bài. Chưa kiểm tra touch/gamepad hoặc mọi phiên bản game; ASSET_AUDIT không đổi vì đây là lựa chọn theme, không thêm model/animation/VFX. Source và dữ liệu game thô giữ private.
 
 ## Khoảng hở khi Drop, v12.20
 
