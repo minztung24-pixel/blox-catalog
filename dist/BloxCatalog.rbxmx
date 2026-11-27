@@ -1424,18 +1424,27 @@ return Inventory
 </ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">NativeShop</string><ProtectedString name="Source">local Catalog = require(script.Parent.Catalog)
 local Inventory = require(script.Parent.Inventory)
 local Collection=game:GetService("CollectionService")
+local Input=game:GetService("UserInputService")
 local NativeShop={}
 
 function NativeShop.new(playerGui,state,onChange,enabled)
     local binding={}
     local original,overlay,badge,connection,savedVisible,savedInteractable,savedSelectable
-    local function window()
+    local checkout,quote
+    local checkoutConnections={}
+    local function dismiss()
+        quote=nil
+        for _,event in ipairs(checkoutConnections)do event:Disconnect()end
+        table.clear(checkoutConnections)
+        if checkout then checkout:Destroy();checkout=nil end
+    end
+    local function window(includeHidden)
         local gui=playerGui:FindFirstChild("GiftWindow")
         local frame=gui and gui:FindFirstChild("Window")
         if not frame or not frame:IsA("GuiObject") then return nil end
         local node=frame
         while node and node~=playerGui do
-            if node:IsA("GuiObject") and not node.Visible or node:IsA("ScreenGui") and not node.Enabled then return nil end
+            if not includeHidden and (node:IsA("GuiObject") and not node.Visible or node:IsA("ScreenGui") and not node.Enabled)then return nil end
             node=node.Parent
         end
         return frame
@@ -1468,6 +1477,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         return button,label,item,username,price
     end
     local function clear()
+        dismiss()
         if connection then connection:Disconnect();connection=nil end
         if overlay then overlay:Destroy();overlay=nil end
         if badge then badge:Destroy();badge=nil end
@@ -1479,24 +1489,153 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function active()
         return not binding.closed and state.balance.applied and enabled()
     end
-    function binding:buy()
+    local function number(value)
+        local formatted=string.format("%.0f",value)
+        repeat
+            local count
+            formatted,count=formatted:gsub("^(%d+)(%d%d%d)","%1,%2")
+            if count==0 then return formatted end
+        until false
+    end
+    local function show(completed)
+        local q=quote
+        local gui=Instance.new("ScreenGui")
+        gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
+        gui:SetAttribute("Simulation",true)
+        gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+        gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+        local order=0
+        for _,child in ipairs(playerGui:GetChildren())do
+            if child:IsA("ScreenGui")then order=math.max(order,child.DisplayOrder)end
+        end
+        gui.DisplayOrder=order+1
+        local shade=Instance.new("TextButton",gui)
+        shade.Name="Shade";shade.Size=UDim2.fromScale(1,1);shade.BackgroundColor3=Color3.new()
+        shade.BackgroundTransparency=.4;shade.Text="";shade.AutoButtonColor=false;shade.Modal=true
+        local panel=Instance.new("Frame",shade)
+        panel.Name="Dialog";panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.5)
+        panel.Size=UDim2.fromOffset(640,400);panel.BackgroundColor3=Color3.fromRGB(25,27,33);panel.ZIndex=2
+        local corner=Instance.new("UICorner",panel);corner.CornerRadius=UDim.new(0,16)
+        local scale=Instance.new("UIScale",panel)
+        local function fit()
+            local camera=workspace.CurrentCamera
+            local viewport=camera and camera.ViewportSize or Vector2.new(800,600)
+            scale.Scale=math.min(1,math.max(1,viewport.X-24)/640,math.max(1,viewport.Y-100)/400)
+        end
+        fit()
+        local camera=workspace.CurrentCamera
+        if camera then table.insert(checkoutConnections,camera:GetPropertyChangedSignal("ViewportSize"):Connect(fit))end
+        local function label(name,text,x,y,w,h,size)
+            local node=Instance.new("TextLabel",panel)
+            node.Name=name;node.Text=text;node.Position=UDim2.fromOffset(x,y);node.Size=UDim2.fromOffset(w,h)
+            node.BackgroundTransparency=1;node.TextColor3=Color3.fromRGB(240,241,245)
+            node.Font=Enum.Font.GothamMedium;node.TextSize=size or 18
+            node.TextXAlignment=Enum.TextXAlignment.Left;node.TextWrapped=true;node.ZIndex=3
+            return node
+        end
+        local function button(name,text,x,y,w,h,callback)
+            local node=Instance.new("TextButton",panel)
+            node.Name=name;node.Text=text;node.Position=UDim2.fromOffset(x,y);node.Size=UDim2.fromOffset(w,h)
+            node.BackgroundColor3=Color3.fromRGB(51,95,255);node.TextColor3=Color3.new(1,1,1)
+            node.TextSize=20;node.Font=Enum.Font.GothamBold;node.ZIndex=4
+            Instance.new("UICorner",node).CornerRadius=UDim.new(0,8)
+            table.insert(checkoutConnections,node.Activated:Connect(callback))
+            return node
+        end
+        label("Title",completed and "Purchase completed" or "Buy item",24,16,360,36,22)
+        local scope=label("Scope","SIMULATION · Local only",24,54,540,24,14)
+        scope.TextColor3=Color3.fromRGB(255,220,100)
+        local close=button("Close","×",580,12,44,44,function()binding:cancel()end)
+        close.BackgroundTransparency=1
+        if completed then
+            local check=label("Check","✓",280,92,80,80,54);check.TextXAlignment=Enum.TextXAlignment.Center
+            label("Result","Simulated purchase of "..q.item.name.." for @"..q.username.." completed.",32,183,576,66,19)
+            label("Balance","Visual R$: "..number(state.balance.robux),32,250,576,28,18)
+        else
+            label("Balance","R$ "..number(state.balance.robux),370,20,200,28,18).TextXAlignment=Enum.TextXAlignment.Right
+            local icon=Instance.new("ImageLabel",panel)
+            icon.Name="Icon";icon.Image=q.item.icon;icon.BackgroundTransparency=1
+            icon.Position=UDim2.fromOffset(28,100);icon.Size=UDim2.fromOffset(84,84);icon.ZIndex=3
+            if q.item.iconRectOffset then icon.ImageRectOffset=Vector2.new(table.unpack(q.item.iconRectOffset))end
+            if q.item.iconRectSize then icon.ImageRectSize=Vector2.new(table.unpack(q.item.iconRectSize))end
+            label("Product",q.item.name.." - Gift",128,96,480,48,22)
+            label("Price","R$ "..number(q.cost),128,145,220,36,24)
+            if q.cost~=q.price then
+                local old=label("OriginalPrice","&lt;s&gt;R$ "..number(q.price).."&lt;/s&gt;",355,149,240,28,18)
+                old.RichText=true;old.TextColor3=Color3.fromRGB(172,175,185)
+            end
+            label("Recipient","To @"..q.username,32,193,576,32,18)
+            label("Discount",q.discount and ("Saving "..number(q.price-q.cost).." with visual discount") or "No visual discount",32,238,576,36,18)
+        end
+        button(completed and "OK" or "Buy",completed and "OK" or "Buy",24,302,592,50,function()
+            if completed then binding:cancel()else binding:confirm()end
+        end)
+        label("Delivery","No real Robux spent. No gift delivered.",24,361,592,24,14)
+        table.insert(checkoutConnections,Input.InputBegan:Connect(function(input)
+            if input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB then binding:cancel()end
+        end))
+        gui:SetAttribute("Phase",completed and "Completed" or "Confirm")
+        checkout=gui;gui.Parent=playerGui
+    end
+    function binding:cancel()
+        dismiss()
+    end
+    local function quoteMatches(button,item,username,price)
+        return quote and button==quote.button and item==quote.item and username==quote.username
+            and price==quote.price and state.balance==quote.balance and state.balance.robux==quote.available
+            and state.balance.plusDiscount==quote.discount
+    end
+    function binding:confirm()
+        local q=quote
+        if not q or not checkout or checkout:GetAttribute("Phase")~="Confirm"then return false end
         local frame=active() and window()
-        if not frame then return false end
-        local button,_,item,username,price=selection(frame)
-        local ok,message=false,"Select a player and a supported permanent fruit."
-        if button==original and item and username then
-            ok,message=Inventory.buyGift(state,item,username,price)
-            if ok then message="Simulated gift: "..item.name.." → "..username..". Not delivered." end
+        local button,_,item,username,price
+        if frame then button,_,item,username,price=selection(frame)end
+        if not quoteMatches(button,item,username,price) then
+            dismiss();onChange("Selection or balance changed. Open Gift again.");return false
+        end
+        -- Consume the confirmation before charging; repeated callbacks cannot spend twice.
+        dismiss()
+        local ok,message=Inventory.buyGift(state,q.item,q.username,q.price)
+        if ok then
+            quote=q;show(true)
+            message="Simulated gift: "..q.item.name.." → "..q.username..". Not delivered."
         end
         if badge then badge.Text=message end
         onChange(message)
         return ok,message
     end
-    function binding:refresh()
+    function binding:buy()
+        if checkout then return false,"Close the current checkout first." end
         local frame=active() and window()
+        if not frame then return false end
+        local button,_,item,username,price=selection(frame)
+        local message="Select a player and a supported permanent fruit."
+        if button==original and item and username then
+            local cost=Inventory.shopPrice(state,price)
+            if not cost then message="Shop price unavailable."
+            elseif #username&lt;3 or #username&gt;20 then message="Invalid gift recipient."
+            elseif cost&gt;state.balance.robux then message="Insufficient visual Robux."
+            else
+                quote={button=button,item=item,username=username,price=price,cost=cost,
+                    discount=state.balance.plusDiscount,balance=state.balance,available=state.balance.robux}
+                show(false);return true
+            end
+        end
+        if badge then badge.Text=message end
+        onChange(message)
+        return false,message
+    end
+    function binding:refresh()
+        local frame=active() and window(true)
         if not frame then clear();return end
+        -- Keep the real button covered while Gift is hidden, so reopening stays in preview mode.
+        if not window()then dismiss()end
         local button,label,item,username,price=selection(frame)
         if not button then clear();return end
+        if checkout and checkout:GetAttribute("Phase")=="Confirm" and not quoteMatches(button,item,username,price)then
+            dismiss()
+        end
         if original~=button or not overlay or not overlay.Parent then
             clear()
             local clone=button:Clone()
@@ -1619,8 +1758,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.8", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.8)
+    text(panel, "Title", "BLOX CATALOG v12.9", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.9)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -1849,7 +1988,7 @@ function UI.start()
         search.Visible = tab ~= "Balance"
         if tab == "Balance" then
             text(content, "BalanceScope", "VISUAL ROBUX · SHOP GIFTS", UDim2.fromOffset(4, 0), UDim2.new(1, -8, 0, 28), 15)
-            text(content, "Instructions", "Apply a balance, then open Shop → Gift → select a player. Gifts use this local preview balance.",
+            text(content, "Instructions", "Apply, then Shop → Gift → select a player → Buy. Confirmation and completion are local simulations. Reset restores real purchases.",
                 UDim2.fromOffset(4, 38), UDim2.new(1, -8, 0, 58), 13, true)
             text(content, "BalanceStatus", "Visual Robux: "..state.balance.robux..(state.balance.applied and " · Applied" or " · Not applied"),
                 UDim2.fromOffset(4, 106), UDim2.new(1, -8, 0, 26), 14)

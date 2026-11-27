@@ -73,8 +73,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.8", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.8)
+    text(panel, "Title", "BLOX CATALOG v12.9", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", 12.9)
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -303,7 +303,7 @@ function UI.start()
         search.Visible = tab ~= "Balance"
         if tab == "Balance" then
             text(content, "BalanceScope", "VISUAL ROBUX · SHOP GIFTS", UDim2.fromOffset(4, 0), UDim2.new(1, -8, 0, 28), 15)
-            text(content, "Instructions", "Apply a balance, then open Shop → Gift → select a player. Gifts use this local preview balance.",
+            text(content, "Instructions", "Apply, then Shop → Gift → select a player → Buy. Confirmation and completion are local simulations. Reset restores real purchases.",
                 UDim2.fromOffset(4, 38), UDim2.new(1, -8, 0, 58), 13, true)
             text(content, "BalanceStatus", "Visual Robux: "..state.balance.robux..(state.balance.applied and " · Applied" or " · Not applied"),
                 UDim2.fromOffset(4, 106), UDim2.new(1, -8, 0, 26), 14)

@@ -1,10 +1,21 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.8. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.9. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Checkout local hai bước, v12.9
+
+Người dùng đã đổi yêu cầu: giữ Shop/Gift và chọn người bằng UI game, cho phép tái tạo riêng Buy item và Purchase completed ở client. Không cần thêm lượt mua thật để thu dữ liệu. V12.9 triển khai đúng phạm vi này; không tiếp tục tuyên bố dùng UI thanh toán native.
+
+- Chưa Apply: không thay nút Purchase của game.
+- Đã Apply: bản sao nút Purchase mở cửa xác nhận local, chưa trừ số dư. Buy mới gọi Inventory.buyGift; hoàn tất hiện cửa success local và OK. Cả hai cửa ghi SIMULATION / Local only, không chi Robux hay giao quà.
+- X/Escape/B hủy không trừ số dư. Quote bị vô hiệu khi đổi người, giá, số dư, lần Apply/Reset hoặc giảm giá. Chặn xác nhận lặp. Đóng GiftWindow dọn cửa xác nhận nhưng vẫn che nút mua thật khi Apply còn bật, để mở lại không trở về luồng thật. Reset, tắt Balance hoặc đóng Catalog mới khôi phục các thuộc tính nút gốc.
+- Phạm vi vẫn là Permanent khớp Catalog và giá native đọc được. Không gọi WrapPurchase, MarketplaceService, remote gift, không phát receipt hoặc tín hiệu hoàn tất giả.
+
+Kiểm tra: NativeShop assertions qua cho xác nhận/hủy, trừ một lần, success, quote cũ, thiếu tiền, loại chưa hỗ trợ, Reset, disable và cleanup. Simulation assertions và 7 test Python build qua. Playtest Client trong Studio với fixture đúng đường dẫn native dùng click thật: callback gốc=1 trước Apply, giữ nguyên=1 trong checkout local, thành=2 sau Reset. Hủy giữ 975141; Buy Buddha giảm 10% trừ 1485 còn 973656, GiftCount=1. Đã xem ảnh cả hai cửa. Lượt bấm tự động theo batch ban đầu tìm nút mới trước khi UI tạo xong; chạy lại tuần tự có chờ UI qua. Chưa chạy v12.9 trong Blox Fruits live hoặc xác minh thao tác phone/gamepad. Không thay asset Fruit/skin trong bản này; số liệu ASSET_AUDIT giữ nguyên.
 
 ## Visual Robux / Shop Gifts, v12.8
 
-### Điều tra checkout gốc sau v12.8, ngày 27/11/2026
+### Lịch sử điều tra checkout gốc sau v12.8, trước khi cho phép UI local
 
 Yêu cầu đã được làm rõ: chỉ mô phỏng số dư/giảm giá và kết quả local, không chi Robux hay gửi quà thật; vẫn phải dùng UI gốc và đủ các bước Processing Purchase → Buy item → Purchase completed → OK. Người dùng không đồng ý tái tạo cửa xác nhận từ ảnh. V12.8 chưa có luồng này, vẫn chỉ ghi local gift và trừ số dư preview.
 

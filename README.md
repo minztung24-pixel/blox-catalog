@@ -12,9 +12,19 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.8 Visual Robux / Shop Gifts
+## v12.9 Local checkout confirmation
 
-**Follow-up investigation (27 November 2026):** this version still performs an immediate local gift record; it does not implement the native Buy item → Purchase completed checkout. The user requires native UI only and declined a recreated dialog. Native purchase components and their test mocks were found, but all five attempted export loads failed with `Cannot require a RobloxScript module from a non RobloxScript context`. The UI capture of the real Robux upsell contained shells rather than usable checkout controls. See [DIAG](docs/DIAG.md) for the bounded probes and exact scope. No replacement client or complete native mock checkout is claimed.
+Before Apply, the original Shop/Gift purchase button remains unchanged. After Apply, keep using the game's Permanent Fruit Shop → Gift and Server/Global recipient selection. Its purchase button opens a local **Buy item** confirmation with the selected product, recipient, fake balance and optional visual discount. Only pressing **Buy** deducts that balance and records a local gift; **Purchase completed → OK** confirms the simulation. Both dialogs explicitly identify local simulation and no delivery.
+
+Closing confirmation with X, Escape or gamepad B does not charge. Repeated Buy clicks cannot charge twice. Changing the recipient, quote, balance session or discount invalidates confirmation. Reset, disabling Balance or closing the Catalog removes the simulated controls and restores the original purchase button. With preview disabled, purchases use the game's real flow and real Robux again.
+
+The adapter supports permanent-fruit names present in this Catalog; unsupported products, unreadable prices and missing recipients stay blocked while Apply is active. The two checkout dialogs are local recreations authorized by the user, not Roblox's native financial prompt. No purchase API, server gift request, receipt or completion signal is sent. The gift recipient receives nothing.
+
+Validation: NativeShop, Simulation, NativeItems and NativeEquip assertions and seven Python build tests pass. A Studio client playtest used actual clicks against a native-path fixture: the original callback fired before Apply, remained unchanged throughout local checkout, and fired again after Reset. Cancel preserved 975141; confirming a discounted Buddha gift deducted 1485 to 973656 and recorded exactly one gift. Confirmation and success screens were visually inspected. Live Blox Fruits integration and phone/gamepad interaction still need confirmation; no real transaction was performed in these tests.
+
+## v12.8 Visual Robux / Shop Gifts (previous behavior)
+
+**Historical investigation (27 November 2026):** v12.8 performed an immediate local gift record without confirmation. At that point the user required native UI only. Native purchase components and their test mocks were found, but all five attempted export loads failed with `Cannot require a RobloxScript module from a non RobloxScript context`. UI capture contained shells rather than usable checkout controls. The user subsequently authorized the two recreated local dialogs now implemented in v12.9. See [DIAG](docs/DIAG.md).
 
 Balance now contains a Visual Robux input, APPLY BALANCE, an optional 10% visual discount and Reset. The previous Beli/Fragments editor is removed. The discount only changes the simulated checkout price, rounded up to whole visual Robux; it does not represent an account subscription.
 
