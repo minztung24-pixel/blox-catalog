@@ -73,8 +73,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.12", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.12")
+    text(panel, "Title", "BLOX CATALOG v12.13", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.13")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -125,7 +125,7 @@ function UI.start()
     end
     local nativeEquip=NativeEquip.new(playerGui,state,equip)
     local shopGifts
-    local function balanceChanged(message)
+    local function balanceChanged(message,notificationText)
         gui:SetAttribute("VisualRobux",state.balance.robux)
         gui:SetAttribute("ShopGiftsApplied",state.balance.applied)
         gui:SetAttribute("VisualPlusDiscount",state.balance.plusDiscount)
@@ -133,6 +133,24 @@ function UI.start()
         if shopGifts then shopGifts:refresh()end
         if tab=="Balance"then render()end
         if message then tell(message)end
+        if notificationText then
+            local balance=state.balance
+            task.spawn(function()
+                local module=game:GetService("ReplicatedStorage"):FindFirstChild("Notification")
+                if not module or not module:IsA("ModuleScript")then
+                    if alive then gui:SetAttribute("GiftNotificationStatus","Unavailable")end
+                    return
+                end
+                local ok,notification=pcall(require,module)
+                if ok and alive and state.balance==balance and balance.applied
+                    and type(notification)=="table" and type(notification.new)=="function"then
+                    local displayed=pcall(function()notification.new(notificationText):Display()end)
+                    gui:SetAttribute("GiftNotificationStatus",displayed and "Displayed"or "Failed")
+                elseif alive then
+                    gui:SetAttribute("GiftNotificationStatus","Unavailable")
+                end
+            end)
+        end
     end
     shopGifts=NativeShop.new(playerGui,state,balanceChanged,function()return flags.Balance end)
     task.spawn(function()

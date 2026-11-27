@@ -1457,6 +1457,8 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local submitted,destroyed=false,false
     local connections={}
     local closeHeartbeat
+    local discountParts={}
+    local expanded=false
     local reducedMotion=Gui.ReducedMotionEnabled
     local previousSelection=Gui.SelectedObject
     local height=completed and 280 or (q.discountLabel and 344 or 264)
@@ -1522,6 +1524,8 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     title.TextColor3=Color3.fromRGB(213,215,221)
     local close=button("Close","×",408,10,36,36,function()self:cancel()end)
     close.BackgroundTransparency=1;close.TextSize=28
+    local mode=label("SimulationMode","LOCAL SIMULATION",20,42,180,14,12)
+    mode.TextColor3=Color3.fromRGB(255,208,110)
     if completed then
         local circle=Instance.new("Frame",panel)
         circle.Name="CheckCircle";circle.Position=UDim2.fromOffset(204,52);circle.Size=UDim2.fromOffset(48,48)
@@ -1562,10 +1566,38 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
             row.BackgroundColor3=Color3.fromRGB(32,34,39);row.BorderSizePixel=0;row.ZIndex=2
             Instance.new("UICorner",row).CornerRadius=UDim.new(0,8)
             robux("DiscountIcon",36,173,18)
-            bold(label("Discount",q.discountLabel,62,168,350,28,18))
+            bold(label("Discount",q.discountLabel,62,168,326,28,18))
+            local toggle=button("DiscountToggle","",0,0,416,56,function()self:toggleDiscount()end)
+            toggle.Parent=row;toggle.BackgroundTransparency=1;toggle.ZIndex=4
+            local arrow=label("DiscountArrow","⌄",390,168,32,28,20)
+            arrow.TextXAlignment=Enum.TextXAlignment.Center
+            local function detail(name,text,x,y,w,strong)
+                local node=label(name,text,x,y,w,24,strong and 18 or 15)
+                if strong then bold(node)end
+                node.Visible=false;table.insert(discountParts,node)
+                return node
+            end
+            local function detailAmount(name,value,y,strong)
+                local node=detail(name,value,252,y,168,strong)
+                node.TextXAlignment=Enum.TextXAlignment.Right
+                robux(name.."Icon",0,y+5,14)
+                local image=panel[name.."Icon"];image.Visible=false;table.insert(discountParts,image)
+                local function align()image.Position=UDim2.fromOffset(420-node.TextBounds.X-20,y+5)end
+                table.insert(connections,node:GetPropertyChangedSignal("TextBounds"):Connect(align));align()
+            end
+            detail("DiscountSubtotal","Subtotal",36,216,200)
+            detailAmount("DiscountSubtotalAmount",number(q.price),216)
+            detail("DiscountSavings","Roblox Plus",36,244,200)
+            detailAmount("DiscountSavingsAmount","- "..number(q.price-q.cost),244)
+            local line=Instance.new("Frame",panel)
+            line.Name="DiscountDivider";line.Position=UDim2.fromOffset(36,276);line.Size=UDim2.fromOffset(384,1)
+            line.BackgroundColor3=Color3.fromRGB(87,89,98);line.BorderSizePixel=0;line.ZIndex=3
+            line.Visible=false;table.insert(discountParts,line)
+            detail("DiscountTotal","Total",36,288,200,true)
+            detailAmount("DiscountTotalAmount",number(q.cost),288,true)
         end
     end
-    local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 80 or 110),416,40,function()
+    local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 60 or 110),416,40,function()
         self:activate()
     end)
     if not completed then
@@ -1579,8 +1611,12 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
         gui:SetAttribute("BuyReady",false);gui:SetAttribute("BuyProgress",0)
     end
     primary.Interactable=false;primary.AutoButtonColor=false;primary.Selectable=false
-    local scope=label("Scope","SIMULATION · No real Robux spent or gift delivered.",20,height-45,416,24,13)
-    scope.TextColor3=Color3.fromRGB(188,190,200);scope.TextXAlignment=Enum.TextXAlignment.Center
+    local terms
+    if not completed then
+        terms=label("Terms","Your payment method will be charged. &lt;u&gt;Roblox Terms of Use&lt;/u&gt; apply.",20,height-45,416,24,13)
+        terms.RichText=true;terms.TextColor3=Color3.fromRGB(188,190,200)
+        terms.TextXAlignment=Enum.TextXAlignment.Center
+    end
     table.insert(connections,Input.InputBegan:Connect(function(input)
         if input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB then self:cancel()end
     end))
@@ -1589,6 +1625,20 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     gui:SetAttribute("Renderer","LocalRobloxPrompt")
     gui:SetAttribute("ReducedMotion",reducedMotion)
     self.gui=gui
+    gui:SetAttribute("DiscountExpanded",false)
+    function self:toggleDiscount()
+        if completed or not q.discountLabel or submitted or destroyed or closingAge~=nil then return false end
+        expanded=not expanded;gui:SetAttribute("DiscountExpanded",expanded)
+        height=expanded and 456 or 344
+        panel.Size=UDim2.fromOffset(456,height)
+        panel.DiscountRow.Size=UDim2.fromOffset(416,expanded and 168 or 56)
+        panel.DiscountArrow.Text=expanded and "⌃"or "⌄"
+        for _,node in ipairs(discountParts)do node.Visible=expanded end
+        primary.Position=UDim2.fromOffset(20,height-110)
+        terms.Position=UDim2.fromOffset(20,height-45)
+        fit()
+        return true
+    end
     local function destroy(external)
         if destroyed then return end
         destroyed=true
@@ -1758,6 +1808,39 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function active()
         return not binding.closed and state.balance.applied and enabled()
     end
+    local function closeNativeGift(q)
+        task.spawn(function()
+            if quote~=q or not active()or not q.screen or not q.screen.Parent or q.screen.Enabled then return end
+            -- Native Cancel calls Close(onClose); calling Close alone leaves the shop's gift lock set.
+            if type(getconnections)=="function" and q.cancel and q.cancel.Parent and q.cancel:IsA("GuiButton")then
+                local ok,handler=pcall(function()
+                    local found
+                    for _,entry in ipairs(getconnections(q.cancel.Activated))do
+                        if entry.Enabled~=false and type(entry.Function)=="function"then
+                            if found then return nil end
+                            found=entry.Function
+                        end
+                    end
+                    return found
+                end)
+                if ok and handler and pcall(handler)then
+                    q.screen:SetAttribute("BloxCatalogClosePath","NativeCancel")
+                    return
+                end
+            end
+            -- shortcut: without readable Cancel connections, use Close until the controller exposes its owner's onClose callback.
+            local controllers=game:GetService("ReplicatedStorage"):FindFirstChild("Controllers")
+            local ui=controllers and controllers:FindFirstChild("UI")
+            local module=ui and ui:FindFirstChild("GiftWindow")
+            if not module or not module:IsA("ModuleScript")then return end
+            local loaded,controller=pcall(require,module)
+            if loaded and quote==q and active()and q.screen.Parent and not q.screen.Enabled
+                and type(controller)=="table" and type(controller.Close)=="function"then
+                pcall(controller.Close,controller)
+                q.screen:SetAttribute("BloxCatalogClosePath","ControllerFallback")
+            end
+        end)
+    end
     local function show(completed)
         local q=quote
         view=RobloxPrompt.open(playerGui,{
@@ -1807,20 +1890,10 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             if ok then
                 show(true)
                 if q.screen and q.screen.Parent then q.screen.Enabled=false end
-                task.spawn(function()
-                    local controllers=game:GetService("ReplicatedStorage"):FindFirstChild("Controllers")
-                    local ui=controllers and controllers:FindFirstChild("UI")
-                    local module=ui and ui:FindFirstChild("GiftWindow")
-                    if not module or not module:IsA("ModuleScript")then return end
-                    local loaded,controller=pcall(require,module)
-                    if loaded and quote==q and active() and q.screen and q.screen.Parent and not q.screen.Enabled
-                        and type(controller)=="table" and type(controller.Close)=="function"then
-                        pcall(controller.Close,controller)
-                    end
-                end)
+                closeNativeGift(q)
                 message="Simulated gift: "..q.item.name.." → "..q.username..". Not delivered."
             else dismiss()end
-            onChange(message)
+            onChange(message,ok and "Gift sent successfully"or nil)
         end
     end
     function binding:confirm()
@@ -1829,6 +1902,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             dismiss();onChange("Selection or balance changed. Open Gift again.");return false
         end
         closeDialog(true);self.phase="Purchasing";elapsed=0
+        onChange("Sending local gift preview to "..quote.username.."...","Sending gift to "..quote.username.."...")
         return true
     end
     function binding:buy()
@@ -1847,6 +1921,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
                 if not ok then onChange(err);return false,err end
                 quote={button=button,item=item,username=username,price=price,cost=cost,
                     discount=state.balance.plusDiscount,balance=state.balance,available=state.balance.robux,
+                    cancel=frame.Content.Buttons:FindFirstChild("Cancel"),
                     screen=frame:FindFirstAncestorWhichIsA("ScreenGui")}
                 self.phase="Preparing";elapsed=0;return true
             end
@@ -1855,7 +1930,10 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         return false,message
     end
     function binding:refresh()
-        if active() and self.phase=="Completed"then return end
+        if active()and self.phase=="Completed"then
+            if not window()then return end
+            dismiss()
+        end
         local frame=active() and window(true)
         if not frame then clear();return end
         -- Keep the real button covered while Gift is hidden, so reopening stays in preview mode.
@@ -1980,8 +2058,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.12", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.12")
+    text(panel, "Title", "BLOX CATALOG v12.13", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.13")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -2032,7 +2110,7 @@ function UI.start()
     end
     local nativeEquip=NativeEquip.new(playerGui,state,equip)
     local shopGifts
-    local function balanceChanged(message)
+    local function balanceChanged(message,notificationText)
         gui:SetAttribute("VisualRobux",state.balance.robux)
         gui:SetAttribute("ShopGiftsApplied",state.balance.applied)
         gui:SetAttribute("VisualPlusDiscount",state.balance.plusDiscount)
@@ -2040,6 +2118,24 @@ function UI.start()
         if shopGifts then shopGifts:refresh()end
         if tab=="Balance"then render()end
         if message then tell(message)end
+        if notificationText then
+            local balance=state.balance
+            task.spawn(function()
+                local module=game:GetService("ReplicatedStorage"):FindFirstChild("Notification")
+                if not module or not module:IsA("ModuleScript")then
+                    if alive then gui:SetAttribute("GiftNotificationStatus","Unavailable")end
+                    return
+                end
+                local ok,notification=pcall(require,module)
+                if ok and alive and state.balance==balance and balance.applied
+                    and type(notification)=="table" and type(notification.new)=="function"then
+                    local displayed=pcall(function()notification.new(notificationText):Display()end)
+                    gui:SetAttribute("GiftNotificationStatus",displayed and "Displayed"or "Failed")
+                elseif alive then
+                    gui:SetAttribute("GiftNotificationStatus","Unavailable")
+                end
+            end)
+        end
     end
     shopGifts=NativeShop.new(playerGui,state,balanceChanged,function()return flags.Balance end)
     task.spawn(function()

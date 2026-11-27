@@ -34,6 +34,8 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local submitted,destroyed=false,false
     local connections={}
     local closeHeartbeat
+    local discountParts={}
+    local expanded=false
     local reducedMotion=Gui.ReducedMotionEnabled
     local previousSelection=Gui.SelectedObject
     local height=completed and 280 or (q.discountLabel and 344 or 264)
@@ -99,6 +101,8 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     title.TextColor3=Color3.fromRGB(213,215,221)
     local close=button("Close","×",408,10,36,36,function()self:cancel()end)
     close.BackgroundTransparency=1;close.TextSize=28
+    local mode=label("SimulationMode","LOCAL SIMULATION",20,42,180,14,12)
+    mode.TextColor3=Color3.fromRGB(255,208,110)
     if completed then
         local circle=Instance.new("Frame",panel)
         circle.Name="CheckCircle";circle.Position=UDim2.fromOffset(204,52);circle.Size=UDim2.fromOffset(48,48)
@@ -139,10 +143,38 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
             row.BackgroundColor3=Color3.fromRGB(32,34,39);row.BorderSizePixel=0;row.ZIndex=2
             Instance.new("UICorner",row).CornerRadius=UDim.new(0,8)
             robux("DiscountIcon",36,173,18)
-            bold(label("Discount",q.discountLabel,62,168,350,28,18))
+            bold(label("Discount",q.discountLabel,62,168,326,28,18))
+            local toggle=button("DiscountToggle","",0,0,416,56,function()self:toggleDiscount()end)
+            toggle.Parent=row;toggle.BackgroundTransparency=1;toggle.ZIndex=4
+            local arrow=label("DiscountArrow","⌄",390,168,32,28,20)
+            arrow.TextXAlignment=Enum.TextXAlignment.Center
+            local function detail(name,text,x,y,w,strong)
+                local node=label(name,text,x,y,w,24,strong and 18 or 15)
+                if strong then bold(node)end
+                node.Visible=false;table.insert(discountParts,node)
+                return node
+            end
+            local function detailAmount(name,value,y,strong)
+                local node=detail(name,value,252,y,168,strong)
+                node.TextXAlignment=Enum.TextXAlignment.Right
+                robux(name.."Icon",0,y+5,14)
+                local image=panel[name.."Icon"];image.Visible=false;table.insert(discountParts,image)
+                local function align()image.Position=UDim2.fromOffset(420-node.TextBounds.X-20,y+5)end
+                table.insert(connections,node:GetPropertyChangedSignal("TextBounds"):Connect(align));align()
+            end
+            detail("DiscountSubtotal","Subtotal",36,216,200)
+            detailAmount("DiscountSubtotalAmount",number(q.price),216)
+            detail("DiscountSavings","Roblox Plus",36,244,200)
+            detailAmount("DiscountSavingsAmount","- "..number(q.price-q.cost),244)
+            local line=Instance.new("Frame",panel)
+            line.Name="DiscountDivider";line.Position=UDim2.fromOffset(36,276);line.Size=UDim2.fromOffset(384,1)
+            line.BackgroundColor3=Color3.fromRGB(87,89,98);line.BorderSizePixel=0;line.ZIndex=3
+            line.Visible=false;table.insert(discountParts,line)
+            detail("DiscountTotal","Total",36,288,200,true)
+            detailAmount("DiscountTotalAmount",number(q.cost),288,true)
         end
     end
-    local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 80 or 110),416,40,function()
+    local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 60 or 110),416,40,function()
         self:activate()
     end)
     if not completed then
@@ -156,8 +188,12 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
         gui:SetAttribute("BuyReady",false);gui:SetAttribute("BuyProgress",0)
     end
     primary.Interactable=false;primary.AutoButtonColor=false;primary.Selectable=false
-    local scope=label("Scope","SIMULATION · No real Robux spent or gift delivered.",20,height-45,416,24,13)
-    scope.TextColor3=Color3.fromRGB(188,190,200);scope.TextXAlignment=Enum.TextXAlignment.Center
+    local terms
+    if not completed then
+        terms=label("Terms","Your payment method will be charged. <u>Roblox Terms of Use</u> apply.",20,height-45,416,24,13)
+        terms.RichText=true;terms.TextColor3=Color3.fromRGB(188,190,200)
+        terms.TextXAlignment=Enum.TextXAlignment.Center
+    end
     table.insert(connections,Input.InputBegan:Connect(function(input)
         if input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB then self:cancel()end
     end))
@@ -166,6 +202,20 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     gui:SetAttribute("Renderer","LocalRobloxPrompt")
     gui:SetAttribute("ReducedMotion",reducedMotion)
     self.gui=gui
+    gui:SetAttribute("DiscountExpanded",false)
+    function self:toggleDiscount()
+        if completed or not q.discountLabel or submitted or destroyed or closingAge~=nil then return false end
+        expanded=not expanded;gui:SetAttribute("DiscountExpanded",expanded)
+        height=expanded and 456 or 344
+        panel.Size=UDim2.fromOffset(456,height)
+        panel.DiscountRow.Size=UDim2.fromOffset(416,expanded and 168 or 56)
+        panel.DiscountArrow.Text=expanded and "⌃"or "⌄"
+        for _,node in ipairs(discountParts)do node.Visible=expanded end
+        primary.Position=UDim2.fromOffset(20,height-110)
+        terms.Position=UDim2.fromOffset(20,height-45)
+        fit()
+        return true
+    end
     local function destroy(external)
         if destroyed then return end
         destroyed=true

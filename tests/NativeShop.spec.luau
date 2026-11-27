@@ -7,6 +7,7 @@ return function(NativeShop,Inventory)
     local content=Instance.new("Frame",window);content.Name="Content"
     local buttons=Instance.new("Frame",content);buttons.Name="Buttons"
     local purchase=Instance.new("TextButton",buttons);purchase.Name="Purchase"
+    local cancel=Instance.new("TextButton",buttons);cancel.Name="Cancel"
     local price=Instance.new("TextLabel",purchase);price.Name="TextLabel"
     price.Text='<font color="#000000">\u{E002}</font>3500'
     local processing=Instance.new("Frame",window);processing.Name="Overlay";processing.Visible=false
@@ -15,8 +16,16 @@ return function(NativeShop,Inventory)
     local loadingText=Instance.new("TextLabel",loading);loadingText.Name="TextLabel";loadingText.Text="Original caption"
     local state=Inventory.new()
     local changes=0
+    local notices={}
+    local nativeCloses=0
+    local moduleEnv=getfenv(NativeShop.new)
+    local savedGetConnections=rawget(moduleEnv,"getconnections")
+    moduleEnv.getconnections=function(signal)
+        assert(signal==cancel.Activated,"Only the verified native Cancel action may be invoked")
+        return {{Enabled=true,Function=function()nativeCloses+=1;gui.Enabled=false end}}
+    end
     local enabled=true
-    local binding=NativeShop.new(pg,state,function()changes+=1 end,function()return enabled end)
+    local binding=NativeShop.new(pg,state,function(_,notice)changes+=1;if notice then table.insert(notices,notice)end end,function()return enabled end)
     local function buy()
         if binding.phase=="Idle"then gui.Enabled=true;binding:refresh()end
         local ok=binding:buy()
@@ -61,17 +70,26 @@ return function(NativeShop,Inventory)
         assert(not pg:FindFirstChild("BloxCatalogCheckout") and state.balance.robux==10000)
         assert(not binding:confirm(),"Cancelled confirmation cannot charge")
         assert(not processing.Visible and loadingText.Text=="Original caption" and loadingImage.Image=="rbxassetid://1")
+        assert(#notices==0,"Opening or cancelling cannot announce a gift")
         assert(buy())
         assert(binding:confirm() and binding.phase=="Purchasing" and state.balance.robux==10000 and #state.gifts==0)
+        assert(#notices==1 and notices[1]=="Sending gift to Player_123...")
         assert(not binding:confirm() and not binding:buy(),"Repeated input while processing cannot buy")
         binding:step(.33)
         assert(state.balance.robux==6500 and state.gifts[1].id=="1517")
+        assert(#notices==2 and notices[2]=="Gift sent successfully","Announce local success once, after the charge")
+        assert(nativeCloses==1,"Close through native Cancel so the shop's onClose callback is released")
         assert(not gui.Enabled and not processing.Visible,"Completed gift closes its original window")
         binding:refresh();assert(pg:FindFirstChild("BloxCatalogCheckout"),"Success remains visible after Gift closes")
         assert(pg.BloxCatalogCheckout:GetAttribute("Phase")=="Completed")
         assert(not binding:confirm() and not binding:buy() and state.balance.robux==6500,"Duplicate clicks cannot charge")
         assert(state.gifts[1].recipient=="Player_123" and state.gifts[1].cost==3500)
+        gui.Enabled=true;context.Text="Gifting [Player_123] <Permanent Buddha}> "
+        binding:refresh()
+        assert(binding.phase=="Idle" and not pg:FindFirstChild("BloxCatalogCheckout"),"Opening another gift replaces the old completion")
+        assert(binding:buy(),"A different fruit must work without reopening Shop")
         binding:cancel()
+        context.Text="Gifting [Player_123] <Permanent Magnet}> "
         assert(price.Text=='<font color="#000000">\u{E002}</font>3500',"Native quote remains untouched")
         state.balance.plusDiscount=true
         binding:refresh()
@@ -138,6 +156,6 @@ return function(NativeShop,Inventory)
         binding:refresh();assert(not buttons:FindFirstChild("BloxCatalogVisualPurchase"))
         assert(changes>0)
     end)
-    binding:close();pg:Destroy();assert(ok,err)
+    binding:close();pg:Destroy();moduleEnv.getconnections=savedGetConnections;assert(ok,err)
     return "Native shop assertions passed: native processing, timed Buy guard, delayed single charge, Gift closure, stale selection, cancel/reset and cleanup"
 end

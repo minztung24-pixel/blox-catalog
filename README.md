@@ -12,7 +12,17 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.12 Shared local prompt and source-based motion
+## v12.13 Plus details, native notification feed and consecutive gifts
+
+Click **Saving… with Plus** to expand/collapse Subtotal, the Plus reduction and Total. The layout follows the pinned Roblox `DiscountSummary` component. Opening details never changes the quote, discount or balance. The confirmation footer follows the wording in the supplied native screenshot; completion has no footer. A compact **LOCAL SIMULATION** marker remains beside the dialog content, so the reference legal wording does not mean that a real payment happens.
+
+Local confirmation emits “Sending gift to …” and successful local charging emits “Gift sent successfully” through the game's UI-only `Notification.new(...):Display()` API. These two message strings are based on the user's observation: the saved real checkout reports did not capture them. Missing native notification support is recorded in the Catalog `GiftNotificationStatus` attribute; no replacement notification UI or server event is generated.
+
+The native Cancel handler calls `Close(onClose)`, while the previous adapter called only `Close()`. Where the runtime exposes exactly one enabled readable Cancel handler, the adapter invokes that UI-only handler to release the Shop owner's close callback. It never reads or invokes Purchase handlers. `GiftWindow.BloxCatalogClosePath` records `NativeCancel` or `ControllerFallback`. Runtimes without readable Cancel connections retain the controller fallback and may still require reopening Shop. Opening another native Gift also clears an old local completion rather than leaving the adapter stuck in Completed.
+
+Validation: five Luau suites and seven Python build tests pass. Studio clicks checked the expanded Plus breakdown and both dialog layouts. With a UI-only Cancel/Notification fixture, Control → Yeti → Yeti completed without reopening Shop: 65500 → 61900 → 59200 → 56500, three local records, three close callbacks and six ordered notifications. The original purchase callback stayed at zero after Apply; Reset restored it. Test objects were removed. The live executor's Cancel access and native notification appearance still need confirmation in the user's session. No paid test is required.
+
+## v12.12 Shared local prompt and source-based motion (previous layout)
 
 The presentation now lives in `RobloxPrompt`, separate from the Blox Fruits adapter and local inventory. Both confirmation and completion use one renderer. Reference theme values update Builder Sans sizes, colors, backdrop, corners and the success check. The medium button uses an 18px label; the original price uses 15px body text.
 

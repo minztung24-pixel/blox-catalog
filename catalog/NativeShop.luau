@@ -92,6 +92,39 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function active()
         return not binding.closed and state.balance.applied and enabled()
     end
+    local function closeNativeGift(q)
+        task.spawn(function()
+            if quote~=q or not active()or not q.screen or not q.screen.Parent or q.screen.Enabled then return end
+            -- Native Cancel calls Close(onClose); calling Close alone leaves the shop's gift lock set.
+            if type(getconnections)=="function" and q.cancel and q.cancel.Parent and q.cancel:IsA("GuiButton")then
+                local ok,handler=pcall(function()
+                    local found
+                    for _,entry in ipairs(getconnections(q.cancel.Activated))do
+                        if entry.Enabled~=false and type(entry.Function)=="function"then
+                            if found then return nil end
+                            found=entry.Function
+                        end
+                    end
+                    return found
+                end)
+                if ok and handler and pcall(handler)then
+                    q.screen:SetAttribute("BloxCatalogClosePath","NativeCancel")
+                    return
+                end
+            end
+            -- shortcut: without readable Cancel connections, use Close until the controller exposes its owner's onClose callback.
+            local controllers=game:GetService("ReplicatedStorage"):FindFirstChild("Controllers")
+            local ui=controllers and controllers:FindFirstChild("UI")
+            local module=ui and ui:FindFirstChild("GiftWindow")
+            if not module or not module:IsA("ModuleScript")then return end
+            local loaded,controller=pcall(require,module)
+            if loaded and quote==q and active()and q.screen.Parent and not q.screen.Enabled
+                and type(controller)=="table" and type(controller.Close)=="function"then
+                pcall(controller.Close,controller)
+                q.screen:SetAttribute("BloxCatalogClosePath","ControllerFallback")
+            end
+        end)
+    end
     local function show(completed)
         local q=quote
         view=RobloxPrompt.open(playerGui,{
@@ -141,20 +174,10 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             if ok then
                 show(true)
                 if q.screen and q.screen.Parent then q.screen.Enabled=false end
-                task.spawn(function()
-                    local controllers=game:GetService("ReplicatedStorage"):FindFirstChild("Controllers")
-                    local ui=controllers and controllers:FindFirstChild("UI")
-                    local module=ui and ui:FindFirstChild("GiftWindow")
-                    if not module or not module:IsA("ModuleScript")then return end
-                    local loaded,controller=pcall(require,module)
-                    if loaded and quote==q and active() and q.screen and q.screen.Parent and not q.screen.Enabled
-                        and type(controller)=="table" and type(controller.Close)=="function"then
-                        pcall(controller.Close,controller)
-                    end
-                end)
+                closeNativeGift(q)
                 message="Simulated gift: "..q.item.name.." → "..q.username..". Not delivered."
             else dismiss()end
-            onChange(message)
+            onChange(message,ok and "Gift sent successfully"or nil)
         end
     end
     function binding:confirm()
@@ -163,6 +186,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             dismiss();onChange("Selection or balance changed. Open Gift again.");return false
         end
         closeDialog(true);self.phase="Purchasing";elapsed=0
+        onChange("Sending local gift preview to "..quote.username.."...","Sending gift to "..quote.username.."...")
         return true
     end
     function binding:buy()
@@ -181,6 +205,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
                 if not ok then onChange(err);return false,err end
                 quote={button=button,item=item,username=username,price=price,cost=cost,
                     discount=state.balance.plusDiscount,balance=state.balance,available=state.balance.robux,
+                    cancel=frame.Content.Buttons:FindFirstChild("Cancel"),
                     screen=frame:FindFirstAncestorWhichIsA("ScreenGui")}
                 self.phase="Preparing";elapsed=0;return true
             end
@@ -189,7 +214,10 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         return false,message
     end
     function binding:refresh()
-        if active() and self.phase=="Completed"then return end
+        if active()and self.phase=="Completed"then
+            if not window()then return end
+            dismiss()
+        end
         local frame=active() and window(true)
         if not frame then clear();return end
         -- Keep the real button covered while Gift is hidden, so reopening stays in preview mode.

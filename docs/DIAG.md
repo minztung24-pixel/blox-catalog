@@ -1,6 +1,18 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.12. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.13. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Plus, thông báo và đổi fruit để gift, v12.13
+
+- Bấm Saving… with Plus mở/thu Subtotal → Roblox Plus → Total. Đối chiếu [DiscountSummary](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Workspace/Packages/_Index/IAPExperience/IAPExperience/Generic/DiscountSummary.luau) và hook useDiscountAccordionConfig: có subscription discount và giá giảm thì dùng accordion, ban đầu thu gọn. Việc xem chi tiết không thay đổi quote hay số dư.
+- Footer xác nhận dùng câu trong ảnh native do người dùng cung cấp; completion bỏ footer. Nhãn LOCAL SIMULATION chuyển lên cạnh nội dung dialog và vẫn hiện ở cả hai trạng thái. Câu legal giống ảnh không đại diện cho giao dịch thật.
+- Đọc lại hai báo cáo checkout thật: không có chuỗi Sending gift / Gift sent successfully. Vì vậy hai câu này ghi nhận theo mô tả của người dùng, chưa tuyên bố là câu đã trích được từ báo cáo. API `ReplicatedStorage.Notification.new(text):Display()` đã xác minh từ source module đã lưu: trên client chỉ gọi NotificationFeed. Bản local gọi API này khi confirm và sau khi charge thành công, không gọi remote hay phát tín hiệu purchase success. GiftNotificationStatus trên Catalog cho biết Displayed/Failed/Unavailable.
+- Source GiftWindow đã lưu cho thấy Cancel.Activated gọi `Close(u85.onClose)`. Close không đối số bỏ qua callback chủ sở hữu Shop, giải thích khả năng bị giữ trạng thái gift khi đổi sản phẩm. Bản mới chỉ đọc kết nối của nút **Cancel**; nếu có đúng một handler bật và đọc được thì gọi handler UI đó, giữ callback onClose của game. Không đọc hay gọi handler Purchase. Nếu runtime không hỗ trợ hoặc kết nối không rõ ràng thì giữ fallback Close cũ; chưa khẳng định fix được trên runtime không có khả năng này. GiftWindow.BloxCatalogClosePath ghi NativeCancel/ControllerFallback.
+- Một lỗi riêng trong adapter: refresh trả về vô điều kiện khi Completed. Nay nếu cửa Gift gốc đã được mở lại thì dọn completion cũ và nhận lựa chọn mới. Fixture đã kiểm tra đổi Magnet → Buddha và bắt đầu gift mới mà không khởi động lại Shop.
+
+Kiểm chứng: 5 bộ assertion Luau, 7 test build Python đạt. Click thực trong Studio: mở Plus xem chi tiết, Control → Yeti → Yeti, số dư 65500 → 61900 → 59200 → 56500, ba gift local, ba callback đóng UI và sáu thông báo đúng thứ tự; callback mua gốc giữ 0 sau Apply, Reset trả về callback gốc. Đã xem screenshot hai dialog và dọn fixture sau test. Cancel/getconnections và Notification trong lượt này là fixture UI-only, không giả nhận đó là xác nhận runtime Potassium hoặc feed live.
+
+Các báo cáo/source game thô vẫn chỉ lưu local. Không cần mua bằng Robux thật để kiểm tra bản sửa. Native notification và khả năng đọc Cancel của Potassium cần xác nhận trong phiên thực tế.
 
 ## Bộ hiển thị local và chuyển động, v12.12
 
