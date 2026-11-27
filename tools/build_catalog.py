@@ -143,7 +143,7 @@ def package_xml(sources, data_sources):
     data = script(folder, "Data", sources["Data"])
     for name, source in data_sources.items():
         script(data, name, source)
-    for name in ("Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI"):
+    for name in ("Catalog", "NativeItems", "NativeEquip", "NativeAbilities", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI"):
         script(folder, name, sources[name])
     script(folder, "Main", sources["Main"], "LocalScript")
     return ET.tostring(root, encoding="utf-8", xml_declaration=True)
@@ -156,11 +156,11 @@ def bundle(snapshot_version=None):
         snapshot_version = json.loads((output / "catalog.json").read_text(encoding="utf-8"))["manifest"]["placeVersion"]
     data_sources = {name: (ROOT / "catalog" / "Data" / (name + ".luau")).read_text(encoding="utf-8") for name in CATEGORIES.values()}
     sources = {name: (ROOT / "catalog" / ("Data/init.luau" if name == "Data" else name + (".client.luau" if name == "Main" else ".luau"))).read_text(encoding="utf-8")
-               for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI", "Main")}
-    parts = ["-- Blox Catalog v12.18 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
+               for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeAbilities", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI", "Main")}
+    parts = ["-- Blox Catalog v12.19 simulator. Snapshot place version " + str(snapshot_version) + ".\n"]
     for name, text in data_sources.items():
         parts.append("local Data" + name + " = (function()\n" + text + "\nend)()\n")
-    for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI"):
+    for name in ("Data", "Catalog", "NativeItems", "NativeEquip", "NativeAbilities", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI"):
         text = sources[name]
         if name == "Data":
             for category, module in CATEGORIES.items():
@@ -168,7 +168,7 @@ def bundle(snapshot_version=None):
         elif name == "Catalog":
             text = text.replace("local Database = require(script.Parent.Data)", "local Database = Data")
         elif name in ("UI", "FruitModels", "RobloxPrompt", "NativeShop"):
-            for dependency in ("Catalog", "Inventory", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "RobloxPrompt", "NativeShop"):
+            for dependency in ("Catalog", "Inventory", "NativeItems", "NativeEquip", "NativeAbilities", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "RobloxPrompt", "NativeShop"):
                 text = text.replace("local " + dependency + " = require(script.Parent." + dependency + ")", "local " + dependency + " = " + dependency)
         parts.append("local " + name + " = (function()\n" + text + "\nend)()\n")
     parts.append("return UI.start()\n")

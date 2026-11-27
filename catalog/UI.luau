@@ -2,6 +2,7 @@ local Catalog = require(script.Parent.Catalog)
 local Inventory = require(script.Parent.Inventory)
 local NativeItems = require(script.Parent.NativeItems)
 local NativeEquip = require(script.Parent.NativeEquip)
+local NativeAbilities = require(script.Parent.NativeAbilities)
 local NativeShop = require(script.Parent.NativeShop)
 local NativeDialogue = require(script.Parent.NativeDialogue)
 local Equipment = require(script.Parent.Equipment)
@@ -73,8 +74,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.18", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.18")
+    text(panel, "Title", "BLOX CATALOG v12.19", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.19")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -100,11 +101,12 @@ function UI.start()
         return (fruitModels.native[item.id] and fruitModels.models[item.id]) or models[item.id]
             or (item.physicalId and models[tostring(item.physicalId)]) or fruitModels.models[item.id]
     end
+    local abilities=NativeAbilities.new(state,player)
     local equipment = Equipment.new(state, player, function(item)
         local source = sourceFor(item)
         if source then return source end
         if item.category == "Fruits" or item.isPhysicalFruit then return fruitModels:load(item) end
-    end, tell, function(item,tool) if showFruitMenu then showFruitMenu(item,tool) end end)
+    end, tell, function(item,tool) if showFruitMenu then showFruitMenu(item,tool) end end,abilities)
     state.removeEquipment = function(id) equipment:remove(id) end
     local function equip(item)
         local ok, err, mode = equipment:equip(item)
@@ -158,7 +160,7 @@ function UI.start()
     end)
     local function useVisual(item)
         if not Equipment.findExistingTool(player, item) and not state.items[item.id] then
-            if not sourceFor(item) then
+            if not NativeAbilities.supports(item)and not sourceFor(item) then
                 tell("Missing 3D model for " .. item.name .. ". View shows its icon; no Tool is available to equip.")
                 return
             end
@@ -169,7 +171,7 @@ function UI.start()
         local ok, _, mode = equip(item)
         if ok then
             state.visualId = item.id
-            if state.items[item.id] then state.items[item.id].visual = mode == "visual" end
+            if state.items[item.id] then state.items[item.id].visual = mode == "visual"or mode=="ability" end
             gui:SetAttribute("VisualItemId", item.id)
         end
     end
@@ -408,7 +410,7 @@ function UI.start()
             local item = rows[index]
             local source = sourceFor(item)
             local stock = state.items[item.id]
-            local available = (source and source.Parent and source:FindFirstChildWhichIsA("BasePart", true))
+            local available = NativeAbilities.supports(item)or (source and source.Parent and source:FindFirstChildWhichIsA("BasePart", true))
                 or Equipment.findExistingTool(player, item) or (stock and stock.tool and stock.tool.Parent) or fruitModels:available(item)
             local card = make("Frame", content, {Name = "Item_" .. item.id, LayoutOrder = index,
                 BackgroundColor3 = available and colors.available or colors.surface, BorderSizePixel = 0})
@@ -431,10 +433,12 @@ function UI.start()
                         if tab == "Visual" then useVisual(item)
                         elseif tab == "Gift Perm" then showGift(item)
                         else
+                            if item.category=="Permanent"and state.items[item.id]then equip(item);return end
                             local ok, err = Inventory.add(state, item)
                             if ok then
                                 updateQuantity()
-                                tell((state.native and "Added to Items locally: " or "Added to panel only / Items offline: ") .. item.name)
+                                if item.category=="Permanent"then equip(item)
+                                else tell((state.native and "Added to Items locally: " or "Added to panel only / Items offline: ") .. item.name)end
                             else
                                 tell("Add failed: " .. tostring(err))
                                 warn("[Blox Catalog] " .. status.Text)

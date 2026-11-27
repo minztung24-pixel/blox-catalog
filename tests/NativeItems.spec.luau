@@ -4,7 +4,7 @@ return function(NativeItems)
     local nativeCaller, failEquip, holdEquip, equipStarted
     local failKey, ignoreKey, coerceOnce, failAfterWrite
     local service = {IS_CLIENT = true, IsInitialized = true, KEYS = {
-        QUANTITY = "Quantity", IS_OWNED = "IsOwned", IS_STOCKED = "IsStocked", IS_EQUIPPED = "IsEquipped",
+        QUANTITY = "Quantity", MASTERY = "Mastery", IS_OWNED = "IsOwned", IS_STOCKED = "IsStocked", IS_EQUIPPED = "IsEquipped",
     }}
     function service:GetItems()
         assert(self == service)
@@ -16,7 +16,7 @@ return function(NativeItems)
     end
     function service:WriteTempItem(key, id, uid, value)
         assert(self == service and typeof(key) == "string" and typeof(id) == "number" and uid == nil)
-        assert(key == "Quantity", "Only quantity may be written; game flags must stay untouched")
+        assert(key == "Quantity" or key == "Mastery", "Only local quantity and initial mastery may be written")
         writes += 1
         if key == failKey then error("fixture write failed") end
         if key == ignoreKey then return false end
@@ -49,6 +49,7 @@ return function(NativeItems)
     assert(bridge:restore(item) and values[1393].Quantity == 20, "Clear must restore the observed baseline")
     local empty = {id = "1525", name = "Arcsteel Magnet", category = "Fruits"}
     assert(bridge:sync(empty, 1, false, false) and values[1525].Quantity == 1)
+    assert(values[1525].Mastery==1,"Added-only physical fruit exposes the native mastery footer")
     nativeCaller=coroutine.running()
     local localResponse = remote.invokeAction(equipAction, 1525)
     assert(localResponse.value.ok,localResponse.value.error)
@@ -59,6 +60,20 @@ return function(NativeItems)
     failEquip=nil
     assert(bridge:sync(empty, 1, true, true) and values[1525].Quantity == nil, "Equipping the final copy must accept the game's zero-to-nil normalization")
     assert(bridge:restore(empty) and values[1525].Quantity == nil)
+    assert(values[1525].Mastery==nil,"Clear restores the missing mastery baseline")
+    failKey="Mastery"
+    assert(not bridge:sync(empty,1,false,false)and values[1525].Quantity==nil and values[1525].Mastery==nil,"Mastery failure rolls back quantity too")
+    failKey=nil
+    assert(bridge:sync(empty,1,false,false));values[1525].Mastery=nil
+    failKey="Mastery"
+    assert(not bridge:sync(empty,2,false,false)and values[1525].Quantity==1,"A failed update preserves stock already added")
+    failKey=nil
+    assert(bridge:restore(empty))
+    assert(bridge:sync(empty,1,false,false));values[1525].Mastery=27
+    assert(bridge:restore(empty)and values[1525].Mastery==27,"Clear preserves a newer server mastery update")
+    local ability={id="358",name="Permanent Control",category="Permanent"}
+    assert(bridge:sync(ability,1,true,true)and values[358].Quantity==1,"A permanent ability preview does not consume a physical copy")
+    assert(bridge:restore(ability))
     failKey = "Quantity"
     assert(not bridge:sync(item, 1, false, false) and values[1393].Quantity == 20, "A failed native write must roll back")
     failKey = nil

@@ -258,10 +258,11 @@ local function dropCollider(tool,handle)
     return collider
 end
 
-function Equipment.new(state, player, getSource, notify, onFruitActivated)
+function Equipment.new(state, player, getSource, notify, onFruitActivated, abilities)
     local controller = {bindings = {}, animations = {}, dropBindings = {}}
     local animationLoader = Equipment.animationLoader()
     function controller:remove(id)
+        if abilities and abilities:remove(id)then return end
         if self.dropBindings[id] then self.dropBindings[id]:Disconnect(); self.dropBindings[id] = nil end
         if self.animations[id] then self.animations[id]:close(); self.animations[id] = nil end
         for _, connection in ipairs(self.bindings[id] or {}) do connection:Disconnect() end
@@ -324,6 +325,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
         return true
     end
     function controller:equip(item)
+        if abilities and (item.category=="Skills"or item.category=="Permanent")then return abilities:equip(item)end
         local row = state.items[item.id]
         local character = player.Character
         local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -399,6 +401,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
     end
     function controller:close(final)
         for id in pairs(state.items) do self:remove(id) end
+        if abilities then abilities:close(final)end
         if final then animationLoader:close() end
     end
     return controller

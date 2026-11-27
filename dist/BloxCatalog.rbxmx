@@ -433,22 +433,23 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
     local quantityKey = assert(keys.QUANTITY, "Native quantity key unavailable")
     local bridge = {entries = {}}
     local pending = {}
-    local function read(id) return service:ReadItem(quantityKey, id, nil) end
+    local function read(id,key) return service:ReadItem(key or quantityKey, id, nil) end
     local function scalar(value)
         local kind = typeof(value)
         if kind == "number" or kind == "string" or kind == "boolean" or kind == "nil" then return tostring(value):sub(1, 120) end
         return "&lt;" .. kind .. "&gt;"
     end
-    local function write(id, value, attempt)
+    local function write(id, value, attempt, key)
+        key=key or quantityKey
         -- UserReplicationCache.Set stores zero and false as nil before notifying listeners.
         if value == 0 or value == false then value = nil end
-        local returned = service:WriteTempItem(quantityKey, id, nil, value)
-        local actual = read(id)
+        local returned = service:WriteTempItem(key, id, nil, value)
+        local actual = read(id,key)
         if attempt then attempt.after = actual; attempt.observed = true end
         if actual ~= value then
-            bridge.lastFailure = {itemId = id, key = tostring(quantityKey), expected = scalar(value), expectedType = typeof(value),
+            bridge.lastFailure = {itemId = id, key = tostring(key), expected = scalar(value), expectedType = typeof(value),
                 actual = scalar(actual), actualType = typeof(actual), returnedType = typeof(returned)}
-            error("Native write verification failed: " .. tostring(quantityKey) .. " / ID " .. id
+            error("Native write verification failed: " .. tostring(key) .. " / ID " .. id
                 .. " / expected " .. scalar(value) .. " / actual " .. scalar(actual), 0)
         end
     end
@@ -456,6 +457,7 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         self.lastFailure = nil
         local id = tonumber(item.id)
         if not id then return false, "Invalid ItemId" end
+        local tracked=self.entries[id]~=nil
         local entry = self.entries[id] or {item = item}
         local attempt = {}
         local desired
@@ -466,7 +468,8 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
             assert(typeof(originalQuantity) == "number" and originalQuantity == originalQuantity
                 and originalQuantity &gt;= 0 and originalQuantity &lt; math.huge and originalQuantity % 1 == 0, "Invalid native quantity")
             assert(typeof(count) == "number" and count &gt;= 0 and count &lt; math.huge and count % 1 == 0, "Invalid local quantity")
-            local stock = math.max(0, count - (outsideStock and 1 or 0))
+            local consumable=item.category~="Skills"and item.category~="Permanent"
+            local stock = math.max(0, count - (consumable and outsideStock and 1 or 0))
             assert(originalQuantity + stock &lt;= 9007199254740991, "Native quantity limit reached")
             desired = originalQuantity + stock
             if desired == 0 then desired = nil end
@@ -491,6 +494,21 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         end
         entry.item = item; entry.written = desired
         self.entries[id] = entry
+        if keys.MASTERY and (item.category=="Fruits"or item.isPhysicalFruit)and read(id,keys.MASTERY)==nil then
+            local initialized,message=pcall(write,id,1,nil,keys.MASTERY)
+            entry.masteryWritten=1
+            if not initialized then
+                local restored=pcall(function()
+                    if read(id,keys.MASTERY)==1 then write(id,nil,nil,keys.MASTERY)end
+                    if read(id)==desired then write(id,attempt.before)end
+                end)
+                if restored then
+                    entry.written=attempt.before;entry.masteryWritten=nil
+                    if not tracked then self.entries[id]=nil end
+                end
+                return false,tostring(message)
+            end
+        end
         return true
     end
     function bridge:restore(item)
@@ -498,6 +516,7 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         local entry = self.entries[id]
         if not entry then return true end
         local ok, err = pcall(function()
+            if entry.masteryWritten and read(id,keys.MASTERY)==entry.masteryWritten then write(id,nil,nil,keys.MASTERY)end
             -- Keep a replication update that superseded this script's local value.
             if read(id) == entry.written then write(id, entry.original) end
         end)
@@ -652,6 +671,183 @@ function NativeEquip.new(playerGui,state,onEquip)
 end
 
 return NativeEquip
+</ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">NativeAbilities</string><ProtectedString name="Source">local NativeAbilities={}
+
+function NativeAbilities.supports(item)
+    return item.category=="Skills"or item.category=="Permanent"
+end
+
+local function connect(player)
+    assert(type(getloadedmodules)=="function"and type(hookfunction)=="function"
+        and debug and type(debug.getupvalues)=="function"and type(getconnections)=="function",
+        "Native ability UI needs cached modules and readable UI connections")
+    local loaded={}
+    for _,node in pairs(getloadedmodules())do loaded[node]=true end
+    local storage=game:GetService("ReplicatedStorage")
+    local function cached(node)
+        assert(node and loaded[node],"Open Items and equip a real ability once, then Rescan")
+        local result
+        local worker=task.spawn(function()result=table.pack(pcall(require,node))end)
+        local deadline=os.clock()+3
+        while not result and os.clock()&lt;deadline do task.wait(.03)end
+        if not result then pcall(task.cancel,worker);error("Native ability module timed out")end
+        assert(result[1],result[2]);return result[2]
+    end
+    local config=cached(storage:FindFirstChild("ItemConfig"))
+    local service=cached(storage:FindFirstChild("ItemReplicationService"))
+    local skills=cached(storage:FindFirstChild("FruitSkills"))
+    local pg=player:FindFirstChildOfClass("PlayerGui")
+    local main=pg and pg:FindFirstChild("Main")
+    local ui=main and main:FindFirstChild("UIController")
+    local setup=cached(ui and ui:FindFirstChild("SetUpSkills"))
+    local target
+    for _,value in pairs(debug.getupvalues(setup))do
+        if type(value)=="function"and debug.info(value,"n")=="getToolData"then
+            assert(not target,"Ambiguous native skill-data function");target=value
+        end
+    end
+    assert(target,"Native skill-data function unavailable")
+    local api={data=setmetatable({},{__mode="k"})}
+    local original
+    original=hookfunction(target,function(gui,tool)
+        if not api.closed and api.data[tool]and tool:GetAttribute("BloxCatalogAbility")then return api.data[tool]end
+        return original(gui,tool)
+    end)
+    assert(type(original)=="function","Native skill-data hook failed")
+    local function rowFor(tool)
+        local root=pg:FindFirstChild("Backpack")
+        if not root then return nil end
+        local count=0
+        for _,node in ipairs(root:GetDescendants())do
+            if node:IsA("GuiButton")then
+                count+=1;if count&gt;300 then break end
+                for _,connection in ipairs(getconnections(node.Activated))do
+                    if connection.Enabled~=false and type(connection.Function)=="function"then
+                        for _,value in pairs(debug.getupvalues(connection.Function))do
+                            if type(value)=="table"and type(value.Tools)=="table"and table.find(value.Tools,tool)
+                                and typeof(value._Obj)=="Instance"and value._Obj:IsDescendantOf(root)
+                                and type(value.Drag)=="function"and debug.info(value.Drag,"n")=="Drag"then return value end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    function api:slot(tool)
+        local row=rowFor(tool);return row and row.Slot
+    end
+    function api:place(tool,slot)
+        local deadline=os.clock()+2
+        repeat
+            local row=rowFor(tool)
+            if row then
+                if row.Slot~=slot then
+                    -- Native Drag's numeric branch only swaps local hotbar rows; it does not invoke actions.
+                    local guiService=game:GetService("GuiService")
+                    local selected=guiService.SelectedObject
+                    row:Drag(nil,slot)
+                    if not selected or selected.Parent then guiService.SelectedObject=selected end
+                end
+                return row.Slot==slot
+            end
+            task.wait(.03)
+        until self.closed or os.clock()&gt;=deadline
+        return false,"Native hotbar row unavailable"
+    end
+    function api:resolve(item)
+        local moveset=config.tryGet(tonumber(item.id))
+        if item.category=="Permanent"then
+            moveset=config.Query.selectOne({Index={IdType="Moveset"},Moveset={SkillRedirect={Operation="EQ",Value=nil}},Economy={PurchaseWith=tonumber(item.id)}}):asNullable()
+        end
+        assert(moveset and moveset.Index.IdType=="Moveset","Native moveset metadata unavailable: "..item.name)
+        local definition=moveset.Moveset
+        local name=moveset.Index.StorageKey
+        local tooltip=definition.Type=="Fruit"and "Blox Fruit"or definition.Type=="FightingStyle"and "Melee"
+        assert(tooltip and skills[name]and skills[name][1],"Native skill list unavailable: "..name)
+        local id=moveset.Index.ItemId
+        local combat=service:ReadItem(service.KEYS.COMBAT_DATA,id,nil)
+        assert(type(combat)=="table"and type(combat.Lvl)=="table"and type(combat.Cooldown)=="table"
+            and type(combat.Cost)=="table"and type(combat.Cap)=="number","Native combat data unavailable: "..name)
+        local mastery=service:ReadItem(service.KEYS.MASTERY,id,nil)or 1
+        assert(type(mastery)=="number"and mastery&gt;=1 and mastery&lt;=600 and mastery%1==0,"Invalid native mastery")
+        return {id=id,name=name,tooltip=tooltip,mastery=mastery,exp=0,combat=combat}
+    end
+    function api:close()
+        if self.closed then return end
+        self.closed=true;hookfunction(target,original);table.clear(self.data)
+    end
+    return api
+end
+
+function NativeAbilities.new(state,player,connector)
+    local binding={slots={}}
+    local api,stash
+    function binding:remove(id)
+        for slot,entry in pairs(self.slots)do if entry.id==id then
+            self.slots[slot]=nil
+            api.data[entry.tool]=nil;entry.tool:Destroy()
+            local row=state.items[id]
+            if row and row.tool==entry.tool then row.tool=nil;row.equipped=false;row.ability=nil end
+            local backpack=player:FindFirstChildOfClass("Backpack")
+            for _,saved in ipairs(entry.originals)do
+                if saved.tool.Parent==stash then
+                    saved.tool.Parent=backpack or saved.parent
+                    if saved.slot and backpack then pcall(api.place,api,saved.tool,saved.slot)end
+                end
+            end
+            return true
+        end end
+        return false
+    end
+    function binding:equip(item)
+        local ok,message=pcall(function()
+            assert(NativeAbilities.supports(item),"Item is not an ability preview")
+            local row=state.items[item.id]
+            assert(row and row.count&gt;0,"Add the item first")
+            local character=player.Character
+            local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+            local backpack=player:FindFirstChildOfClass("Backpack")
+            assert(humanoid and humanoid.Health&gt;0 and backpack,"Wait for your character to spawn")
+            if not api then api=(connector or connect)(player)end
+            local metadata=api:resolve(item)
+            local slot=item.category=="Permanent"and 2 or 1
+            if self.slots[slot]then self:remove(self.slots[slot].id)end
+            if not stash then stash=Instance.new("Folder");stash.Name="BloxCatalogAbilityStash";stash.Parent=player:FindFirstChildOfClass("PlayerGui")or backpack.Parent end
+            local tool=Instance.new("Tool")
+            tool.Name=metadata.name;tool.ToolTip=metadata.tooltip;tool.RequiresHandle=false
+            tool.CanBeDropped=false;tool.Enabled=false;tool.ManualActivationOnly=true
+            tool:SetAttribute("ItemId",metadata.id);tool:SetAttribute("BloxCatalogOwned",true);tool:SetAttribute("BloxCatalogAbility",true)
+            tool:SetAttribute("Level",metadata.mastery);tool:SetAttribute("Exp",metadata.exp)
+            local level=Instance.new("IntValue",tool);level.Name="Level";level.Value=metadata.mastery
+            local exp=Instance.new("IntValue",tool);exp.Name="Exp";exp.Value=metadata.exp
+            local entry={id=item.id,tool=tool,originals={}}
+            self.slots[slot]=entry;api.data[tool]=metadata.combat;row.tool=tool;row.ability=true
+            for _,root in ipairs({backpack,character})do for _,real in ipairs(root:GetChildren())do
+                if real:IsA("Tool")and real.ToolTip==metadata.tooltip and not real:GetAttribute("BloxCatalogOwned")then
+                    table.insert(entry.originals,{tool=real,parent=real.Parent,slot=api:slot(real)})
+                    real.Parent=stash
+                end
+            end end
+            tool.Parent=backpack
+            local placed,why=api:place(tool,slot)
+            assert(placed,why or "Native slot placement failed")
+            humanoid:EquipTool(tool)
+            assert(tool.Parent==character,"Ability preview did not equip")
+            row.equipped=true
+        end)
+        if not ok then self:remove(item.id);return false,tostring(message)end
+        return true,nil,"ability"
+    end
+    function binding:close(final)
+        local ids={}
+        for _,entry in pairs(self.slots)do table.insert(ids,entry.id)end
+        for _,id in ipairs(ids)do self:remove(id)end
+        if stash and #stash:GetChildren()==0 then stash:Destroy();stash=nil end
+        if final and api then api:close();api=nil end
+    end
+    return binding
+end
+return NativeAbilities
 </ProtectedString></Properties></Item><Item class="ModuleScript"><Properties><string name="Name">NativeDialogue</string><ProtectedString name="Source">local NativeDialogue = {}
 
 function NativeDialogue.new(controller)
@@ -993,10 +1189,11 @@ local function dropCollider(tool,handle)
     return collider
 end
 
-function Equipment.new(state, player, getSource, notify, onFruitActivated)
+function Equipment.new(state, player, getSource, notify, onFruitActivated, abilities)
     local controller = {bindings = {}, animations = {}, dropBindings = {}}
     local animationLoader = Equipment.animationLoader()
     function controller:remove(id)
+        if abilities and abilities:remove(id)then return end
         if self.dropBindings[id] then self.dropBindings[id]:Disconnect(); self.dropBindings[id] = nil end
         if self.animations[id] then self.animations[id]:close(); self.animations[id] = nil end
         for _, connection in ipairs(self.bindings[id] or {}) do connection:Disconnect() end
@@ -1059,6 +1256,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
         return true
     end
     function controller:equip(item)
+        if abilities and (item.category=="Skills"or item.category=="Permanent")then return abilities:equip(item)end
         local row = state.items[item.id]
         local character = player.Character
         local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -1134,6 +1332,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated)
     end
     function controller:close(final)
         for id in pairs(state.items) do self:remove(id) end
+        if abilities then abilities:close(final)end
         if final then animationLoader:close() end
     end
     return controller
@@ -2006,6 +2205,7 @@ return NativeShop
 local Inventory = require(script.Parent.Inventory)
 local NativeItems = require(script.Parent.NativeItems)
 local NativeEquip = require(script.Parent.NativeEquip)
+local NativeAbilities = require(script.Parent.NativeAbilities)
 local NativeShop = require(script.Parent.NativeShop)
 local NativeDialogue = require(script.Parent.NativeDialogue)
 local Equipment = require(script.Parent.Equipment)
@@ -2077,8 +2277,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.18", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.18")
+    text(panel, "Title", "BLOX CATALOG v12.19", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.19")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -2104,11 +2304,12 @@ function UI.start()
         return (fruitModels.native[item.id] and fruitModels.models[item.id]) or models[item.id]
             or (item.physicalId and models[tostring(item.physicalId)]) or fruitModels.models[item.id]
     end
+    local abilities=NativeAbilities.new(state,player)
     local equipment = Equipment.new(state, player, function(item)
         local source = sourceFor(item)
         if source then return source end
         if item.category == "Fruits" or item.isPhysicalFruit then return fruitModels:load(item) end
-    end, tell, function(item,tool) if showFruitMenu then showFruitMenu(item,tool) end end)
+    end, tell, function(item,tool) if showFruitMenu then showFruitMenu(item,tool) end end,abilities)
     state.removeEquipment = function(id) equipment:remove(id) end
     local function equip(item)
         local ok, err, mode = equipment:equip(item)
@@ -2162,7 +2363,7 @@ function UI.start()
     end)
     local function useVisual(item)
         if not Equipment.findExistingTool(player, item) and not state.items[item.id] then
-            if not sourceFor(item) then
+            if not NativeAbilities.supports(item)and not sourceFor(item) then
                 tell("Missing 3D model for " .. item.name .. ". View shows its icon; no Tool is available to equip.")
                 return
             end
@@ -2173,7 +2374,7 @@ function UI.start()
         local ok, _, mode = equip(item)
         if ok then
             state.visualId = item.id
-            if state.items[item.id] then state.items[item.id].visual = mode == "visual" end
+            if state.items[item.id] then state.items[item.id].visual = mode == "visual"or mode=="ability" end
             gui:SetAttribute("VisualItemId", item.id)
         end
     end
@@ -2412,7 +2613,7 @@ function UI.start()
             local item = rows[index]
             local source = sourceFor(item)
             local stock = state.items[item.id]
-            local available = (source and source.Parent and source:FindFirstChildWhichIsA("BasePart", true))
+            local available = NativeAbilities.supports(item)or (source and source.Parent and source:FindFirstChildWhichIsA("BasePart", true))
                 or Equipment.findExistingTool(player, item) or (stock and stock.tool and stock.tool.Parent) or fruitModels:available(item)
             local card = make("Frame", content, {Name = "Item_" .. item.id, LayoutOrder = index,
                 BackgroundColor3 = available and colors.available or colors.surface, BorderSizePixel = 0})
@@ -2435,10 +2636,12 @@ function UI.start()
                         if tab == "Visual" then useVisual(item)
                         elseif tab == "Gift Perm" then showGift(item)
                         else
+                            if item.category=="Permanent"and state.items[item.id]then equip(item);return end
                             local ok, err = Inventory.add(state, item)
                             if ok then
                                 updateQuantity()
-                                tell((state.native and "Added to Items locally: " or "Added to panel only / Items offline: ") .. item.name)
+                                if item.category=="Permanent"then equip(item)
+                                else tell((state.native and "Added to Items locally: " or "Added to panel only / Items offline: ") .. item.name)end
                             else
                                 tell("Add failed: " .. tostring(err))
                                 warn("[Blox Catalog] " .. status.Text)

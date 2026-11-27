@@ -12,6 +12,16 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.19 Native Mastery and ability slots without models
+
+**Visual → Skills → Equip** now previews a native fighting style in hotbar **slot 1** without requiring a 3D model. **Inventory → Permanent → + Add** equips the corresponding fruit ability in **slot 2**; selecting another permanent replaces that ability. Added → Equip also supports these previews. These are separate from physical fruit Tools and their model/VFX pipeline.
+
+The native ItemConfig relation resolves the actual Moveset ID, name and icon; the game's cached FruitSkills and CombatData supply the skill list. A handle-free, non-activating local Tool lets the existing hotbar and SetUpSkills build their own UI. The adapter uses the native hotbar's numeric Drag branch and a narrowly scoped skill-data hook for its own proxies only; it does not copy a different fruit's skill data. Real Tools are temporarily held outside the Backpack and restored with their previous slots on Clear, Restore visuals or close. Missing native moveset/skill data produces an explicit error; admin/utility records without a native fighting-style/fruit skill list are not fabricated.
+
+Added physical fruits now initialize missing local Mastery to 1 so the native inventory card can show **1 Mastery**. Existing mastery is preserved; Clear restores missing baselines and keeps newer replicated values. Mastery write failures roll back the attempted quantity update. Ability previews keep their local inventory quantity rather than consuming a physical copy.
+
+Validation: six Luau suites pass in Studio Edit, the ability suite passes in Client Play, and seven Python build tests pass. A reversible Blox Fruits trial confirmed Death Step in slot 1 with Mastery 400 and four native skills, then Control in slot 2 with Mastery 1 and its five current native skills; the game's own hotbar supplied both icons. Original Tools and hooks were restored. A separate cache trial confirmed a missing physical-fruit Mastery changed nil → 1 → nil on cleanup. No attacks, purchases or item transaction actions were invoked by the trial. Reports and decompiled game source remain private. Respawn and gamepad/touch behavior have not been playtested in the live game.
+
 ## v12.18 Remove the checkout caption
 
 Removed the **LOCAL SIMULATION** caption from both confirmation and completion. Their geometry, contents, behavior and local-only transaction logic are unchanged. Catalog still describes the preview behavior. Renderer regression assertions cover both dialogs; all five Luau suites and seven build tests pass.

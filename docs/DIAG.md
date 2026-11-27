@@ -1,6 +1,20 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.18. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.19. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Mastery và hai slot khả năng, v12.19
+
+Nguyên nhân: UI Visual và Equipment.equip đều yêu cầu BasePart/model. Điều này đúng cho trái vật phẩm nhưng không cần thiết cho khả năng fighting style hay permanent fruit. Thêm NativeAbilities làm đường riêng, dùng Tool local RequiresHandle=false, Enabled=false, ManualActivationOnly=true, không có script, Remote hay model. Skills ở ô 1; Permanent ở ô 2. + Add Permanent đồng thời preview, bấm lại không nhân thêm stock. Nút Equip trong Added dùng cùng đường này. Clear/Restore/đóng trả Tool thật và slot gốc; số lượng ability không bị trừ như trái vật phẩm khi đưa vào tay.
+
+Đã đọc module live: ItemConfig, ItemReplicationService, React Inventory.ItemCard.Display/useMastery/useMoveset, PlayerGui.Backpack.LocalScriptB, Main.UIController.SetUpSkills và FruitSkills. Quan hệ Permanent → Moveset dùng Economy.PurchaseWith và bỏ SkillRedirect theo hook useMoveset gốc; không dùng icon vật phẩm permanent hay ID PhysicalMoveset để giả làm ID khả năng. Control trong phiên đo resolve ItemId 95, không phải ID 402 của dữ liệu CombatData khác.
+
+Hotbar đọc ItemId để lấy icon. Numeric branch của native row:Drag(nil,slot) chỉ đổi row local. UIController nhận Tool vào Character, lấy FruitSkills theo StorageKey và gọi SetUpSkills. SetUpSkills cần LegacyDataAggregate; preview cung cấp chính CombatData có sẵn từ ItemReplicationService qua hook getToolData, chỉ cho các Tool proxy thuộc adapter. Không chép source Roblox vào renderer và không gọi getFruitDataAsync vì hàm đó sẽ InvokeServer. Các mục Skills không có Moveset hoặc bảng chiêu/cache gốc báo rõ unavailable; không tạo chiêu/hiệu ứng để lấp chỗ thiếu.
+
+Mastery trong thẻ React chỉ dựng khi useMastery trả giá trị. NativeItems khởi tạo Mastery=1 nếu đang thiếu ở trái vật phẩm local; giữ giá trị đã có. Restore chỉ bỏ giá trị chính mình đã viết; cập nhật từ replication được giữ. Lỗi setter Mastery hoàn tác đúng stock trước lần Add, không xóa stock đã thêm trước đó.
+
+Kiểm chứng: 6 suite Luau trong Edit (NativeItems, Equipment, NativeEquip, NativeShop, RobloxPrompt, Simulation); NativeAbilities chạy trên nhân vật thật của Client Play để kiểm tra Equip/đổi slot/không Handle/khôi phục. 7 test Python kiểm tra build và dependency mới trong package. Trial local có hoàn tác trong Blox Fruits: Death Step (1184), slot 1, Mastery 400, Rocket Kick/Wind Bullet/Vermillion Drill/Maximum Overheat; Permanent Control (358) → Control-Control (95), slot 2, Mastery 1, Domain Control/Slice N’ Dice/Gamma Blade/Total Concentration/Transmutation. Hai proxy held=true, RequiresHandle=false; native hotbar hiện đúng atlas icon; cleanup restored=true. Trial Mastery Dragon (West) ghi nil → 1 → nil, masteryOk=true. Không gọi đòn đánh, mua hay InventoryAction trong mã thử. Dữ liệu/source thô giữ local.
+
+Chưa kiểm tra respawn và thao tác touch/gamepad trong game thật. Đây là preview client, không đổi fighting style hoặc fruit thật trên server, không tạo model hay VFX mới; ASSET_AUDIT giữ nguyên số liệu model.
 
 ## Bỏ nhãn checkout, v12.18
 

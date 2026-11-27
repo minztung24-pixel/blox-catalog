@@ -18,22 +18,23 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
     local quantityKey = assert(keys.QUANTITY, "Native quantity key unavailable")
     local bridge = {entries = {}}
     local pending = {}
-    local function read(id) return service:ReadItem(quantityKey, id, nil) end
+    local function read(id,key) return service:ReadItem(key or quantityKey, id, nil) end
     local function scalar(value)
         local kind = typeof(value)
         if kind == "number" or kind == "string" or kind == "boolean" or kind == "nil" then return tostring(value):sub(1, 120) end
         return "<" .. kind .. ">"
     end
-    local function write(id, value, attempt)
+    local function write(id, value, attempt, key)
+        key=key or quantityKey
         -- UserReplicationCache.Set stores zero and false as nil before notifying listeners.
         if value == 0 or value == false then value = nil end
-        local returned = service:WriteTempItem(quantityKey, id, nil, value)
-        local actual = read(id)
+        local returned = service:WriteTempItem(key, id, nil, value)
+        local actual = read(id,key)
         if attempt then attempt.after = actual; attempt.observed = true end
         if actual ~= value then
-            bridge.lastFailure = {itemId = id, key = tostring(quantityKey), expected = scalar(value), expectedType = typeof(value),
+            bridge.lastFailure = {itemId = id, key = tostring(key), expected = scalar(value), expectedType = typeof(value),
                 actual = scalar(actual), actualType = typeof(actual), returnedType = typeof(returned)}
-            error("Native write verification failed: " .. tostring(quantityKey) .. " / ID " .. id
+            error("Native write verification failed: " .. tostring(key) .. " / ID " .. id
                 .. " / expected " .. scalar(value) .. " / actual " .. scalar(actual), 0)
         end
     end
@@ -41,6 +42,7 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         self.lastFailure = nil
         local id = tonumber(item.id)
         if not id then return false, "Invalid ItemId" end
+        local tracked=self.entries[id]~=nil
         local entry = self.entries[id] or {item = item}
         local attempt = {}
         local desired
@@ -51,7 +53,8 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
             assert(typeof(originalQuantity) == "number" and originalQuantity == originalQuantity
                 and originalQuantity >= 0 and originalQuantity < math.huge and originalQuantity % 1 == 0, "Invalid native quantity")
             assert(typeof(count) == "number" and count >= 0 and count < math.huge and count % 1 == 0, "Invalid local quantity")
-            local stock = math.max(0, count - (outsideStock and 1 or 0))
+            local consumable=item.category~="Skills"and item.category~="Permanent"
+            local stock = math.max(0, count - (consumable and outsideStock and 1 or 0))
             assert(originalQuantity + stock <= 9007199254740991, "Native quantity limit reached")
             desired = originalQuantity + stock
             if desired == 0 then desired = nil end
@@ -76,6 +79,21 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         end
         entry.item = item; entry.written = desired
         self.entries[id] = entry
+        if keys.MASTERY and (item.category=="Fruits"or item.isPhysicalFruit)and read(id,keys.MASTERY)==nil then
+            local initialized,message=pcall(write,id,1,nil,keys.MASTERY)
+            entry.masteryWritten=1
+            if not initialized then
+                local restored=pcall(function()
+                    if read(id,keys.MASTERY)==1 then write(id,nil,nil,keys.MASTERY)end
+                    if read(id)==desired then write(id,attempt.before)end
+                end)
+                if restored then
+                    entry.written=attempt.before;entry.masteryWritten=nil
+                    if not tracked then self.entries[id]=nil end
+                end
+                return false,tostring(message)
+            end
+        end
         return true
     end
     function bridge:restore(item)
@@ -83,6 +101,7 @@ function NativeItems.new(service, remote, Future, Result, equipActions, onEquip,
         local entry = self.entries[id]
         if not entry then return true end
         local ok, err = pcall(function()
+            if entry.masteryWritten and read(id,keys.MASTERY)==entry.masteryWritten then write(id,nil,nil,keys.MASTERY)end
             -- Keep a replication update that superseded this script's local value.
             if read(id) == entry.written then write(id, entry.original) end
         end)
