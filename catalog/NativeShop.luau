@@ -9,6 +9,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local binding={phase="Idle"}
     local original,overlay,connection,savedVisible,savedInteractable,savedSelectable
     local checkout,view,quote,processing,heartbeat
+    local pendingNotice
     local elapsed,dotElapsed,dots=0,0,0
     local function closeDialog(animated)
         if view then view:close(animated);view=nil end
@@ -92,6 +93,9 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function active()
         return not binding.closed and state.balance.applied and enabled()
     end
+    local function scheduleNotices(q)
+        if q and active()then pendingNotice={balance=q.balance,username=q.username,elapsed=0}end
+    end
     local function closeNativeGift(q)
         task.spawn(function()
             if quote~=q or not active()or not q.screen or not q.screen.Parent or q.screen.Enabled then return end
@@ -138,7 +142,9 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         binding.phase=completed and "Completed"or "Confirm";elapsed=0
     end
     function binding:cancel(animated)
+        local completed=self.phase=="Completed" and quote
         dismiss(animated)
+        if completed then scheduleNotices(completed)end
     end
     local function quoteMatches(button,item,username,price)
         return quote and button==quote.button and item==quote.item and username==quote.username
@@ -154,6 +160,21 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     function binding:step(dt)
         if type(dt)~="number" or dt<0 or dt~=dt or dt==math.huge then return end
         if view then view:step(dt)end
+        if pendingNotice then
+            local p=pendingNotice
+            if not active()or state.balance~=p.balance then pendingNotice=nil
+            else
+                p.elapsed+=dt
+                if not p.sent and p.elapsed+1e-8>=.1 then
+                    p.sent=true
+                    onChange(nil,"<Color=White>Sending gift to "..p.username.."...<Color=/>")
+                end
+                if pendingNotice==p and active()and state.balance==p.balance and p.elapsed+1e-8>=.32 then
+                    pendingNotice=nil
+                    onChange(nil,"<Color=White>Gift sent successfully<Color=/>")
+                end
+            end
+        end
         if self.closed or not quote or self.phase=="Completed"then return end
         if not validQuote()then dismiss();onChange("Selection or balance changed. Open Gift again.");return end
         elapsed+=dt
@@ -177,7 +198,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
                 closeNativeGift(q)
                 message="Simulated gift: "..q.item.name.." → "..q.username..". Not delivered."
             else dismiss()end
-            onChange(message,ok and "Gift sent successfully"or nil)
+            onChange(message)
         end
     end
     function binding:confirm()
@@ -186,7 +207,6 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             dismiss();onChange("Selection or balance changed. Open Gift again.");return false
         end
         closeDialog(true);self.phase="Purchasing";elapsed=0
-        onChange("Sending local gift preview to "..quote.username.."...","Sending gift to "..quote.username.."...")
         return true
     end
     function binding:buy()
@@ -216,6 +236,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     function binding:refresh()
         if active()and self.phase=="Completed"then
             if not window()then return end
+            scheduleNotices(quote)
             dismiss()
         end
         local frame=active() and window(true)
@@ -261,7 +282,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     end
     function binding:close()
         if heartbeat then heartbeat:Disconnect();heartbeat=nil end
-        self.closed=true;clear()
+        self.closed=true;pendingNotice=nil;clear()
     end
     if Run:IsRunning() and Run:IsClient()then heartbeat=Run.Heartbeat:Connect(function(dt)binding:step(dt)end)end
     return binding

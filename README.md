@@ -12,7 +12,17 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.13 Plus details, native notification feed and consecutive gifts
+## v12.14 Installed Roblox icons, screen alignment and visible gift notices
+
+A read-only snapshot from the running client confirmed that native PurchasePromptApp uses **DeviceSafeInsets**. The local dialogs now use the same coordinate space, removing the top-bar centering offset. Both reference dialogs measured approximately 456px wide; their different heights also reflect different branches: **Buy Robux and item** includes a Robux bundle when real funds are insufficient, while **Buy item** confirms an affordable item. Enough visual funds retain Buy item; insufficient visual funds remain blocked rather than opening a real-currency upsell.
+
+X, Robux, Plus, the accordion chevrons and the completion check now use the installed **BuilderIcons** font used by Roblox Foundation. The package and font family were located in the installed client and the icon rendering was checked in Studio. No copied bitmap, ordinary multiplication sign or unsupported chevron character is used. Buy and legal-footer spacing follow the supplied native reference more closely; the explicit local marker remains visible.
+
+The two gift messages wait until completion is dismissed with OK/X, so they do not expire or appear dimmed behind the checkout backdrop. After the 0.1s exit, the game's own notification feed receives **Sending gift to …** and then **Gift sent successfully**, separated by its 0.22s transition interval. The verified game White markup preserves white text; its native Source Sans Pro SemiBold, 32px text and dark stroke remain untouched. This is local presentation after a simulated charge, not a server gift.
+
+Validation: five Luau suites and seven Python build tests pass. Studio screenshots checked regular, Plus and completion layouts, icon rendering and screen centering. Clicks verified 1000000 → 996500 → 993350, no notices underneath completion, two notices after OK and another two after completion X. Cancelling confirmation with X neither charged nor emitted gift notices. The original purchase callback remained unused after Apply, and Reset restored it. Test fixtures were removed. See [DIAG](docs/DIAG.md) for live measurements and remaining limits; this is not a claim of a pixel-perfect native CoreGui renderer.
+
+## v12.13 Plus details, native notification feed and consecutive gifts (previous timing)
 
 Click **Saving… with Plus** to expand/collapse Subtotal, the Plus reduction and Total. The layout follows the pinned Roblox `DiscountSummary` component. Opening details never changes the quote, discount or balance. The confirmation footer follows the wording in the supplied native screenshot; completion has no footer. A compact **LOCAL SIMULATION** marker remains beside the dialog content, so the reference legal wording does not mean that a real payment happens.
 

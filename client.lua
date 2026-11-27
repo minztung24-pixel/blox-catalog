@@ -1,4 +1,4 @@
--- Blox Catalog v12.13 simulator. Snapshot place version 4632.
+-- Blox Catalog v12.14 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -1474,6 +1474,7 @@ local RobloxPrompt = (function()
 local Input=game:GetService("UserInputService")
 local Run=game:GetService("RunService")
 local Gui=game:GetService("GuiService")
+local iconFont=Font.new("rbxasset://LuaPackages/Packages/_Index/BuilderIcons/BuilderIcons/BuilderIcons.json",Enum.FontWeight.Regular)
 local RobloxPrompt={}
 local function bezier(x,x1,y1,x2,y2)
     if x<=0 or x>=1 then return x end
@@ -1515,7 +1516,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
     gui:SetAttribute("Simulation",true)
     gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-    gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+    gui.ScreenInsets=Enum.ScreenInsets.DeviceSafeInsets
     local order=0
     for _,child in ipairs(playerGui:GetChildren())do
         if child:IsA("ScreenGui")then order=math.max(order,child.DisplayOrder)end
@@ -1563,25 +1564,23 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
         node.TextColor3=Color3.fromRGB(247,247,248)
         return node
     end
-    local function robux(name,x,y,size)
-        local icon=Instance.new("ImageLabel",panel)
-        icon.Name=name;icon.Image="rbxasset://textures/ui/common/robux@3x.png"
-        icon.Position=UDim2.fromOffset(x,y);icon.Size=UDim2.fromOffset(size,size)
-        icon.BackgroundTransparency=1;icon.ZIndex=3
+    local function symbol(name,glyph,x,y,size)
+        local icon=label(name,glyph,x,y,size,size,size)
+        icon.FontFace=iconFont;icon.TextWrapped=false;icon.AutoLocalize=false
+        icon.TextXAlignment=Enum.TextXAlignment.Center
+        return icon
     end
+    local function robux(name,x,y,size)return symbol(name,"robux",x,y,size)end
     local title=bold(label("Title",completed and "Purchase completed" or "Buy item",20,16,270,28,25))
     title.TextColor3=Color3.fromRGB(213,215,221)
-    local close=button("Close","×",408,10,36,36,function()self:cancel()end)
-    close.BackgroundTransparency=1;close.TextSize=28
+    local close=button("Close","",404,8,40,40,function()self:cancel()end)
+    close.BackgroundTransparency=1
+    local closeIcon=symbol("Icon","x",8,8,24)
+    closeIcon.Parent=close;closeIcon.ZIndex=5
     local mode=label("SimulationMode","LOCAL SIMULATION",20,42,180,14,12)
     mode.TextColor3=Color3.fromRGB(255,208,110)
     if completed then
-        local circle=Instance.new("Frame",panel)
-        circle.Name="CheckCircle";circle.Position=UDim2.fromOffset(204,52);circle.Size=UDim2.fromOffset(48,48)
-        circle.BackgroundTransparency=1;circle.ZIndex=3
-        Instance.new("UICorner",circle).CornerRadius=UDim.new(1,0)
-        local stroke=Instance.new("UIStroke",circle);stroke.Thickness=2;stroke.Color=Color3.fromRGB(220,222,228)
-        local check=label("Check","✓",204,52,48,48,30);check.TextXAlignment=Enum.TextXAlignment.Center
+        symbol("Check","circle-check",204,52,48)
         local result=label("Result",q.resultText,20,116,416,64,18)
         result.TextXAlignment=Enum.TextXAlignment.Center
     else
@@ -1614,11 +1613,12 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
             row.Name="DiscountRow";row.Position=UDim2.fromOffset(20,154);row.Size=UDim2.fromOffset(416,56)
             row.BackgroundColor3=Color3.fromRGB(32,34,39);row.BorderSizePixel=0;row.ZIndex=2
             Instance.new("UICorner",row).CornerRadius=UDim.new(0,8)
-            robux("DiscountIcon",36,173,18)
+            symbol("DiscountIcon","roblox-plus",36,173,18)
             bold(label("Discount",q.discountLabel,62,168,326,28,18))
             local toggle=button("DiscountToggle","",0,0,416,56,function()self:toggleDiscount()end)
             toggle.Parent=row;toggle.BackgroundTransparency=1;toggle.ZIndex=4
-            local arrow=label("DiscountArrow","⌄",390,168,32,28,20)
+            local arrow=label("DiscountArrow","chevron-small-down",390,168,32,28,16)
+            arrow.FontFace=iconFont;arrow.TextWrapped=false;arrow.AutoLocalize=false
             arrow.TextXAlignment=Enum.TextXAlignment.Center
             local function detail(name,text,x,y,w,strong)
                 local node=label(name,text,x,y,w,24,strong and 18 or 15)
@@ -1646,7 +1646,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
             detailAmount("DiscountTotalAmount",number(q.cost),288,true)
         end
     end
-    local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 60 or 110),416,40,function()
+    local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 60 or 86),416,40,function()
         self:activate()
     end)
     if not completed then
@@ -1662,7 +1662,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     primary.Interactable=false;primary.AutoButtonColor=false;primary.Selectable=false
     local terms
     if not completed then
-        terms=label("Terms","Your payment method will be charged. <u>Roblox Terms of Use</u> apply.",20,height-45,416,24,13)
+        terms=label("Terms","Your payment method will be charged. <u>Roblox Terms of Use</u> apply.",20,height-39,416,24,13)
         terms.RichText=true;terms.TextColor3=Color3.fromRGB(188,190,200)
         terms.TextXAlignment=Enum.TextXAlignment.Center
     end
@@ -1681,10 +1681,10 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
         height=expanded and 456 or 344
         panel.Size=UDim2.fromOffset(456,height)
         panel.DiscountRow.Size=UDim2.fromOffset(416,expanded and 168 or 56)
-        panel.DiscountArrow.Text=expanded and "⌃"or "⌄"
+        panel.DiscountArrow.Text=expanded and "chevron-small-up"or "chevron-small-down"
         for _,node in ipairs(discountParts)do node.Visible=expanded end
-        primary.Position=UDim2.fromOffset(20,height-110)
-        terms.Position=UDim2.fromOffset(20,height-45)
+        primary.Position=UDim2.fromOffset(20,height-86)
+        terms.Position=UDim2.fromOffset(20,height-39)
         fit()
         return true
     end
@@ -1777,6 +1777,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local binding={phase="Idle"}
     local original,overlay,connection,savedVisible,savedInteractable,savedSelectable
     local checkout,view,quote,processing,heartbeat
+    local pendingNotice
     local elapsed,dotElapsed,dots=0,0,0
     local function closeDialog(animated)
         if view then view:close(animated);view=nil end
@@ -1860,6 +1861,9 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function active()
         return not binding.closed and state.balance.applied and enabled()
     end
+    local function scheduleNotices(q)
+        if q and active()then pendingNotice={balance=q.balance,username=q.username,elapsed=0}end
+    end
     local function closeNativeGift(q)
         task.spawn(function()
             if quote~=q or not active()or not q.screen or not q.screen.Parent or q.screen.Enabled then return end
@@ -1906,7 +1910,9 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         binding.phase=completed and "Completed"or "Confirm";elapsed=0
     end
     function binding:cancel(animated)
+        local completed=self.phase=="Completed" and quote
         dismiss(animated)
+        if completed then scheduleNotices(completed)end
     end
     local function quoteMatches(button,item,username,price)
         return quote and button==quote.button and item==quote.item and username==quote.username
@@ -1922,6 +1928,21 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     function binding:step(dt)
         if type(dt)~="number" or dt<0 or dt~=dt or dt==math.huge then return end
         if view then view:step(dt)end
+        if pendingNotice then
+            local p=pendingNotice
+            if not active()or state.balance~=p.balance then pendingNotice=nil
+            else
+                p.elapsed+=dt
+                if not p.sent and p.elapsed+1e-8>=.1 then
+                    p.sent=true
+                    onChange(nil,"<Color=White>Sending gift to "..p.username.."...<Color=/>")
+                end
+                if pendingNotice==p and active()and state.balance==p.balance and p.elapsed+1e-8>=.32 then
+                    pendingNotice=nil
+                    onChange(nil,"<Color=White>Gift sent successfully<Color=/>")
+                end
+            end
+        end
         if self.closed or not quote or self.phase=="Completed"then return end
         if not validQuote()then dismiss();onChange("Selection or balance changed. Open Gift again.");return end
         elapsed+=dt
@@ -1945,7 +1966,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
                 closeNativeGift(q)
                 message="Simulated gift: "..q.item.name.." → "..q.username..". Not delivered."
             else dismiss()end
-            onChange(message,ok and "Gift sent successfully"or nil)
+            onChange(message)
         end
     end
     function binding:confirm()
@@ -1954,7 +1975,6 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             dismiss();onChange("Selection or balance changed. Open Gift again.");return false
         end
         closeDialog(true);self.phase="Purchasing";elapsed=0
-        onChange("Sending local gift preview to "..quote.username.."...","Sending gift to "..quote.username.."...")
         return true
     end
     function binding:buy()
@@ -1984,6 +2004,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     function binding:refresh()
         if active()and self.phase=="Completed"then
             if not window()then return end
+            scheduleNotices(quote)
             dismiss()
         end
         local frame=active() and window(true)
@@ -2029,7 +2050,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     end
     function binding:close()
         if heartbeat then heartbeat:Disconnect();heartbeat=nil end
-        self.closed=true;clear()
+        self.closed=true;pendingNotice=nil;clear()
     end
     if Run:IsRunning() and Run:IsClient()then heartbeat=Run.Heartbeat:Connect(function(dt)binding:step(dt)end)end
     return binding
@@ -2113,8 +2134,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.13", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.13")
+    text(panel, "Title", "BLOX CATALOG v12.14", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.14")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
