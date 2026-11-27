@@ -1454,7 +1454,8 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     local root = Instance.new("Folder")
     root.Name = "BloxCatalogLocalFruitModels"
     local cache = {models = {}, native = {}, loading = {}, errors = {}, closed = false}
-    function cache:capture(item, tool)
+    local stopWatching
+    function cache:capture(item, tool, refresh)
         if self.closed then return nil end
         local holder=tool.Parent
         local preview=holder and holder.Name=="__ReplicatedSpinnerInstances" and holder.Parent and holder.Parent:IsA("PlayerGui")
@@ -1462,8 +1463,8 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             or tool:GetAttribute("BloxCatalogOwned") or tool:GetAttribute("ClientCatalogOwned")
             or tostring(tool:GetAttribute("ItemId")) ~= item.id then return nil end
         -- Prefer a captured held Tool over transient preview copies of the same item.
-        if preview and self.native[item.id] then return self.models[item.id] end
-        if self.native[item.id] == tool then return self.models[item.id] end
+        if preview and self.native[item.id] and self.native[item.id]~=tool then return self.models[item.id] end
+        if self.native[item.id] == tool and not refresh then return self.models[item.id] end
         if #tool:GetDescendants() &gt; 3000 then return nil end
         local ok, clean = pcall(Equipment.clone,tool,item)
         if not ok or not clean then return nil end
@@ -1475,6 +1476,80 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         self.native[item.id] = tool
         if previous then previous:Destroy() end
         return clean
+    end
+    function cache:watch(player,items,onChange)
+        assert(not self.closed and not stopWatching,"Fruit source watcher already started or closed")
+        local watched,pending,connections={}, {}, {}
+        local watchedCount,notifyPending,stopped=0,false,false
+        local function sourceFor(node)
+            while node and node~=workspace and node~=player do
+                local parent=node.Parent
+                if parent and (parent==workspace or parent==player.Character
+                    or parent:IsA("Backpack") and parent.Parent==player)then
+                    return node:IsA("Tool") and node or nil
+                elseif parent and parent.Parent and parent.Name=="__ReplicatedSpinnerInstances" and parent.Parent==player:FindFirstChildOfClass("PlayerGui")then
+                    return (node:IsA("Tool")or node:IsA("Model"))and node or nil
+                end
+                node=parent
+            end
+        end
+        local function unwatch(source)
+            local bindings=watched[source]
+            if not bindings then return end
+            watched[source]=nil;watchedCount-=1
+            for _,connection in ipairs(bindings)do connection:Disconnect()end
+        end
+        local function queue(source)
+            if stopped or self.closed or pending[source]then return end
+            pending[source]=true
+            task.defer(function()
+                pending[source]=nil
+                if stopped or self.closed or sourceFor(source)~=source then return end
+                local item=items[tostring(source:GetAttribute("ItemId")or "")]
+                if not item or not (item.category=="Fruits"or item.isPhysicalFruit)then return end
+                local previous=self.models[item.id]
+                local captured=self:capture(item,source,true)
+                if captured and captured~=previous and onChange and not notifyPending then
+                    notifyPending=true
+                    task.defer(function()
+                        notifyPending=false
+                        if not stopped and not self.closed then onChange()end
+                    end)
+                end
+            end)
+        end
+        local function added(node)
+            local source=sourceFor(node)
+            if not source or source:GetAttribute("BloxCatalogOwned")or source:GetAttribute("ClientCatalogOwned")then return end
+            if not watched[source]then
+                local id=source:GetAttribute("ItemId")
+                local item=id and items[tostring(id)]
+                if id and (not item or not (item.category=="Fruits"or item.isPhysicalFruit))then return end
+                if watchedCount&gt;=256 then return end
+                watchedCount+=1
+                watched[source]={
+                    source:GetAttributeChangedSignal("ItemId"):Connect(function()queue(source)end),
+                    source.AncestryChanged:Connect(function()
+                        if sourceFor(source)==source then queue(source)else unwatch(source)end
+                    end),
+                    source.Destroying:Connect(function()unwatch(source)end),
+                }
+            end
+            queue(source)
+        end
+        stopWatching=function()
+            stopped=true
+            for _,connection in ipairs(connections)do connection:Disconnect()end
+            for source in pairs(watched)do unwatch(source)end
+            table.clear(pending)
+        end
+        table.insert(connections,player.DescendantAdded:Connect(added))
+        table.insert(connections,workspace.DescendantAdded:Connect(added))
+        local gui=player:FindFirstChildOfClass("PlayerGui")
+        for _,container in pairs({player:FindFirstChildOfClass("Backpack"),player.Character,
+            gui and gui:FindFirstChild("__ReplicatedSpinnerInstances"),workspace})do
+            for _,node in ipairs(container:GetChildren())do added(node)end
+        end
     end
     function cache:path(item)
         if self.closed or not (item.category=="Fruits" or item.isPhysicalFruit) or not fileExists or not assetUri then return nil end
@@ -1554,6 +1629,7 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     end
     function cache:close()
         self.closed = true
+        if stopWatching then stopWatching();stopWatching=nil end
         root:Destroy()
         table.clear(self.models)
         table.clear(self.native)
@@ -2310,8 +2386,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.23", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.23")
+    text(panel, "Title", "BLOX CATALOG v12.24", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.24")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -2840,6 +2916,7 @@ function UI.start()
         for _, connection in ipairs(connections) do connection:Disconnect() end
         table.clear(models)
     end)
+    fruitModels:watch(player,Catalog.byId,function()if alive then render()end end)
     resize(); refreshModels()
     return gui
 end

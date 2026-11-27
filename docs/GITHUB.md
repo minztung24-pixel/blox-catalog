@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.24 Automatically capture native fruit sources arriving later
+
+Previously, native templates arriving after startup were missed until Rescan. The Catalog now passively watches physical fruit/skin Tools in the local Backpack, current Character and Workspace, plus Tool/Model templates in the native preview holder. Exact ItemId remains required; Catalog clones, unrelated IDs and other characters' Tools are ignored. Late ItemIds and added descendants refresh the sanitized snapshot and availability cards without consuming inventory or initiating a resource request, purchase or roll.
+
+Captures and UI notifications are coalesced. Captured genuine Tools retain priority over other holder previews. Closing the Catalog disconnects global/source listeners and prevents queued callbacks from doing work; native objects are left intact. Watchers are bounded to 256 active sources and retain the existing 3000-descendant import limit. Per-frame changes to every FX property are not mirrored.
+
+The late-arrival UI regression fails on v12.23 and passes after the fix. Client Play checks cover streamed structure, late ItemIds/animation/FX, exact base/skin identity, sanitation, priority, retained snapshots and cleanup, while existing model/import assertions still pass. This fixes discovery timing; coverage remains **45 loaded local files, 35 missing files and one mismatched Empyrean file**. Dragon's unavailable idle data and the other previously measured clip failures remain unresolved.
+
 ## Additional verification on v12.23: known-good controls and Dragon
 
 Compared Yeti, Shadow and Dark with eight affected fruits/skins using three playback paths in the original game: Catalog preload, immediate Animator playback and immediate AnimationController playback. All nine control cases changed pose; all eight affected items failed preload and both direct paths remained at zero loaded clip length within seven seconds. Changing playback API alone did not restore Dragon or the other affected clips in this session. This does not establish whether permissions, stale IDs or asset delivery caused the missing clip data.

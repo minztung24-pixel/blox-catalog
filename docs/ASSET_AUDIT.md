@@ -11,6 +11,12 @@ Kiểm kê cập nhật ngày 27/11/2026 cho 81 trái vật phẩm trong Fruits 
 - **Đo lại trong Blox Fruits ngày 26/11:** Dragon, Dragon (West), Ember, Flame, Lightning, Quake và Werewolf (Tiger) đều có 4 mẫu Tool đang cầm, trạng thái cuối Failed do preload trả Failure và không có track đang chạy. Báo cáo kết thúc bình thường nhưng thiếu Tiger (1430).
 
 
+## Tự nhận model native mới, v12.24
+
+Sửa lỗi chỉ nhận nguồn có sẵn ở lần mở/Rescan: Catalog nay theo dõi thụ động Tool ở Backpack/Character/Workspace và Tool/Model trong kho preview native. Nguồn tới sau, ItemId tới sau hoặc thêm child mesh/animation/VFX sẽ làm mới snapshot sạch và thẻ Catalog. Không thêm asset, không mua/quay, không sửa source thật. Bỏ qua clone Catalog và vẫn phân biệt ItemId fruit/skin. Đóng panel dọn listener/callback; fixture kiểm tra trong Studio, không dùng asset giả trong game thật.
+
+**Coverage không tăng:** vẫn 45 model file nạp được, 35 thiếu file và 1 Empyrean sai nội dung. Tự nhận một nguồn tương lai không được tính thành đã tìm thấy nguồn đó. Chưa đo lại toàn bộ hình ảnh/animation/VFX của 81 trái sau sửa; các kết quả đối chứng dưới đây giữ nguyên. Chi tiết phạm vi và kiểm thử trong DIAG.md.
+
 ## Đối chứng chuyển động và bảo toàn model ngày 28/11/2026
 
 Đã kiểm tra sâu Yeti, Shadow, Dark (user xác nhận đầy đủ) và 8 mục lỗi bằng v12.23. 33 ca gồm preload Catalog, phát trực tiếp qua Animator và phát trực tiếp qua AnimationController. Yeti đổi pose 108/120 khớp, Shadow 89/99, Dark 47/70 ở cả ba đường. Dark không có ParticleEmitter/Beam/Trail trong file; 0 VFX không tự động đồng nghĩa chưa hoàn chỉnh.

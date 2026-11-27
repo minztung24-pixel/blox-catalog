@@ -74,8 +74,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.23", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.23")
+    text(panel, "Title", "BLOX CATALOG v12.24", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.24")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -604,6 +604,7 @@ function UI.start()
         for _, connection in ipairs(connections) do connection:Disconnect() end
         table.clear(models)
     end)
+    fruitModels:watch(player,Catalog.byId,function()if alive then render()end end)
     resize(); refreshModels()
     return gui
 end

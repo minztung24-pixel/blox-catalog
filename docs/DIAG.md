@@ -1,6 +1,18 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 28/11/2026, Catalog v12.23. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Các số đo model/animation/VFX dưới đây vẫn là lượt 27/11; kiểm tra nguồn Shop mới chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 28/11/2026, Catalog v12.24. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Thống kê toàn bộ giữ mốc 27/11; các lượt đối chứng 28/11 ghi riêng bên dưới. Chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Tự nhận nguồn native đến muộn, v12.24
+
+V12.23 chỉ nhận nguồn đang có lúc mở panel, respawn hoặc Rescan. Regression UI tạo native preview holder/model sau lần quét đầu tiên giữ thẻ Venom ở màu thiếu model; World Tool mới cũng chưa vào cache nếu không quét lại. Thêm FruitModels.watch để nghe thụ động DescendantAdded trong player/Workspace, ItemId và ancestry của nguồn phù hợp. Không polling theo frame, gọi remote hoặc tự mở/quay Gacha.
+
+Chỉ theo dõi Tool trực tiếp ở Backpack của player, Character hiện tại hoặc Workspace; Tool/Model trong đúng PlayerGui.__ReplicatedSpinnerInstances cũng hợp lệ. Bỏ qua clone Catalog, ID không thuộc trái vật phẩm và nguồn của nhân vật khác. Tối đa 256 nguồn được theo dõi đồng thời; giới hạn nhập model 3000 descendants vẫn giữ. Rescan cũ vẫn dùng được.
+
+Capture được defer/coalesce theo nguồn để nhận các child cùng đợt replication. ItemId đến sau hoặc thêm child mesh/animation/VFX sẽ cập nhật snapshot qua sanitizer hiện có; giữ clip/FX đang quan sát, không suy diễn tài nguyên chưa có. Refresh cùng nguồn không còn bị memoization bỏ qua. Preview khác vẫn không đè Tool thật đã cache. Một đợt cập nhật chỉ yêu cầu render một lần; không sửa inventory/stock, model gốc hay giao dịch.
+
+Đóng Catalog ngắt cả listener toàn cục và listener từng nguồn, hủy tác dụng của callback đang chờ; native source không bị phá. Kiểm thử Client Play: model tới sau khi mở UI tự hiện xanh không bấm Rescan, Tool native tới sau cũng được nhận, ItemId/animation/FX tới muộn được giữ, đúng base/skin, loại scripts/remotes, giữ ưu tiên Tool thật, giữ snapshot sau cleanup và đóng khi capture đang chờ. Regression UI thất bại trước sửa và đạt sau sửa; các bài FruitModels/FruitPreviewModels/FruitAnimationImport vẫn đạt.
+
+Đây là sửa đường nhận/cập nhật nguồn game thực sự cấp, không chứng minh đã khôi phục 35 file thiếu hay clip Dragon. Không theo dõi mọi thay đổi thuộc tính FX do script chạy theo frame; không phục dựng controller bị thiếu trong file. Chưa đo lại toàn bộ 81 trái hoặc xác nhận một model thiếu mới trong live game. Kết quả 33 ca animation trước đó giữ nguyên.
 
 ## Đối chứng Yeti/Shadow/Dark và Dragon, ngày 28/11/2026
 
