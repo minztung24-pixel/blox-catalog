@@ -74,7 +74,7 @@ class BuildCatalogTests(unittest.TestCase):
     def test_studio_package_contains_required_fruit_model_module(self):
         folder = Path(__file__).parents[1] / "catalog"
         sources = {name: (folder / (name + ".luau")).read_text(encoding="utf-8")
-                   for name in ("Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "NativeShop", "UI")}
+                   for name in ("Catalog", "NativeItems", "NativeEquip", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI")}
         sources.update(Data="return {}", Main="return nil")
         root = ET.fromstring(self.module.package_xml(sources, {}))
         names = {item.findtext("Properties/string[@name='Name']") for item in root.find("Item").findall("Item")}
@@ -82,6 +82,7 @@ class BuildCatalogTests(unittest.TestCase):
         self.assertIn("FruitAnimations", names, "Studio imports need the verified animation references")
         self.assertIn("NativeEquip", names, "Studio package must include the legacy Equip adapter")
         self.assertIn("NativeDialogue", names, "Studio package must include the native menu adapter")
+        self.assertIn("RobloxPrompt", names, "Studio package includes the common renderer")
         self.assertIn("NativeShop", names, "Studio package must include the native gift preview adapter")
 
     def test_default_appearance_of_variant_is_still_a_skin(self):

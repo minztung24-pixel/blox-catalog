@@ -1,8 +1,25 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.11. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.12. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
 
-## Processing và thanh Buy, v12.11
+## Bộ hiển thị local và chuyển động, v12.12
+
+Tách `RobloxPrompt` thành module chỉ hiển thị; `NativeShop` truyền dữ liệu quote/callback và giữ toàn bộ kiểm tra session, số dư, giá và người nhận. Renderer không gọi MarketplaceService, remote, receipt hoặc CorePackages. Vẫn dùng Shop/Gift và Processing overlay gốc; hai dialog xác nhận/hoàn tất là bản local có nhãn mô phỏng. Chưa xác nhận khớp từng pixel với client Roblox đang cài.
+
+Đã lần theo alias package trong cùng artifact commit `69b8d709dccdb25eb71fefd5b23f26b12fdb9b43`, đối chiếu các nguồn:
+
+- [Dark theme](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Packages/_Index/RbxDesignFoundations-31ab8d40-6.1.1/RbxDesignFoundations/Default/Dark.luau): nền Surface100 RGB 25/26/31; backdrop RGB 10/10/14, transparency 0.25; BuilderSans heading-small 25 Bold, title-medium 18 Bold, label-medium 18 Medium, body-small 15 Regular, body-medium 18 Regular; radius-large 16.
+- [Otter ease](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Packages/_Index/Otter-31ab8d40-1.3.7/Otter/ease.luau): Enum Quad là p*p, tức ease-in. **Sửa nội suy Quad/Out của v12.11**; tại nửa thời gian thanh chạy 25%, không phải 75%.
+- [CenterSheet](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Packages/_Index/Foundation/Foundation/Components/Sheet/CenterSheet.luau): entry 0.3s, offset 32px, StandardOut cubic Bezier (0.2,0,0,1); exit 0.1s StandardIn (0.8,0,0.4,1); backdrop fade 0.1s. Tôn trọng ReducedMotionEnabled.
+- [Initial button delay](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Workspace/Packages/_Index/IAPExperience/IAPExperience/Generic/Hooks/useInitialButtonDisableDelay.luau): khóa đầu 0.3s, rồi Buy fill 2.5s theo UnifiedProductPurchaseModal. Tổng khóa xác nhận 2.8s; completion OK cũng khóa đầu 0.3s.
+- [Button variants](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Packages/_Index/Foundation/Foundation/Components/Button/useButtonVariants.luau): InputSize.Medium dùng text-label-medium.
+- [Unified completion](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Workspace/Packages/_Index/IAPExperience/IAPExperience/Generic/UnifiedPurchaseCompletionModal.luau): heading-small, CircleCheck 48px, body-medium và khóa đầu OK.
+
+Chỉ chuyển các thông số cần thiết sang renderer tự viết, không phân phối lại package/source Roblox. Source artifact ngoài chưa được xác nhận cùng binary với máy người dùng. Hai khoảng Processing local 0.33s trước/sau xác nhận là nhịp xem trước chủ động, không phải độ trễ server đã đo. Không mô phỏng nạp Robux bằng tiền thật khi thiếu số dư.
+
+Kiểm chứng: 5 bộ assertion Luau (RobloxPrompt, NativeShop, Simulation, NativeItems, NativeEquip), 7 test build Python đạt. Studio client fixture: Control giá 4000, Plus mô phỏng giảm còn 3600, số dư 975141 → 971541, chỉ một gift local; callback mua gốc không tăng sau Apply; UI Close fixture gọi một lần, Gift tắt nhưng completion còn hiển thị; OK dọn modal; Reset trả lại callback gốc. Đã kiểm tra bằng click thực trong Studio, không mua thật; fixture test đã dọn. Tích hợp controller/overlay của Blox Fruits live và thao tác gamepad/mobile vẫn cần đối chiếu trên phiên thực tế.
+
+## Processing và thanh Buy, v12.11 (lịch sử; timing đã sửa ở v12.12)
 
 Đọc lại báo cáo checkout thật đã lưu (SHA256 `82e75c89cc9e1c467776ae2510fbd823d88df99120724e0c3fdfa70fa214e87e`): 12 snapshot, complete=true. Processing Purchase hiện ở 22.629s; PurchasePromptApp tăng từ 7 lên 17 node nhưng vẫn chỉ có khung/cursor, không chứa cây nội dung nút Buy. GiftWindow.Enabled=false ở 45.265s; tín hiệu client hoàn tất ở 59.948s. Đây không phải video hoặc mã hoạt ảnh Buy; không thể lấy thời lượng thanh từ báo cáo này. Dữ liệu và source game thô giữ local.
 

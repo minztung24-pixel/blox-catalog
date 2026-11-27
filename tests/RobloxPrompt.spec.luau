@@ -1,0 +1,49 @@
+return function(Prompt)
+    local pg=Instance.new("Folder")
+    local data={productName="Reference item - Gift",icon="rbxasset://textures/ui/common/robux@3x.png",
+        balance=10000,price=3500,cost=3150,discountLabel="Saving 350 with Plus",resultText="Local test completed."}
+    local buys,cancels=0,0
+    local view=Prompt.open(pg,data,false,function()buys+=1 end,function()cancels+=1 end)
+    local ok,err=pcall(function()
+        local gui=view.gui
+        local panel=gui.Shade.Dialog
+        assert(panel.Buy.Caption.TextSize==18 and panel.OriginalPrice.TextSize==15,"Reference typography sizes")
+        assert(gui:GetAttribute("Simulation") and gui:GetAttribute("Renderer")=="LocalRobloxPrompt")
+        local reduced=gui:GetAttribute("ReducedMotion")
+        assert(panel.GroupTransparency==(reduced and 0 or 1) and panel.Position.Y.Offset==(reduced and 0 or 32))
+        assert(not view:activate() and buys==0,"Opening cannot confirm")
+        view:step(.15)
+        if reduced then assert(panel.GroupTransparency==0 and panel.Position.Y.Offset==0)
+        else assert(panel.GroupTransparency>0 and panel.GroupTransparency<1 and panel.Position.Y.Offset>0)end
+        assert(gui:GetAttribute("BuyProgress")==0 and not view:activate())
+        view:step(.15)
+        assert(panel.GroupTransparency==0 and panel.Position.Y.Offset==0)
+        assert(gui:GetAttribute("BuyProgress")==0 and not view:ready())
+        view:step(1.25)
+        assert(math.abs(gui:GetAttribute("BuyProgress")-.25)<.0001,"Otter's Quad advances to one-quarter at half time")
+        assert(not view:activate() and buys==0)
+        view:step(1.25)
+        assert(view:ready() and gui:GetAttribute("BuyReady"))
+        assert(view:activate() and buys==1)
+        assert(not view:activate() and buys==1,"One view submits once")
+        view:close(true)
+        if not reduced then
+            assert(gui.Parent and not view:activate())
+            view:step(.05)
+            assert(panel.GroupTransparency>0 and panel.Position.Y.Offset>0)
+            view:step(.05)
+        end
+        assert(not gui.Parent,"Close animation removes the view")
+        view=Prompt.open(pg,data,true,function()error("Completion cannot buy")end,function()cancels+=1 end)
+        assert(not view:activate(),"Completion has the initial input lock too")
+        view:step(.3)
+        assert(view:activate() and cancels==1)
+        assert(not view:activate() and cancels==1)
+        view:close()
+        local invalid=table.clone(data);invalid.cost=0/0
+        assert(not pcall(Prompt.open,pg,invalid,false,function()end,function()end))
+        assert(not pg:FindFirstChild("BloxCatalogCheckout"),"Invalid data cannot leave a modal")
+    end)
+    view:close();pg:Destroy();assert(ok,err)
+    return "Roblox prompt assertions passed: source-timed entry, delayed Quad fill, single activation, animated exit and completion guard"
+end

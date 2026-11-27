@@ -1,21 +1,18 @@
+local RobloxPrompt = require(script.Parent.RobloxPrompt)
 local Catalog = require(script.Parent.Catalog)
 local Inventory = require(script.Parent.Inventory)
 local Collection=game:GetService("CollectionService")
-local Input=game:GetService("UserInputService")
 local Run=game:GetService("RunService")
-local Tween=game:GetService("TweenService")
 local NativeShop={}
 
 function NativeShop.new(playerGui,state,onChange,enabled)
     local binding={phase="Idle"}
     local original,overlay,connection,savedVisible,savedInteractable,savedSelectable
-    local checkout,quote,processing,heartbeat
+    local checkout,view,quote,processing,heartbeat
     local elapsed,dotElapsed,dots=0,0,0
-    local checkoutConnections={}
-    local function closeDialog()
-        for _,event in ipairs(checkoutConnections)do event:Disconnect()end
-        table.clear(checkoutConnections)
-        if checkout then checkout:Destroy();checkout=nil end
+    local function closeDialog(animated)
+        if view then view:close(animated);view=nil end
+        checkout=nil
     end
     local function restoreProcessing()
         if not processing then return end
@@ -26,8 +23,8 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             p.image.Image=p.sprite;p.image.ImageRectOffset=p.offset;p.image.ImageRectSize=p.size;p.image.Rotation=p.rotation
         end
     end
-    local function dismiss()
-        closeDialog();restoreProcessing();quote=nil;binding.phase="Idle";elapsed=0
+    local function dismiss(animated)
+        closeDialog(animated);restoreProcessing();quote=nil;binding.phase="Idle";elapsed=0
     end
     local function startProcessing(frame,item)
         local native=frame:FindFirstChild("Overlay")
@@ -95,142 +92,20 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function active()
         return not binding.closed and state.balance.applied and enabled()
     end
-    local function number(value)
-        local formatted=string.format("%.0f",value)
-        repeat
-            local count
-            formatted,count=formatted:gsub("^(%d+)(%d%d%d)","%1,%2")
-            if count==0 then return formatted end
-        until false
-    end
     local function show(completed)
         local q=quote
-        local height=completed and 280 or (q.discount and 344 or 264)
-        local gui=Instance.new("ScreenGui")
-        gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
-        gui:SetAttribute("Simulation",true)
-        gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-        gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
-        local order=0
-        for _,child in ipairs(playerGui:GetChildren())do
-            if child:IsA("ScreenGui")then order=math.max(order,child.DisplayOrder)end
-        end
-        gui.DisplayOrder=order+1
-        local shade=Instance.new("TextButton",gui)
-        shade.Name="Shade";shade.Size=UDim2.fromScale(1,1);shade.BackgroundColor3=Color3.new()
-        shade.BackgroundTransparency=.4;shade.Text="";shade.AutoButtonColor=false;shade.Modal=true
-        local panel=Instance.new("Frame",shade)
-        panel.Name="Dialog";panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.5)
-        panel.Size=UDim2.fromOffset(456,height);panel.BackgroundColor3=Color3.fromRGB(25,26,31)
-        panel.BorderSizePixel=0;panel.ZIndex=2
-        local corner=Instance.new("UICorner",panel);corner.CornerRadius=UDim.new(0,16)
-        local scale=Instance.new("UIScale",panel)
-        local function fit()
-            local camera=workspace.CurrentCamera
-            local viewport=camera and camera.ViewportSize or Vector2.new(800,600)
-            scale.Scale=math.min(1,math.max(1,viewport.X-24)/456,math.max(1,viewport.Y-100)/height)
-        end
-        fit()
-        local camera=workspace.CurrentCamera
-        if camera then table.insert(checkoutConnections,camera:GetPropertyChangedSignal("ViewportSize"):Connect(fit))end
-        local function label(name,text,x,y,w,h,size)
-            local node=Instance.new("TextLabel",panel)
-            node.Name=name;node.Text=text;node.Position=UDim2.fromOffset(x,y);node.Size=UDim2.fromOffset(w,h)
-            node.BackgroundTransparency=1;node.TextColor3=Color3.fromRGB(240,241,245)
-            node.FontFace=Font.new("rbxasset://fonts/families/BuilderSans.json");node.TextSize=size or 18
-            node.TextXAlignment=Enum.TextXAlignment.Left;node.TextWrapped=true;node.ZIndex=3
-            return node
-        end
-        local function button(name,text,x,y,w,h,callback)
-            local node=Instance.new("TextButton",panel)
-            node.Name=name;node.Text=text;node.Position=UDim2.fromOffset(x,y);node.Size=UDim2.fromOffset(w,h)
-            node.BackgroundColor3=Color3.fromRGB(51,95,255);node.TextColor3=Color3.new(1,1,1)
-            node.TextSize=18;node.FontFace=Font.new("rbxasset://fonts/families/BuilderSans.json",Enum.FontWeight.Bold)
-            node.BorderSizePixel=0;node.ZIndex=4
-            Instance.new("UICorner",node).CornerRadius=UDim.new(0,8)
-            table.insert(checkoutConnections,node.Activated:Connect(callback))
-            return node
-        end
-        local function bold(node)
-            node.FontFace=Font.new("rbxasset://fonts/families/BuilderSans.json",Enum.FontWeight.Bold)
-            return node
-        end
-        local function robux(name,x,y,size)
-            local icon=Instance.new("ImageLabel",panel)
-            icon.Name=name;icon.Image="rbxasset://textures/ui/common/robux@3x.png"
-            icon.Position=UDim2.fromOffset(x,y);icon.Size=UDim2.fromOffset(size,size)
-            icon.BackgroundTransparency=1;icon.ZIndex=3
-        end
-        bold(label("Title",completed and "Purchase completed" or "Buy item",20,16,270,28,20))
-        local close=button("Close","×",408,10,36,36,function()binding:cancel()end)
-        close.BackgroundTransparency=1;close.TextSize=28
-        if completed then
-            local circle=Instance.new("Frame",panel)
-            circle.Name="CheckCircle";circle.Position=UDim2.fromOffset(202,52);circle.Size=UDim2.fromOffset(52,52)
-            circle.BackgroundTransparency=1;circle.ZIndex=3
-            Instance.new("UICorner",circle).CornerRadius=UDim.new(1,0)
-            local stroke=Instance.new("UIStroke",circle);stroke.Thickness=2;stroke.Color=Color3.fromRGB(220,222,228)
-            local check=label("Check","✓",202,52,52,52,30);check.TextXAlignment=Enum.TextXAlignment.Center
-            local result=label("Result","Simulated purchase of "..q.item.name.." for "..q.username.." completed.",20,126,416,52,14)
-            result.TextXAlignment=Enum.TextXAlignment.Center
-        else
-            robux("BalanceIcon",308,21,18)
-            local balance=bold(label("Balance",number(state.balance.robux),304,16,94,28,16))
-            balance.TextXAlignment=Enum.TextXAlignment.Right
-            local function alignBalance()
-                panel.BalanceIcon.Position=UDim2.fromOffset(398-balance.TextBounds.X-24,21)
-            end
-            table.insert(checkoutConnections,balance:GetPropertyChangedSignal("TextBounds"):Connect(alignBalance))
-            alignBalance()
-            local icon=Instance.new("ImageLabel",panel)
-            icon.Name="Icon";icon.Image=q.item.icon;icon.BackgroundTransparency=1
-            icon.Position=UDim2.fromOffset(20,58);icon.Size=UDim2.fromOffset(72,72);icon.ZIndex=3
-            if q.item.iconRectOffset then icon.ImageRectOffset=Vector2.new(table.unpack(q.item.iconRectOffset))end
-            if q.item.iconRectSize then icon.ImageRectSize=Vector2.new(table.unpack(q.item.iconRectSize))end
-            bold(label("Product",q.item.name.." - Gift",108,60,328,32,18))
-            robux("PriceIcon",108,101,16)
-            local amount=bold(label("Price",number(q.cost),132,94,160,28,18))
-            if q.cost~=q.price then
-                local old=bold(label("OriginalPrice","<s>"..number(q.price).."</s>",132,94,140,28,16))
-                local function alignPrice()old.Position=UDim2.fromOffset(132+amount.TextBounds.X+16,94)end
-                table.insert(checkoutConnections,amount:GetPropertyChangedSignal("TextBounds"):Connect(alignPrice))
-                alignPrice()
-                old.RichText=true;old.TextColor3=Color3.fromRGB(172,175,185)
-            end
-            if q.discount then
-                local row=Instance.new("Frame",panel)
-                row.Name="DiscountRow";row.Position=UDim2.fromOffset(20,154);row.Size=UDim2.fromOffset(416,56)
-                row.BackgroundColor3=Color3.fromRGB(30,32,40);row.BorderSizePixel=0;row.ZIndex=2
-                Instance.new("UICorner",row).CornerRadius=UDim.new(0,8)
-                robux("DiscountIcon",36,173,18)
-                bold(label("Discount","Saving "..number(q.price-q.cost).." with Plus",62,168,350,28,18))
-            end
-        end
-        local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 80 or 110),416,40,function()
-            if completed then binding:cancel()else binding:confirm()end
-        end)
-        if not completed then
-            local caption=Instance.new("TextLabel",primary)
-            caption.Name="Caption";caption.Text=primary.Text;primary.Text=""
-            caption.Size=UDim2.fromScale(1,1);caption.BackgroundTransparency=1
-            caption.FontFace=primary.FontFace;caption.TextSize=primary.TextSize
-            caption.TextColor3=primary.TextColor3;caption.ZIndex=primary.ZIndex+1
-            primary.Interactable=false;primary.AutoButtonColor=false
-            local delay=Instance.new("UIGradient",primary);delay.Name="InputDelay"
-            delay.Transparency=NumberSequence.new(.5)
-            gui:SetAttribute("BuyReady",false);gui:SetAttribute("BuyProgress",0)
-        end
-        local scope=label("Scope","SIMULATION · No real Robux spent or gift delivered.",20,height-45,416,24,14)
-        scope.TextColor3=Color3.fromRGB(180,183,193);scope.TextXAlignment=Enum.TextXAlignment.Center
-        table.insert(checkoutConnections,Input.InputBegan:Connect(function(input)
-            if input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB then binding:cancel()end
-        end))
-        gui:SetAttribute("Phase",completed and "Completed" or "Confirm")
-        binding.phase=completed and "Completed" or "Confirm";elapsed=0
-        checkout=gui;gui.Parent=playerGui
+        view=RobloxPrompt.open(playerGui,{
+            productName=q.item.name.." - Gift",icon=q.item.icon,
+            iconRectOffset=q.item.iconRectOffset,iconRectSize=q.item.iconRectSize,
+            balance=state.balance.robux,price=q.price,cost=q.cost,
+            discountLabel=q.discount and ("Saving "..(q.price-q.cost).." with Plus")or nil,
+            resultText="You have successfully bought "..q.item.name.." for "..q.username.."."
+        },completed,function()binding:confirm()end,function()binding:cancel(true)end)
+        checkout=view.gui
+        binding.phase=completed and "Completed"or "Confirm";elapsed=0
     end
-    function binding:cancel()
-        dismiss()
+    function binding:cancel(animated)
+        dismiss(animated)
     end
     local function quoteMatches(button,item,username,price)
         return quote and button==quote.button and item==quote.item and username==quote.username
@@ -244,8 +119,9 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         return quoteMatches(button,item,username,price)
     end
     function binding:step(dt)
-        if self.closed or not quote or self.phase=="Completed"then return end
         if type(dt)~="number" or dt<0 or dt~=dt or dt==math.huge then return end
+        if view then view:step(dt)end
+        if self.closed or not quote or self.phase=="Completed"then return end
         if not validQuote()then dismiss();onChange("Selection or balance changed. Open Gift again.");return end
         elapsed+=dt
         if processing then
@@ -258,16 +134,6 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         if self.phase=="Preparing" and elapsed>=.33 then
             -- Local preview has no server wait: show one authored processing-dot interval first.
             show(false)
-        elseif self.phase=="Confirm"then
-            local ready=elapsed>=2.5
-            if ready and checkout:GetAttribute("BuyReady")then return end
-            local progress=Tween:GetValue(math.clamp(elapsed/2.5,0,1),Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-            checkout:SetAttribute("BuyProgress",progress);checkout:SetAttribute("BuyReady",ready)
-            local buy=checkout.Shade.Dialog.Buy
-            buy.Interactable=ready;buy.AutoButtonColor=ready
-            buy.InputDelay.Transparency=ready and NumberSequence.new(0)or NumberSequence.new({
-                NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(math.max(0,progress-.0001),0),
-                NumberSequenceKeypoint.new(math.min(1,progress+.0001),.5),NumberSequenceKeypoint.new(1,.5)})
         elseif self.phase=="Purchasing" and elapsed>=.33 then
             local q=quote
             restoreProcessing()
@@ -292,11 +158,11 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         end
     end
     function binding:confirm()
-        if not quote or not checkout or self.phase~="Confirm" or elapsed<2.5 then return false end
+        if not quote or not view or self.phase~="Confirm" or not view:ready()then return false end
         if not validQuote()then
             dismiss();onChange("Selection or balance changed. Open Gift again.");return false
         end
-        closeDialog();self.phase="Purchasing";elapsed=0
+        closeDialog(true);self.phase="Purchasing";elapsed=0
         return true
     end
     function binding:buy()

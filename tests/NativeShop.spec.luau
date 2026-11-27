@@ -20,7 +20,7 @@ return function(NativeShop,Inventory)
     local function buy()
         if binding.phase=="Idle"then gui.Enabled=true;binding:refresh()end
         local ok=binding:buy()
-        if ok then binding:step(.33);binding:step(2.5)end
+        if ok then binding:step(.33);binding:step(2.8)end
         return ok
     end
     local function confirm()
@@ -50,8 +50,10 @@ return function(NativeShop,Inventory)
         pg.BloxCatalogCheckout:SetAttribute("BuyReady",true)
         assert(not binding:confirm(),"Readiness is checked against elapsed time, not a UI attribute")
         pg.BloxCatalogCheckout:SetAttribute("BuyReady",false)
+        binding:step(.3)
+        assert(pg.BloxCatalogCheckout:GetAttribute("BuyProgress")==0,"Roblox's initial input lock precedes the Buy fill")
         binding:step(1.25)
-        assert(pg.BloxCatalogCheckout:GetAttribute("BuyProgress")>0 and pg.BloxCatalogCheckout:GetAttribute("BuyProgress")<1)
+        assert(math.abs(pg.BloxCatalogCheckout:GetAttribute("BuyProgress")-.25)<.0001,"Native Otter Quad is ease-in, not ease-out")
         assert(not binding:confirm() and state.balance.robux==10000,"A partially filled button cannot charge")
         binding:step(1.25)
         assert(pg.BloxCatalogCheckout:GetAttribute("BuyReady") and state.balance.robux==10000)

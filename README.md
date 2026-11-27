@@ -12,7 +12,17 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.11 Processing, delayed Buy and completion flow
+## v12.12 Shared local prompt and source-based motion
+
+The presentation now lives in `RobloxPrompt`, separate from the Blox Fruits adapter and local inventory. Both confirmation and completion use one renderer. Reference theme values update Builder Sans sizes, colors, backdrop, corners and the success check. The medium button uses an 18px label; the original price uses 15px body text.
+
+The previous Quad/Out approximation is corrected: there is a 0.3-second initial input lock, followed by a 2.5-second **Quad ease-in** Buy fill. Entry uses 0.3-second StandardOut motion from 32px below; exit uses 0.1-second StandardIn. Backdrop fade takes 0.1 seconds. Reduced-motion settings remove the transitions while preserving the input locks. Filling never submits a purchase. Completion has its own 0.3-second initial OK lock.
+
+These values come from pinned, decompiled Roblox component/theme artifacts, not an imported CoreGui or proof of the installed client's exact build. The native Shop/Gift selection and Processing overlay remain in use; the two financial dialogs remain local recreations with an explicit simulation footer. No real Robux, purchase handler or receipt is used after Apply. Reset restores the original button. Insufficient fake balance is blocked; a real-currency Robux upsell is not simulated.
+
+Validation: five Luau suites (RobloxPrompt, NativeShop, Simulation, NativeItems and NativeEquip) and seven Python build tests pass. Studio clicks checked native processing, the delayed confirmation guard, the visual Plus discount and a single charge: 975141 minus 3600 for Control leaves 971541. The original purchase callback stayed unchanged after Apply, the UI-only Close fixture ran once, OK cleaned up, and Reset restored the original callback. Test-only Studio objects were removed. See [DIAG](docs/DIAG.md) for reference links and remaining live-game limits.
+
+## v12.11 Processing, delayed Buy and completion flow (previous timing)
 
 After Apply, the flow is now **Gift → the existing game Processing Purchase overlay → Buy input-delay fill → local processing → Gift closes → local completion**. The adapter uses `GiftWindow.Window.Overlay.Loading` directly, preserves its icon/caption/visibility, and restores them on cancel or cleanup. Missing or already busy native processing UI is reported instead of creating a replacement. No game purchase handler is called.
 
