@@ -11,6 +11,14 @@ Kiểm kê cập nhật ngày 27/11/2026 cho 81 trái vật phẩm trong Fruits 
 - **Đo lại trong Blox Fruits ngày 26/11:** Dragon, Dragon (West), Ember, Flame, Lightning, Quake và Werewolf (Tiger) đều có 4 mẫu Tool đang cầm, trạng thái cuối Failed do preload trả Failure và không có track đang chạy. Báo cáo kết thúc bình thường nhưng thiếu Tiger (1430).
 
 
+## Bổ sung đường tìm và lưu nguồn, v12.25
+
+Watcher nay nhận Tool vật phẩm trực tiếp trong Character thật của người chơi khác đang được replicate tới client, xác thực Character và ItemId, bỏ qua NPC và clone Catalog. Nguồn local có ưu tiên. Không chạm vào Tool gốc hoặc yêu cầu/mua tài nguyên. Kiểm tra khả năng exporter ghi nhận 6 Character khác nhưng không có Tool physical hợp lệ đang cầm tại thời điểm đo; không lưu danh tính người chơi trong báo cáo tổng hợp.
+
+Thêm archive riêng cho bản sao sạch, chỉ nhận sau vòng export → import → kiểm chứng cấu trúc/rig/render/VFX đã đo. Chỉ mục theo physical ItemId giữ fruit/skin riêng; khi chạy lại, Archive được tra trước file cũ. File capture và metadata runtime ở Work Potassium riêng tư, không đưa asset game lên repo. Exporter làm mất ItemId và làm tròn curve/range VFX trên Yeti đã được phát hiện; metadata giá trị gốc khắc phục loại sai lệch này, còn mất geometry/cấu trúc phải từ chối. Xem giới hạn và kiểm thử trong DIAG.
+
+**Chưa tăng coverage:** 45 file nạp được, 35 thiếu file, 1 Empyrean sai model. Tám suite Client Play và 7 Python checks đã đạt. Lượt kiểm chứng exporter native mới trên Yeti/Arcsteel Magnet/Dark đã complete=true, passed=true: cả ba lưu/nạp qua bộ nạp mới đúng ItemId, giữ rig và các thuộc tính cấu trúc/render/VFX đã đo. Ba model đối chứng đều đã có file cũ, không được tính là tìm thêm ba trái. Không xác nhận Dragon đã có clip mới hoặc toàn bộ VFX/controller đã đầy đủ. Tổng hợp: data/fruit-capture-check-2026-11-28.json.
+
 ## Tự nhận model native mới, v12.24
 
 Sửa lỗi chỉ nhận nguồn có sẵn ở lần mở/Rescan: Catalog nay theo dõi thụ động Tool ở Backpack/Character/Workspace và Tool/Model trong kho preview native. Nguồn tới sau, ItemId tới sau hoặc thêm child mesh/animation/VFX sẽ làm mới snapshot sạch và thẻ Catalog. Không thêm asset, không mua/quay, không sửa source thật. Bỏ qua clone Catalog và vẫn phân biệt ItemId fruit/skin. Đóng panel dọn listener/callback; fixture kiểm tra trong Studio, không dùng asset giả trong game thật.

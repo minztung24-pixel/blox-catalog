@@ -7,6 +7,7 @@ local NativeShop = require(script.Parent.NativeShop)
 local NativeDialogue = require(script.Parent.NativeDialogue)
 local Equipment = require(script.Parent.Equipment)
 local FruitModels = require(script.Parent.FruitModels)
+local FruitArchive = require(script.Parent.FruitArchive)
 local UI = {}
 
 function UI.start()
@@ -74,8 +75,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.24", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.24")
+    text(panel, "Title", "BLOX CATALOG v12.25", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.25")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -119,7 +120,7 @@ function UI.start()
         if native then displayNotification(value,"FruitNotificationStatus")end
     end
     local function sourceFor(item)
-        return (fruitModels.native[item.id] and fruitModels.models[item.id]) or models[item.id]
+        return ((fruitModels.native[item.id] or fruitModels.archived[item.id]) and fruitModels.models[item.id]) or models[item.id]
             or (item.physicalId and models[tostring(item.physicalId)]) or fruitModels.models[item.id]
     end
     local abilities=NativeAbilities.new(state,player)
@@ -605,6 +606,12 @@ function UI.start()
         table.clear(models)
     end)
     fruitModels:watch(player,Catalog.byId,function()if alive then render()end end)
+    fruitModels.archive=FruitArchive.new(nil,function(id,ok,message)
+        if not alive then return end
+        gui:SetAttribute("FruitArchiveLastId",id)
+        gui:SetAttribute("FruitArchiveStatus",ok and "Saved"or "Failed")
+        if not ok then warn("[Blox Catalog] Fruit capture not saved: "..id.." / "..tostring(message))end
+    end)
     resize(); refreshModels()
     return gui
 end

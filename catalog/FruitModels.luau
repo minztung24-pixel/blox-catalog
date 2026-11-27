@@ -8,9 +8,9 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     getObjects = getObjects or function(uri) return game:GetObjects(uri) end
     local root = Instance.new("Folder")
     root.Name = "BloxCatalogLocalFruitModels"
-    local cache = {models = {}, native = {}, loading = {}, errors = {}, closed = false}
+    local cache = {models = {}, native = {}, foreign = {}, archived = {}, loading = {}, errors = {}, closed = false}
     local stopWatching
-    function cache:capture(item, tool, refresh)
+    function cache:capture(item, tool, refresh, foreign)
         if self.closed then return nil end
         local holder=tool.Parent
         local preview=holder and holder.Name=="__ReplicatedSpinnerInstances" and holder.Parent and holder.Parent:IsA("PlayerGui")
@@ -29,18 +29,24 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         self.models[item.id] = clean
         self.errors[item.id] = nil
         self.native[item.id] = tool
+        self.foreign[item.id] = foreign or nil
+        self.archived[item.id] = nil
         if previous then previous:Destroy() end
+        if self.archive then self.archive:enqueue(item,clean) end
         return clean
     end
     function cache:watch(player,items,onChange)
         assert(not self.closed and not stopWatching,"Fruit source watcher already started or closed")
         local watched,pending,connections={}, {}, {}
+        local players=game:GetService("Players")
+        local peers={}
         local watchedCount,notifyPending,stopped=0,false,false
         local function sourceFor(node)
             while node and node~=workspace and node~=player do
                 local parent=node.Parent
                 if parent and (parent==workspace or parent==player.Character
-                    or parent:IsA("Backpack") and parent.Parent==player)then
+                    or parent:IsA("Backpack") and parent.Parent==player
+                    or parent:IsA("Model") and players:GetPlayerFromCharacter(parent))then
                     return node:IsA("Tool") and node or nil
                 elseif parent and parent.Parent and parent.Name=="__ReplicatedSpinnerInstances" and parent.Parent==player:FindFirstChildOfClass("PlayerGui")then
                     return (node:IsA("Tool")or node:IsA("Model"))and node or nil
@@ -62,8 +68,11 @@ function FruitModels.new(fileExists, assetUri, getObjects)
                 if stopped or self.closed or sourceFor(source)~=source then return end
                 local item=items[tostring(source:GetAttribute("ItemId")or "")]
                 if not item or not (item.category=="Fruits"or item.isPhysicalFruit)then return end
+                local parent=source.Parent
+                local foreign=parent and parent~=player.Character and parent:IsA("Model") and players:GetPlayerFromCharacter(parent)~=nil
+                if foreign and self.native[item.id] and not self.foreign[item.id]and self.native[item.id]~=source then return end
                 local previous=self.models[item.id]
-                local captured=self:capture(item,source,true)
+                local captured=self:capture(item,source,true,foreign)
                 if captured and captured~=previous and onChange and not notifyPending then
                     notifyPending=true
                     task.defer(function()
@@ -96,10 +105,25 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             stopped=true
             for _,connection in ipairs(connections)do connection:Disconnect()end
             for source in pairs(watched)do unwatch(source)end
+            for _,connection in pairs(peers)do connection:Disconnect()end
+            table.clear(peers)
             table.clear(pending)
         end
         table.insert(connections,player.DescendantAdded:Connect(added))
         table.insert(connections,workspace.DescendantAdded:Connect(added))
+        local function peerAdded(peer)
+            if peer==player or peers[peer]then return end
+            local function characterAdded(character)
+                for _,node in ipairs(character:GetChildren())do added(node)end
+            end
+            peers[peer]=peer.CharacterAdded:Connect(characterAdded)
+            if peer.Character then characterAdded(peer.Character)end
+        end
+        table.insert(connections,players.PlayerAdded:Connect(peerAdded))
+        table.insert(connections,players.PlayerRemoving:Connect(function(peer)
+            if peers[peer]then peers[peer]:Disconnect();peers[peer]=nil end
+        end))
+        for _,peer in ipairs(players:GetPlayers())do peerAdded(peer)end
         local gui=player:FindFirstChildOfClass("PlayerGui")
         for _,container in pairs({player:FindFirstChildOfClass("Backpack"),player.Character,
             gui and gui:FindFirstChild("__ReplicatedSpinnerInstances"),workspace})do
@@ -121,8 +145,20 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         if self.closed then return nil,"Fruit model cache is closed" end
         if self.models[item.id] then return self.models[item.id] end
         if self.loading[item.id] then return nil,"Fruit model is loading; try again" end
+        local archiveError
+        if self.archive then
+            self.loading[item.id]=true
+            local restored,message=self.archive:load(item)
+            self.loading[item.id]=nil
+            if restored then
+                if self.closed or self.models[item.id]then restored:Destroy()
+                else restored.Parent=root;self.models[item.id]=restored;self.archived[item.id]=true end
+                return self.models[item.id]
+            end
+            archiveError=message
+        end
         local path = self:path(item)
-        if not path then return nil,"No local model file for " .. item.name end
+        if not path then return nil,archiveError or ("No local model file for " .. item.name) end
         self.loading[item.id] = true
         local objects, clean
         local ok, message = pcall(function()
@@ -175,19 +211,24 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         if self.closed then return false end
         local model=self.models[item.id]
         if model and model.Parent then return true end
+        if self.archive and self.archive:available(item)then return true end
         local path=self:path(item)
         local failure=self.errors[item.id]
         return path~=nil and (not failure or failure.path~=path)
     end
     function cache:clearErrors()
         table.clear(self.errors)
+        if self.archive then self.archive:clearErrors()end
     end
     function cache:close()
         self.closed = true
         if stopWatching then stopWatching();stopWatching=nil end
+        if self.archive then self.archive:close()end
         root:Destroy()
         table.clear(self.models)
         table.clear(self.native)
+        table.clear(self.foreign)
+        table.clear(self.archived)
         table.clear(self.errors)
     end
     return cache

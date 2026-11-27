@@ -1,6 +1,22 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 28/11/2026, Catalog v12.24. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Thống kê toàn bộ giữ mốc 27/11; các lượt đối chứng 28/11 ghi riêng bên dưới. Chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 28/11/2026, Catalog v12.25. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Thống kê toàn bộ giữ mốc 27/11; các lượt đối chứng 28/11 ghi riêng bên dưới. Chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Nhận nguồn từ người chơi khác và lưu cache, v12.25
+
+Mở rộng watcher để nhận Tool trái vật phẩm trực tiếp trong Character của người chơi khác mà client đã nhận qua replication. Xác thực Character bằng Players.GetPlayerFromCharacter, ItemId vật phẩm phải khớp Catalog. Không quét Backpack riêng của người khác, không chọn model NPC theo tên, không yêu cầu server tải tài nguyên. Nguồn của mình vẫn ưu tiên; nguồn của người chơi khác được thay bằng bản mới khi nguồn quan sát cũ biến mất. Nguồn gốc không bị đổi parent, phá hủy hay sửa thuộc tính. Có xử lý người vào/rời và Character mới.
+
+Nguồn nhận được đi qua Equipment.clone như trước. FruitArchive lưu bản sao riêng, loại scripts/remotes, tags và metadata runtime, giữ ItemId vật phẩm; không lưu tên/ID chủ sở hữu vào chỉ mục. Native saveinstance chỉ nhận đúng bản sao Tool với Decompile=false, không nhận game hay Character. Model/metadata dùng tên riêng blox-catalog-captured-fruit-<ItemId>-<GUID>; không ghi đè 50 file gốc trong codex_fruit_studio/models. Chỉ mục blox-catalog-captured-fruits-v1.json có bản dự phòng.
+
+Exporter native đã được đo trên Yeti: xuất đúng Tool/rig nhưng bỏ ItemId và làm tròn một số NumberRange/NumberSequence của VFX. File đó bị từ chối. Thêm metadata giá trị gốc cho ba kiểu NumberRange/NumberSequence/ColorSequence để khôi phục đúng giá trị đã quan sát, không nới dung sai 0.000001. Sau nạp phải khớp cây cha/con, class/tên node và các thuộc tính mesh/texture/rig/render/VFX được kiểm tra. Sai cấu trúc, geometry, ItemId hoặc file hỏng không được ghi vào chỉ mục. Archive được thử trước bộ file cũ khi Equip; thẻ khả dụng nhận chỉ mục từ lúc mở Catalog.
+
+Giới hạn: tối đa 3000 descendants/model, 8 MiB file model, 2 MiB metadata; chỉ lưu sau khi có MeshPart/SpecialMesh. Save được gom đợt, đóng Catalog hủy các save đang chờ và ngăn commit muộn. Export không hỗ trợ hoặc kiểm chứng thất bại vẫn giữ snapshot trong RAM của phiên hiện tại. Không phục hồi controller/code đã loại bỏ, quyền tải asset hay motion clip server chưa cấp. Không theo dõi mọi thay đổi thuộc tính chạy theo frame.
+
+Kiểm thử Client Play đạt: FruitOtherCharacter, FruitSourceWatch, FruitVisuals, FruitArchive, FruitModels, FruitPreviewModels, FruitAnimationImport và FruitPreviewScan. Có cold load qua FruitModels, sai skin, metadata vượt quyền, cây bị đổi dù thứ tự node giữ nguyên, geometry hỏng, đường dẫn vượt namespace, đóng trước save; mutation bỏ kiểm chứng geometry bị bài test bắt. Thay nguồn quan sát đã biến mất được tái hiện lỗi trước sửa và đạt sau sửa. 7 Python build checks đạt và bundle chạy được trong Studio.
+
+Lượt native Potassium đã hoàn tất, complete=true và passed=true: Yeti (1424), Arcsteel Magnet (1525), Dark (1395) đều export → kiểm chứng → ghi chỉ mục → tạo bộ nạp mới → load lại thành công. Đúng ItemId, đúng rig signature, khớp cấu trúc cha/con và các thuộc tính đã đo sau khôi phục curve/range. Snapshot lần lượt có 148/150/89 descendants, file 79578/113194/47177 bytes. Giá trị runtime bị loại nên đây không phải bản sao toàn bộ Tool gameplay. Không Equip, Drop hoặc gọi giao dịch trong phép đo. Báo cáo chi tiết và model ở Work Potassium riêng tư; bản tổng hợp không có danh tính người chơi ở data/fruit-capture-check-2026-11-28.json.
+
+Không có model thuộc 35 mục thiếu được xác nhận mới trong đợt này. Dragon và 7 mục idle lỗi khác giữ nguyên kết quả cũ; mở rộng đường tìm nguồn và lưu nguồn không đồng nghĩa đã sửa clip.
 
 ## Tự nhận nguồn native đến muộn, v12.24
 

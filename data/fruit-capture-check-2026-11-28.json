@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-28",
+  "catalogVersion": "12.25",
+  "environment": "Blox Fruits client with Potassium native exporter",
+  "scope": "Round-trip existing sanitized local reference models, not newly recovered assets",
+  "complete": true,
+  "passed": true,
+  "results": [
+    {"physicalItemId": "1424", "name": "Yeti", "descendants": 148, "modelBytes": 79578, "passed": true},
+    {"physicalItemId": "1525", "name": "Arcsteel Magnet", "descendants": 150, "modelBytes": 113194, "passed": true},
+    {"physicalItemId": "1395", "name": "Dark", "descendants": 89, "modelBytes": 47177, "passed": true}
+  ],
+  "checks": ["explicit sanitized Tool export with Decompile=false", "fresh archive loader", "exact physical ItemId", "rig signature", "node hierarchy", "measured mesh, texture, render and FX properties", "restore observed ranges/sequences without relaxing 0.000001 tolerance"],
+  "studioSuitesPassed": 8,
+  "pythonBuildChecksPassed": 7,
+  "coverage": {"physicalFruitAndSkinEntries": 81, "loadedOriginalFiles": 45, "missingOriginalFiles": 35, "mismatchedOriginalFiles": 1, "newMissingModelsRecovered": 0},
+  "limits": ["Does not restore stripped gameplay/controller scripts or runtime attributes", "Does not grant asset permissions or recover unavailable animation clips", "Not a full visual comparison of all 81 fruits/skins", "Raw captures, metadata and runtime reports remain private"]
+}

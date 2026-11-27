@@ -12,7 +12,15 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.24 Automatically capture native fruit sources arriving later
+## v12.25 Observe replicated player-held fruits and retain validated captures
+
+The source watcher also recognizes physical fruit/skin Tools directly inside other players' engine-verified Characters already replicated to this client. It requires the exact physical ItemId, ignores NPC lookalikes and Catalog clones, handles player/character lifecycle, and preserves local/native-source priority. It does not inspect another player's private Backpack or modify their Tool.
+
+Sanitized captures can be written to a separate private archive through Potassium's native saveinstance with an explicit Tool target and Decompile=false. The archive never replaces the original model pack. Each capture is imported and checked before committing an ItemId-based index; a later Catalog run can restore it before trying older local files. Runtime attributes/values and executable objects are removed. Exporter loss of ItemId and rounding of VFX ranges/sequences are repaired from measured metadata, without relaxing validation tolerance. Structural/geometry loss, invalid paths, wrong IDs or failed writes are rejected. Unsupported exports leave the current in-memory capture usable.
+
+Eight Client Play suites and seven Python build checks pass, including cold cache imports, foreign-character filtering/replacement, skin identity, corrupted geometry/hierarchy, metadata restrictions, path traversal and close cleanup. The native Potassium exporter round-trip also passed on Yeti, Arcsteel Magnet and Dark: all three restored through a fresh archive loader with the correct physical ItemId, rig and measured hierarchy/render/FX properties. These are existing reference models. Coverage remains **45 loaded local files, 35 missing files and one mismatched Empyrean file**; no newly missing model or unavailable Dragon clip is claimed recovered. Raw captures and game reports stay private; the sanitized result is data/fruit-capture-check-2026-11-28.json. See docs/DIAG.md and docs/ASSET_AUDIT.md.
+
+## v12.24 Automatically capture native fruit sources arriving later (historical scope)
 
 Previously, native templates arriving after startup were missed until Rescan. The Catalog now passively watches physical fruit/skin Tools in the local Backpack, current Character and Workspace, plus Tool/Model templates in the native preview holder. Exact ItemId remains required; Catalog clones, unrelated IDs and other characters' Tools are ignored. Late ItemIds and added descendants refresh the sanitized snapshot and availability cards without consuming inventory or initiating a resource request, purchase or roll.
 

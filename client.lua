@@ -1,4 +1,4 @@
--- Blox Catalog v12.24 simulator. Snapshot place version 4632.
+-- Blox Catalog v12.25 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -1021,7 +1021,7 @@ function Equipment.clone(source, item)
     clearTags(clone)
     for _, node in ipairs(clone:GetDescendants()) do
         clearTags(node)
-        if node:IsA("LuaSourceContainer") or node:IsA("RemoteEvent") or node:IsA("RemoteFunction")
+        if node:IsA("LuaSourceContainer") or node:IsA("RemoteEvent") or node:IsA("UnreliableRemoteEvent") or node:IsA("RemoteFunction")
             or node:IsA("ProximityPrompt") or node:IsA("ClickDetector") or node:IsA("BodyMover") or node:IsA("Sound") then
             node:Destroy()
         elseif node:IsA("JointInstance") or node:IsA("WeldConstraint") or node:IsA("NoCollisionConstraint") then
@@ -1488,6 +1488,276 @@ return FruitAnimations
 
 
 end)()
+local FruitVisuals = (function()
+local FruitVisuals={}
+local props={
+    Tool={"Grip","TextureId","ToolTip","RequiresHandle","CanBeDropped","Enabled","ManualActivationOnly"},
+    BasePart={"CFrame","Size","Transparency","Color","Material","MaterialVariant","Reflectance","LocalTransparencyModifier"},
+    MeshPart={"MeshId","TextureID","DoubleSided"},
+    SpecialMesh={"MeshId","TextureId","Scale","Offset","VertexColor","MeshType"},
+    Decal={"Texture","Transparency","Color3","Face"},
+    SurfaceAppearance={"ColorMap","NormalMap","RoughnessMap","MetalnessMap","AlphaMode"},
+    Attachment={"CFrame"},Bone={"Transform"},JointInstance={"C0","C1","Part0","Part1"},Motor6D={"Transform"},
+    WeldConstraint={"Part0","Part1","Enabled"},Animation={"AnimationId"},
+    ParticleEmitter={"Texture","Enabled","Rate","TimeScale","Lifetime","Speed","Transparency","Size","Color","LightEmission","LightInfluence"},
+    Beam={"Texture","Enabled","Attachment0","Attachment1","Width0","Width1","Color","Transparency"},
+    Trail={"Texture","Enabled","Attachment0","Attachment1","Lifetime","Color","Transparency"},
+    GuiObject={"Position","Size","AnchorPoint","Rotation","Visible","BackgroundTransparency","BackgroundColor3","ZIndex"},
+    ImageLabel={"Image","ImageTransparency","ImageColor3","ImageRectOffset","ImageRectSize"},
+    ImageButton={"Image","ImageTransparency","ImageColor3"},
+    SurfaceGui={"Enabled","AlwaysOnTop","Adornee","Face"},BillboardGui={"Enabled","AlwaysOnTop","Adornee","StudsOffset"},
+    Light={"Enabled","Color","Brightness"},
+}
+local function nodes(root)
+    local result={root}
+    for _,node in ipairs(root:GetDescendants())do table.insert(result,node)end
+    assert(#result<=3001,"Fruit exceeds archive node limit")
+    return result
+end
+local function encode(value,indices)
+    local kind=typeof(value)
+    if kind=="Instance"then return assert(indices[value],"External archive reference")
+    elseif kind=="CFrame"then return {value:GetComponents()}
+    elseif kind=="Vector3"then return {value.X,value.Y,value.Z}
+    elseif kind=="Vector2"then return {value.X,value.Y}
+    elseif kind=="UDim"then return {value.Scale,value.Offset}
+    elseif kind=="UDim2"then return {value.X.Scale,value.X.Offset,value.Y.Scale,value.Y.Offset}
+    elseif kind=="Color3"then return {value.R,value.G,value.B}
+    elseif kind=="NumberRange"then return {value.Min,value.Max}
+    elseif kind=="NumberSequence"or kind=="ColorSequence"then
+        local points={}
+        for _,point in ipairs(value.Keypoints)do table.insert(points,{point.Time,encode(point.Value,indices),kind=="NumberSequence"and point.Envelope or nil})end
+        return points
+    elseif kind=="EnumItem"then return tostring(value)
+    elseif kind=="nil"then return "<nil>"
+    elseif kind=="string"or kind=="boolean"or kind=="number"then return value end
+    error("Unsupported archive value: "..kind)
+end
+local function read(root)
+    local all=nodes(root)
+    local indices,shape,values,overrides={},{},{},{}
+    for i,node in ipairs(all)do indices[node]=i end
+    for i,node in ipairs(all)do shape[i]={class=node.ClassName,name=node.Name,parent=indices[node.Parent]or 0}end
+    for i,node in ipairs(all)do
+        values[i]={}
+        for class,fields in pairs(props)do if node:IsA(class)then
+            for _,property in ipairs(fields)do
+                local value=node[property]
+                values[i][property]=encode(value,indices)
+                local kind=typeof(value)
+                if kind=="NumberRange"or kind=="NumberSequence"or kind=="ColorSequence"then
+                    table.insert(overrides,{node=i,property=property,kind=kind,value=encode(value,indices)})
+                end
+            end
+        end end
+    end
+    return {shape=shape,values=values},overrides
+end
+local function equivalent(a,b)
+    if type(a)~=type(b)then return false end
+    if type(a)=="number"then return math.abs(a-b)<=.000001 end
+    if type(a)~="table"then return a==b end
+    for key,value in pairs(a)do if not equivalent(value,b[key])then return false end end
+    for key in pairs(b)do if a[key]==nil then return false end end
+    return true
+end
+function FruitVisuals.snapshot(root)return (read(root))end
+function FruitVisuals.differences(a,b)
+    return equivalent(a,b)and {}or {"Archive visual/rig properties differ"}
+end
+function FruitVisuals.metadata(root)
+    local expected,overrides=read(root)
+    local id=tostring(root:GetAttribute("ItemId")or "")
+    assert(id:match("^%d+$"),"Archive needs physical ItemId")
+    return {schemaVersion=1,id=id,expected=expected,overrides=overrides}
+end
+function FruitVisuals.restore(root,meta,id)
+    assert(type(meta)=="table"and meta.schemaVersion==1 and meta.id==id,"Archive ItemId mismatch")
+    local all=nodes(root)
+    local indices={}
+    for i,node in ipairs(all)do indices[node]=i end
+    assert(type(meta.expected)=="table"and type(meta.expected.shape)=="table"and #meta.expected.shape==#all,"Archive structure differs")
+    for i,node in ipairs(all)do
+        local shape=meta.expected.shape[i]
+        assert(type(shape)=="table"and shape.class==node.ClassName and shape.name==node.Name
+            and shape.parent==(indices[node.Parent]or 0),"Archive hierarchy/identity differs")
+    end
+    assert(type(meta.overrides)=="table"and #meta.overrides<=30000,"Invalid archive overrides")
+    for _,entry in ipairs(meta.overrides)do
+        local node=all[entry.node]
+        local allowed=false
+        if node then for class,fields in pairs(props)do
+            if node:IsA(class)and table.find(fields,entry.property)then allowed=true;break end
+        end end
+        assert(allowed and typeof(node[entry.property])==entry.kind,"Invalid archive property repair")
+        local value=entry.value
+        if entry.kind=="NumberRange"then
+            node[entry.property]=NumberRange.new(value[1],value[2])
+        elseif entry.kind=="NumberSequence"then
+            assert(#value<=64,"Too many sequence points")
+            local points={}
+            for _,point in ipairs(value)do table.insert(points,NumberSequenceKeypoint.new(point[1],point[2],point[3]))end
+            node[entry.property]=NumberSequence.new(points)
+        elseif entry.kind=="ColorSequence"then
+            assert(#value<=64,"Too many sequence points")
+            local points={}
+            for _,point in ipairs(value)do table.insert(points,ColorSequenceKeypoint.new(point[1],Color3.new(table.unpack(point[2]))))end
+            node[entry.property]=ColorSequence.new(points)
+        else error("Unsupported archive repair")end
+    end
+    assert(equivalent(FruitVisuals.snapshot(root),meta.expected),"Archive lost visual/rig data")
+    root:SetAttribute("ItemId",tonumber(id))
+    root:SetAttribute("BloxCatalogOwned",true)
+    return root
+end
+return FruitVisuals
+
+end)()
+local FruitArchive = (function()
+local FruitVisuals = FruitVisuals
+local Http=game:GetService("HttpService")
+local FruitArchive={}
+local indexPath="blox-catalog-captured-fruits-v1.json"
+local backupPath="blox-catalog-captured-fruits-v1.backup.json"
+local function physical(item)
+    return type(item.id)=="string"and item.id:match("^%d+$")and (item.category=="Fruits"or item.isPhysicalFruit)
+end
+local function validEntry(id,entry)
+    return type(id)=="string"and id:match("^%d+$")and type(entry)=="table"
+        and type(entry.file)=="string"and entry.file:match("^blox%-catalog%-captured%-fruit%-"..id.."%-%x+%.rbxm$")
+        and entry.metadata==entry.file:gsub("%.rbxm$",".json")
+end
+function FruitArchive.new(ops,onResult)
+    ops=ops or {exists=isfile,read=readfile,write=writefile,uri=getcustomasset,
+        objects=function(uri)return game:GetObjects(uri)end,
+        export=typeof(saveinstance)=="function"and function(root,path)
+            saveinstance(root,{FileName=path,Decompile=false,ShowStatus=false})
+        end}
+    local enabled=typeof(ops.exists)=="function"and typeof(ops.read)=="function"and typeof(ops.uri)=="function"and typeof(ops.objects)=="function"
+    local archive={entries={},errors={},closed=false,pending={}}
+    local function readIndex(path)
+        local ok,result=pcall(function()
+            if not ops.exists(path)then return end
+            local bytes=ops.read(path);assert(#bytes<=128*1024,"Capture index too large")
+            local index=Http:JSONDecode(bytes)
+            assert(index.schemaVersion==1 and type(index.entries)=="table","Invalid capture index")
+            local count=0
+            for id,entry in pairs(index.entries)do
+                count+=1;assert(count<=100 and validEntry(id,entry),"Invalid capture index entry")
+            end
+            return index.entries
+        end)
+        return ok and result or nil
+    end
+    if enabled then archive.entries=readIndex(indexPath)or readIndex(backupPath)or {}end
+    function archive:available(item)
+        if not enabled or self.closed or not physical(item)or self.errors[item.id]then return false end
+        local entry=self.entries[item.id]
+        if not validEntry(item.id,entry)then return false end
+        local ok,exists=pcall(function()return ops.exists(entry.file)and ops.exists(entry.metadata)end)
+        return ok and exists or false
+    end
+    local function readModel(item,entry,metadata)
+        local objects,model
+        local ok,message=pcall(function()
+            assert(validEntry(item.id,entry),"Invalid capture path")
+            local bytes=ops.read(entry.file);assert(#bytes>0 and #bytes<=8*1024*1024,"Invalid capture size")
+            if not metadata then
+                local json=ops.read(entry.metadata);assert(#json<=2*1024*1024,"Capture metadata too large")
+                metadata=Http:JSONDecode(json)
+            end
+            objects=ops.objects(ops.uri(entry.file))
+            assert(type(objects)=="table"and #objects==1 and typeof(objects[1])=="Instance"and objects[1]:IsA("Tool"),"Expected one captured Tool")
+            model=objects[1]
+            assert(not model:FindFirstChildWhichIsA("LuaSourceContainer",true)
+                and not model:FindFirstChildWhichIsA("RemoteEvent",true)
+                and not model:FindFirstChildWhichIsA("UnreliableRemoteEvent",true)
+                and not model:FindFirstChildWhichIsA("RemoteFunction",true),"Captured model contains executable objects")
+            FruitVisuals.restore(model,metadata,item.id)
+            assert(not archive.closed,"Capture archive closed while loading")
+        end)
+        if not ok then
+            if type(objects)=="table"then for _,node in pairs(objects)do if typeof(node)=="Instance"then node:Destroy()end end end
+            return nil,tostring(message)
+        end
+        return model
+    end
+    function archive:load(item)
+        if not self:available(item)then return nil end
+        local model,message=readModel(item,self.entries[item.id])
+        if not model then self.errors[item.id]=message end
+        return model,message
+    end
+    function archive:save(item,source)
+        if not enabled or self.closed or not physical(item)or typeof(ops.export)~="function"or typeof(ops.write)~="function"then return nil,"Model exporter unavailable"end
+        local copy,verified
+        local ok,message=pcall(function()
+            assert(source:IsA("Tool")and source:GetAttribute("BloxCatalogOwned")and tostring(source:GetAttribute("ItemId"))==item.id,"Export only a sanitized physical capture")
+            assert(#source:GetDescendants()<=3000 and (source:FindFirstChildWhichIsA("MeshPart",true)or source:FindFirstChildWhichIsA("SpecialMesh",true)),"Capture has no mesh yet")
+            copy=source:Clone()
+            local all={copy}
+            for _,node in ipairs(copy:GetDescendants())do table.insert(all,node)end
+            for _,node in ipairs(all)do
+                for key in pairs(node:GetAttributes())do node:SetAttribute(key,nil)end
+                if node:IsA("ValueBase")or node:IsA("TouchTransmitter")then node:Destroy()end
+            end
+            copy:SetAttribute("ItemId",tonumber(item.id));copy:SetAttribute("BloxCatalogOwned",true)
+            local metadata=FruitVisuals.metadata(copy)
+            local json=Http:JSONEncode(metadata);assert(#json<=2*1024*1024,"Capture metadata too large")
+            local file="blox-catalog-captured-fruit-"..item.id.."-"..Http:GenerateGUID(false):gsub("-","")..".rbxm"
+            local entry={file=file,metadata=file:gsub("%.rbxm$",".json")}
+            assert(not ops.exists(entry.file)and not ops.exists(entry.metadata),"Capture already exists")
+            ops.export(copy,entry.file)
+            local deadline=os.clock()+10
+            while not ops.exists(entry.file)and not self.closed and os.clock()<deadline do task.wait(.1)end
+            assert(not self.closed and ops.exists(entry.file),"Capture export did not finish")
+            verified=assert(readModel(item,entry,metadata))
+            ops.write(entry.metadata,json)
+            assert(ops.read(entry.metadata)==json,"Capture metadata write failed")
+            local entries=table.clone(self.entries);entries[item.id]=entry
+            local index=Http:JSONEncode({schemaVersion=1,entries=entries})
+            -- Keep the last validated index if an interrupted write damages the current one.
+            local old=readIndex(indexPath)
+            if old then ops.write(backupPath,Http:JSONEncode({schemaVersion=1,entries=old}))end
+            assert(not self.closed,"Capture archive closed before commit")
+            ops.write(indexPath,index)
+            assert(ops.read(indexPath)==index,"Capture index write failed")
+            self.entries=entries;self.errors[item.id]=nil
+        end)
+        if copy then copy:Destroy()end
+        if verified then verified:Destroy()end
+        if not ok then return nil,tostring(message)end
+        return true
+    end
+    function archive:enqueue(item,source)
+        if self.closed or not enabled or typeof(ops.export)~="function"then return end
+        local previous=self.pending[item.id]
+        if previous then previous:Destroy()end
+        self.pending[item.id]=source:Clone()
+        if self.worker then return end
+        self.worker=task.delay(.5,function()
+            while not self.closed do
+                local id,copy=next(self.pending)
+                if not id then break end
+                self.pending[id]=nil
+                local ok,message=self:save({id=id,category="Fruits"},copy)
+                copy:Destroy()
+                if not self.closed and onResult then onResult(id,ok,message)end
+            end
+            self.worker=nil
+        end)
+    end
+    function archive:clearErrors()table.clear(self.errors)end
+    function archive:close()
+        self.closed=true
+        for _,copy in pairs(self.pending)do copy:Destroy()end
+        table.clear(self.pending)
+    end
+    return archive
+end
+return FruitArchive
+
+end)()
 local FruitModels = (function()
 local Equipment = Equipment
 local FruitAnimations = FruitAnimations
@@ -1499,9 +1769,9 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     getObjects = getObjects or function(uri) return game:GetObjects(uri) end
     local root = Instance.new("Folder")
     root.Name = "BloxCatalogLocalFruitModels"
-    local cache = {models = {}, native = {}, loading = {}, errors = {}, closed = false}
+    local cache = {models = {}, native = {}, foreign = {}, archived = {}, loading = {}, errors = {}, closed = false}
     local stopWatching
-    function cache:capture(item, tool, refresh)
+    function cache:capture(item, tool, refresh, foreign)
         if self.closed then return nil end
         local holder=tool.Parent
         local preview=holder and holder.Name=="__ReplicatedSpinnerInstances" and holder.Parent and holder.Parent:IsA("PlayerGui")
@@ -1520,18 +1790,24 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         self.models[item.id] = clean
         self.errors[item.id] = nil
         self.native[item.id] = tool
+        self.foreign[item.id] = foreign or nil
+        self.archived[item.id] = nil
         if previous then previous:Destroy() end
+        if self.archive then self.archive:enqueue(item,clean) end
         return clean
     end
     function cache:watch(player,items,onChange)
         assert(not self.closed and not stopWatching,"Fruit source watcher already started or closed")
         local watched,pending,connections={}, {}, {}
+        local players=game:GetService("Players")
+        local peers={}
         local watchedCount,notifyPending,stopped=0,false,false
         local function sourceFor(node)
             while node and node~=workspace and node~=player do
                 local parent=node.Parent
                 if parent and (parent==workspace or parent==player.Character
-                    or parent:IsA("Backpack") and parent.Parent==player)then
+                    or parent:IsA("Backpack") and parent.Parent==player
+                    or parent:IsA("Model") and players:GetPlayerFromCharacter(parent))then
                     return node:IsA("Tool") and node or nil
                 elseif parent and parent.Parent and parent.Name=="__ReplicatedSpinnerInstances" and parent.Parent==player:FindFirstChildOfClass("PlayerGui")then
                     return (node:IsA("Tool")or node:IsA("Model"))and node or nil
@@ -1553,8 +1829,11 @@ function FruitModels.new(fileExists, assetUri, getObjects)
                 if stopped or self.closed or sourceFor(source)~=source then return end
                 local item=items[tostring(source:GetAttribute("ItemId")or "")]
                 if not item or not (item.category=="Fruits"or item.isPhysicalFruit)then return end
+                local parent=source.Parent
+                local foreign=parent and parent~=player.Character and parent:IsA("Model") and players:GetPlayerFromCharacter(parent)~=nil
+                if foreign and self.native[item.id] and not self.foreign[item.id]and self.native[item.id]~=source then return end
                 local previous=self.models[item.id]
-                local captured=self:capture(item,source,true)
+                local captured=self:capture(item,source,true,foreign)
                 if captured and captured~=previous and onChange and not notifyPending then
                     notifyPending=true
                     task.defer(function()
@@ -1587,10 +1866,25 @@ function FruitModels.new(fileExists, assetUri, getObjects)
             stopped=true
             for _,connection in ipairs(connections)do connection:Disconnect()end
             for source in pairs(watched)do unwatch(source)end
+            for _,connection in pairs(peers)do connection:Disconnect()end
+            table.clear(peers)
             table.clear(pending)
         end
         table.insert(connections,player.DescendantAdded:Connect(added))
         table.insert(connections,workspace.DescendantAdded:Connect(added))
+        local function peerAdded(peer)
+            if peer==player or peers[peer]then return end
+            local function characterAdded(character)
+                for _,node in ipairs(character:GetChildren())do added(node)end
+            end
+            peers[peer]=peer.CharacterAdded:Connect(characterAdded)
+            if peer.Character then characterAdded(peer.Character)end
+        end
+        table.insert(connections,players.PlayerAdded:Connect(peerAdded))
+        table.insert(connections,players.PlayerRemoving:Connect(function(peer)
+            if peers[peer]then peers[peer]:Disconnect();peers[peer]=nil end
+        end))
+        for _,peer in ipairs(players:GetPlayers())do peerAdded(peer)end
         local gui=player:FindFirstChildOfClass("PlayerGui")
         for _,container in pairs({player:FindFirstChildOfClass("Backpack"),player.Character,
             gui and gui:FindFirstChild("__ReplicatedSpinnerInstances"),workspace})do
@@ -1612,8 +1906,20 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         if self.closed then return nil,"Fruit model cache is closed" end
         if self.models[item.id] then return self.models[item.id] end
         if self.loading[item.id] then return nil,"Fruit model is loading; try again" end
+        local archiveError
+        if self.archive then
+            self.loading[item.id]=true
+            local restored,message=self.archive:load(item)
+            self.loading[item.id]=nil
+            if restored then
+                if self.closed or self.models[item.id]then restored:Destroy()
+                else restored.Parent=root;self.models[item.id]=restored;self.archived[item.id]=true end
+                return self.models[item.id]
+            end
+            archiveError=message
+        end
         local path = self:path(item)
-        if not path then return nil,"No local model file for " .. item.name end
+        if not path then return nil,archiveError or ("No local model file for " .. item.name) end
         self.loading[item.id] = true
         local objects, clean
         local ok, message = pcall(function()
@@ -1666,19 +1972,24 @@ function FruitModels.new(fileExists, assetUri, getObjects)
         if self.closed then return false end
         local model=self.models[item.id]
         if model and model.Parent then return true end
+        if self.archive and self.archive:available(item)then return true end
         local path=self:path(item)
         local failure=self.errors[item.id]
         return path~=nil and (not failure or failure.path~=path)
     end
     function cache:clearErrors()
         table.clear(self.errors)
+        if self.archive then self.archive:clearErrors()end
     end
     function cache:close()
         self.closed = true
         if stopWatching then stopWatching();stopWatching=nil end
+        if self.archive then self.archive:close()end
         root:Destroy()
         table.clear(self.models)
         table.clear(self.native)
+        table.clear(self.foreign)
+        table.clear(self.archived)
         table.clear(self.errors)
     end
     return cache
@@ -2377,6 +2688,7 @@ local NativeShop = NativeShop
 local NativeDialogue = NativeDialogue
 local Equipment = Equipment
 local FruitModels = FruitModels
+local FruitArchive = FruitArchive
 local UI = {}
 
 function UI.start()
@@ -2444,8 +2756,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.24", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.24")
+    text(panel, "Title", "BLOX CATALOG v12.25", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.25")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -2489,7 +2801,7 @@ function UI.start()
         if native then displayNotification(value,"FruitNotificationStatus")end
     end
     local function sourceFor(item)
-        return (fruitModels.native[item.id] and fruitModels.models[item.id]) or models[item.id]
+        return ((fruitModels.native[item.id] or fruitModels.archived[item.id]) and fruitModels.models[item.id]) or models[item.id]
             or (item.physicalId and models[tostring(item.physicalId)]) or fruitModels.models[item.id]
     end
     local abilities=NativeAbilities.new(state,player)
@@ -2975,6 +3287,12 @@ function UI.start()
         table.clear(models)
     end)
     fruitModels:watch(player,Catalog.byId,function()if alive then render()end end)
+    fruitModels.archive=FruitArchive.new(nil,function(id,ok,message)
+        if not alive then return end
+        gui:SetAttribute("FruitArchiveLastId",id)
+        gui:SetAttribute("FruitArchiveStatus",ok and "Saved"or "Failed")
+        if not ok then warn("[Blox Catalog] Fruit capture not saved: "..id.." / "..tostring(message))end
+    end)
     resize(); refreshModels()
     return gui
 end

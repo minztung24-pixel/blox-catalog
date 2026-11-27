@@ -74,12 +74,14 @@ class BuildCatalogTests(unittest.TestCase):
     def test_studio_package_contains_required_fruit_model_module(self):
         folder = Path(__file__).parents[1] / "catalog"
         sources = {name: (folder / (name + ".luau")).read_text(encoding="utf-8")
-                   for name in ("Catalog", "NativeItems", "NativeEquip", "NativeAbilities", "NativeDialogue", "Equipment", "FruitAnimations", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI")}
+                   for name in ("Catalog", "NativeItems", "NativeEquip", "NativeAbilities", "NativeDialogue", "Equipment", "FruitAnimations", "FruitVisuals", "FruitArchive", "FruitModels", "Inventory", "RobloxPrompt", "NativeShop", "UI")}
         sources.update(Data="return {}", Main="return nil")
         root = ET.fromstring(self.module.package_xml(sources, {}))
         names = {item.findtext("Properties/string[@name='Name']") for item in root.find("Item").findall("Item")}
         self.assertIn("FruitModels", names, "Studio package must include the UI's new dependency")
         self.assertIn("FruitAnimations", names, "Studio imports need the verified animation references")
+        self.assertIn("FruitArchive", names, "Studio package needs the capture archive loader")
+        self.assertIn("FruitVisuals", names, "Archive validation must also be bundled")
         self.assertIn("NativeEquip", names, "Studio package must include the legacy Equip adapter")
         self.assertIn("NativeAbilities", names, "Studio package includes the native hotbar ability adapter")
         self.assertIn("NativeDialogue", names, "Studio package must include the native menu adapter")

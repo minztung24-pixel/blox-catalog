@@ -31,7 +31,7 @@ function Equipment.clone(source, item)
     clearTags(clone)
     for _, node in ipairs(clone:GetDescendants()) do
         clearTags(node)
-        if node:IsA("LuaSourceContainer") or node:IsA("RemoteEvent") or node:IsA("RemoteFunction")
+        if node:IsA("LuaSourceContainer") or node:IsA("RemoteEvent") or node:IsA("UnreliableRemoteEvent") or node:IsA("RemoteFunction")
             or node:IsA("ProximityPrompt") or node:IsA("ClickDetector") or node:IsA("BodyMover") or node:IsA("Sound") then
             node:Destroy()
         elseif node:IsA("JointInstance") or node:IsA("WeldConstraint") or node:IsA("NoCollisionConstraint") then
