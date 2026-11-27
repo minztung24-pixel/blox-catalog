@@ -1,6 +1,10 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.17. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.18. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Bỏ nhãn checkout, v12.18
+
+Theo yêu cầu, xóa TextLabel SimulationMode trong renderer chung để cả cửa Buy item và Purchase completed không còn dòng LOCAL SIMULATION. Không đổi tọa độ, font, icon hoặc nội dung khác của hai cửa. Thuộc tính Simulation và hướng dẫn preview trong Catalog vẫn mô tả đúng hoạt động local; không đổi giao dịch, số dư hay thông báo. Regression mới thất bại trên bản cũ; 5 suite Luau và 7 test build đạt sau sửa. Không thực hiện giao dịch thật; không cần lượt đo UI mới cho việc xóa nhãn.
 
 ## Khung hoàn tất và gạch chân điều khoản, v12.17
 

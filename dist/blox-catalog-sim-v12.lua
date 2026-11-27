@@ -1,4 +1,4 @@
--- Blox Catalog v12.17 simulator. Snapshot place version 4632.
+-- Blox Catalog v12.18 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -1577,8 +1577,6 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     close.BackgroundTransparency=1
     local closeIcon=symbol("Icon","x",8,8,24)
     closeIcon.Parent=close;closeIcon.ZIndex=5
-    local mode=label("SimulationMode","LOCAL SIMULATION",20,42,180,14,12)
-    mode.TextColor3=Color3.fromRGB(255,208,110)
     if completed then
         symbol("Check","circle-check",204,64,48)
         local result=label("Result",q.resultText,20,124,416,32,18)
@@ -2134,8 +2132,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.17", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.17")
+    text(panel, "Title", "BLOX CATALOG v12.18", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.18")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

@@ -105,8 +105,6 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     close.BackgroundTransparency=1
     local closeIcon=symbol("Icon","x",8,8,24)
     closeIcon.Parent=close;closeIcon.ZIndex=5
-    local mode=label("SimulationMode","LOCAL SIMULATION",20,42,180,14,12)
-    mode.TextColor3=Color3.fromRGB(255,208,110)
     if completed then
         symbol("Check","circle-check",204,64,48)
         local result=label("Result",q.resultText,20,124,416,32,18)

@@ -12,7 +12,11 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.17 Compact completion and legal-link underline
+## v12.18 Remove the checkout caption
+
+Removed the **LOCAL SIMULATION** caption from both confirmation and completion. Their geometry, contents, behavior and local-only transaction logic are unchanged. Catalog still describes the preview behavior. Renderer regression assertions cover both dialogs; all five Luau suites and seven build tests pass.
+
+## v12.17 Compact completion and legal-link underline (caption removed in v12.18)
 
 Completion now reads **You have successfully bought Dragon.** (using the selected short product name), without the permanent prefix or recipient. Gift records and native gift notices still retain the full product and recipient. The reference image's aspect ratio gives a 456×236 completion, replacing 456×280; the installed Roblox circle-check glyph is centered in its 48px slot at (204,64), the result is at (20,124) in a 416×32 area, and OK starts at y=176. The visible local marker remains.
 
