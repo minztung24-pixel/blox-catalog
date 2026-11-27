@@ -1,8 +1,21 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.15. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.16. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
 
-## Tên ngắn, giá và bố cục theo mẫu, v12.15
+## Buy item và thông báo theo formatter game, v12.16
+
+Theo yêu cầu sửa lại, trả title về Buy item và bỏ card Total riêng. Khung thường 456×264; Plus thu gọn 456×344, mở chi tiết 456×456. Total chỉ còn trong chi tiết Plus cùng Subtotal và khoản giảm. Không có khoản tiết kiệm thực tế thì không hiện accordion. Giữ tên ngắn, vị trí sản phẩm/giá, icon Roblox đã cài, nút Buy và chuyển động trước đó. Đây là renderer local, không tuyên bố đã trích nguyên dialog CoreGui.
+
+Probe chỉ đọc trong Potassium đã ghi đủ 14 module trình bày được chỉ định. Source game xác nhận Notification → Controllers.UI.NotificationFeed → React.Components.NotificationFeed; TextLayer dùng useColorShortcuts(useTranslation(text)). Hook màu chỉ nhận Color shorthand, rồi tự escape dấu < và > còn lại. Vì vậy gửi nguyên tên có ngoặc nhọn, không escape hai lần và không tạo TextLabel thông báo riêng.
+
+- Dòng đầu: `Sending gift <Color=Yellow><Permanent …><Color=/> to receiver...`.
+- Dòng sau: `<Color=Green>Gift sent successfully!<Color=/>`.
+
+ColorPalette gốc và formatter cho Yellow RGB(255,229,51), Green RGB(102,255,102). Đã chạy chính thân formatter đọc từ báo cáo với dependency palette thực, xác nhận kết quả RichText giữ được &lt;Permanent Control&gt; trong font vàng và dòng thành công xanh có dấu chấm than. Font Source Sans Pro SemiBold, size 32, stroke và feed tween 0.22s vẫn do game dựng. Thông báo lưu tên đầy đủ của quote đã hoàn tất; chuyển lựa chọn sang món khác không đổi nội dung cũ. Vẫn phát sau khi đóng completion theo timing v12.14; không giả nhận đó là timing server.
+
+Kiểm chứng: 5 suite Luau đạt cho renderer, NativeShop, Simulation, NativeItems, NativeEquip; 7 test build Python đạt. Regression kiểm tra tên item đã commit khi đổi context, hai chuỗi màu chính xác, không card Total riêng, Plus không tiết kiệm, guard/hủy/Reset và không gọi callback mua gốc sau Apply. Đã xem Studio ở khung thường, Plus thu gọn và mở rộng; fixture client được dọn bằng Stop Play. Chưa xem hai dòng mới chạy trong feed Blox Fruits thực tế. Không bấm mua thật, không đóng cửa thanh toán thật hay chạy đè loader trong phiên của người dùng. Báo cáo và source game thô không đưa lên GitHub.
+
+## Tên ngắn, giá và bố cục theo mẫu, v12.15 (lịch sử; title/Total đã thay ở v12.16)
 
 Đọc báo cáo mới khi cửa mua thật đang mở: complete=true, 31 node PurchasePromptApp, chỉ một text node là StopPropagationOverlay với text rỗng. Đã thấy RobuxUpsellContainer nhưng chưa có nội dung dialog. Không giả nhận đã lấy được nguyên cây UI hoặc kích thước từng thành phần từ file.
 

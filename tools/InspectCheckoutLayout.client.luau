@@ -18,6 +18,11 @@ local paths={
     {"Modules","Util","TextUtil"},
     {"React","Hooks","NotificationFeed","useFormattedText"},
     {"Util","RichText","ColorPalette"},
+    {"Util","RichText"},
+    {"Controllers","UI","NotificationFeed"},
+    {"React","Components","NotificationFeed"},
+    {"React","Hooks","Text","useColorShortcuts"},
+    {"React","Hooks","Text","useTranslation"},
     {"React","CONSTANTS"},
 }
 for _,parts in ipairs(paths)do

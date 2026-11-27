@@ -12,7 +12,15 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.15 Short product names and reference-sized confirmation
+## v12.16 Buy item and native gift notification formatting
+
+Affordable visual checkout uses **Buy item** again. The standalone Total card is removed; the regular dialog is 456×264. Short product names, the existing Buy animation and the reference product positions remain. Plus retains its savings accordion, 456×344 collapsed and 456×456 expanded, with Subtotal / reduction / Total inside the expanded details only. Quotes with no actual saving do not show the accordion.
+
+Both gift messages use the game's own `Notification.new(text):Display()` feed. The first is **Sending gift <Permanent …> to receiver...**, with the full committed product name in yellow; the second is **Gift sent successfully!**, in green. The live game's color-shortcut formatter was inspected and tested: it renders the literal angle brackets around the product correctly, yellow RGB(255,229,51), green RGB(102,255,102). The native font, stroke, placement and animation are unchanged. Switching the selected product cannot change an already completed gift's message.
+
+Validation: five Luau suites and seven Python build tests pass. Studio visual checks covered regular and collapsed/expanded Plus layouts. The native text formatter was tested separately with the exact strings. No paid transaction was performed; the actual notification feed after this change still needs visual confirmation in the user's session. The checkout dialogs remain local recreations with a visible local marker, not imported native CoreGui. Raw game reports and source stay private.
+
+## v12.15 Short product names and reference-sized confirmation (superseded heading and Total card)
 
 The local confirmation now uses the requested **Buy Robux and item** heading and short product names such as **Blade** and **Flame**. This is presentation text after Apply; it does not open a real Robux upsell or change the original checkout before Apply. The recorded gift still keeps its permanent item name and ID.
 

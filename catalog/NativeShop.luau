@@ -94,7 +94,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         return not binding.closed and state.balance.applied and enabled()
     end
     local function scheduleNotices(q)
-        if q and active()then pendingNotice={balance=q.balance,username=q.username,elapsed=0}end
+        if q and active()then pendingNotice={balance=q.balance,username=q.username,itemName=q.item.name,elapsed=0}end
     end
     local function closeNativeGift(q)
         task.spawn(function()
@@ -135,7 +135,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             productName=q.item.name:gsub("^Permanent%s+",""),icon=q.item.icon,
             iconRectOffset=q.item.iconRectOffset,iconRectSize=q.item.iconRectSize,
             balance=state.balance.robux,price=q.price,cost=q.cost,
-            discountLabel=q.discount and ("Saving "..(q.price-q.cost).." with Plus")or nil,
+            discountLabel=q.discount and q.cost<q.price and ("Saving "..(q.price-q.cost).." with Plus")or nil,
             resultText="You have successfully bought "..q.item.name.." for "..q.username.."."
         },completed,function()binding:confirm()end,function()binding:cancel(true)end)
         checkout=view.gui
@@ -167,11 +167,11 @@ function NativeShop.new(playerGui,state,onChange,enabled)
                 p.elapsed+=dt
                 if not p.sent and p.elapsed+1e-8>=.1 then
                     p.sent=true
-                    onChange(nil,"<Color=White>Sending gift to "..p.username.."...<Color=/>")
+                    onChange(nil,"Sending gift <Color=Yellow><"..p.itemName.."><Color=/> to "..p.username.."...")
                 end
                 if pendingNotice==p and active()and state.balance==p.balance and p.elapsed+1e-8>=.32 then
                     pendingNotice=nil
-                    onChange(nil,"<Color=White>Gift sent successfully<Color=/>")
+                    onChange(nil,"<Color=Green>Gift sent successfully!<Color=/>")
                 end
             end
         end

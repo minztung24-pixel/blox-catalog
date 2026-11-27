@@ -1,4 +1,4 @@
--- Blox Catalog v12.15 simulator. Snapshot place version 4632.
+-- Blox Catalog v12.16 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -1511,7 +1511,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local expanded=false
     local reducedMotion=Gui.ReducedMotionEnabled
     local previousSelection=Gui.SelectedObject
-    local height=completed and 280 or 344
+    local height=completed and 280 or (q.discountLabel and 344 or 264)
     local gui=Instance.new("ScreenGui")
     gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
     gui:SetAttribute("Simulation",true)
@@ -1571,7 +1571,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
         return icon
     end
     local function robux(name,x,y,size)return symbol(name,"robux",x,y,size)end
-    local title=bold(label("Title",completed and "Purchase completed" or "Buy Robux and item",20,16,270,28,25))
+    local title=bold(label("Title",completed and "Purchase completed" or "Buy item",20,16,270,28,25))
     title.TextColor3=Color3.fromRGB(213,215,221)
     local close=button("Close","",404,8,40,40,function()self:cancel()end)
     close.BackgroundTransparency=1
@@ -1644,18 +1644,6 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
             line.Visible=false;table.insert(discountParts,line)
             detail("DiscountTotal","Total",36,288,200,true)
             detailAmount("DiscountTotalAmount",number(q.cost),288,true)
-        else
-            local summary=Instance.new("Frame",panel)
-            summary.Name="PriceSummary";summary.Position=UDim2.fromOffset(20,148);summary.Size=UDim2.fromOffset(416,58)
-            summary.BackgroundColor3=Color3.fromRGB(32,34,39);summary.BorderSizePixel=0;summary.ZIndex=2
-            Instance.new("UICorner",summary).CornerRadius=UDim.new(0,8)
-            local border=Instance.new("UIStroke",summary);border.Color=Color3.fromRGB(213,215,221);border.Thickness=1.5
-            local caption=bold(label("Total","Total",16,0,180,58,18));caption.Parent=summary
-            local total=bold(label("TotalAmount",number(q.cost),230,0,170,58,18));total.Parent=summary
-            total.TextXAlignment=Enum.TextXAlignment.Right
-            local currency=robux("TotalPriceIcon",0,20,18);currency.Parent=summary
-            local function alignTotal()currency.Position=UDim2.fromOffset(400-total.TextBounds.X-24,20)end
-            table.insert(connections,total:GetPropertyChangedSignal("TextBounds"):Connect(alignTotal));alignTotal()
         end
     end
     local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 60 or 86),416,40,function()
@@ -1874,7 +1862,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         return not binding.closed and state.balance.applied and enabled()
     end
     local function scheduleNotices(q)
-        if q and active()then pendingNotice={balance=q.balance,username=q.username,elapsed=0}end
+        if q and active()then pendingNotice={balance=q.balance,username=q.username,itemName=q.item.name,elapsed=0}end
     end
     local function closeNativeGift(q)
         task.spawn(function()
@@ -1915,7 +1903,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             productName=q.item.name:gsub("^Permanent%s+",""),icon=q.item.icon,
             iconRectOffset=q.item.iconRectOffset,iconRectSize=q.item.iconRectSize,
             balance=state.balance.robux,price=q.price,cost=q.cost,
-            discountLabel=q.discount and ("Saving "..(q.price-q.cost).." with Plus")or nil,
+            discountLabel=q.discount and q.cost<q.price and ("Saving "..(q.price-q.cost).." with Plus")or nil,
             resultText="You have successfully bought "..q.item.name.." for "..q.username.."."
         },completed,function()binding:confirm()end,function()binding:cancel(true)end)
         checkout=view.gui
@@ -1947,11 +1935,11 @@ function NativeShop.new(playerGui,state,onChange,enabled)
                 p.elapsed+=dt
                 if not p.sent and p.elapsed+1e-8>=.1 then
                     p.sent=true
-                    onChange(nil,"<Color=White>Sending gift to "..p.username.."...<Color=/>")
+                    onChange(nil,"Sending gift <Color=Yellow><"..p.itemName.."><Color=/> to "..p.username.."...")
                 end
                 if pendingNotice==p and active()and state.balance==p.balance and p.elapsed+1e-8>=.32 then
                     pendingNotice=nil
-                    onChange(nil,"<Color=White>Gift sent successfully<Color=/>")
+                    onChange(nil,"<Color=Green>Gift sent successfully!<Color=/>")
                 end
             end
         end
@@ -2146,8 +2134,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.15", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.15")
+    text(panel, "Title", "BLOX CATALOG v12.16", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.16")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
