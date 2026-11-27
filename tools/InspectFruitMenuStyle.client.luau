@@ -9,7 +9,7 @@ local paths={"DialogueController","DialogueController.Dialogue.Window","Dialogue
     "DialogueController.Builder.Dialogue","React.Components.DialogueSession","React.Components.DialogueWindow",
     "React.Components.LegacyThemeProvider","React.Hooks.Player.useTestGroup","TestingGroupUtil",
     "React.Components.DialogueWindow.ContextLayer","React.Components.DialogueWindow.Window",
-    "React.Hooks.DialogueSession.usePageProps"}
+    "React.Hooks.DialogueSession.usePageProps","Notification","DialogueController.Builder.Page"}
 for _,path in ipairs(paths)do
     local node=storage
     for name in path:gmatch("[^.]+")do node=node and node:FindFirstChild(name)end
@@ -58,7 +58,7 @@ local function snapshot(root)
     end
 end
 for _,gui in ipairs(player.PlayerGui:GetChildren())do
-    if gui:IsA("ScreenGui")and (gui.Name:lower():find("dialog",1,true)or gui.Name=="BloxCatalogSim")then snapshot(gui)end
+    if gui:IsA("ScreenGui")and (gui.Name:lower():find("dialog",1,true)or gui.Name=="BloxCatalogSim"or gui.Name=="Notifications")then snapshot(gui)end
 end
 report.complete=true
 local filename="blox-catalog-fruit-menu-style-"..game.PlaceId..".json"

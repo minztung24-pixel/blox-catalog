@@ -287,6 +287,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
             if not ok then return false,message end
         end
         self:remove(item.id)
+        if item.category=="Fruits"or item.isPhysicalFruit then notify("Blox Fruit stored.",true)end
         return true
     end
     function controller:drop(item)
@@ -351,12 +352,14 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
         end
         if not row or row.count < 1 then return false, "Add the item first" end
         local tool = row.tool
+        local created=false
         if not tool or not tool.Parent then
             self:remove(item.id)
             local source, sourceError = getSource(item)
             tool = Equipment.clone(source, item)
             if not tool then return false, sourceError or ("Missing 3D model for " .. item.name .. "; the catalog only has its metadata/icon") end
             row.tool = tool
+            created=true
         end
         if state.native then
             local synced, err = state.native:sync(item, row.count, true, true)
@@ -402,6 +405,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
                 end))
             end
         end
+        if created and (item.category=="Fruits"or item.isPhysicalFruit)then notify("Fruit added to backpack.",true)end
         return true, nil, "visual"
     end
     function controller:close(final)

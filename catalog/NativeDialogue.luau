@@ -44,6 +44,27 @@ function NativeDialogue.new(controller)
             table.insert(connections,tool.Unequipped:Connect(dismissOwned))
             table.insert(connections,tool.Destroying:Connect(dismissOwned))
             controller.start(dialogue)
+            -- Store destroys the Tool; its listeners must not dismiss the result page.
+            for _,connection in ipairs(connections)do connection:Disconnect()end
+            table.clear(connections)
+            if self.closed then return end
+            if selected and actions[selected]then
+                local success,reason=actions[selected]()
+                if success==false then error(tostring(reason or "Fruit action failed"),0)end
+                if selected=="Store"and success==true and not self.closed then
+                    assert(not controller.getActiveDialogue(),"Finish the current game dialogue first")
+                    local result=controller.new()
+                    self.dialogue=result
+                    result:setTitle("Blox Fruit")
+                    result:setLayout({Cinematic=true})
+                    result:addPage(function(page)
+                        page:addText("[Blox Fruit stored.]<AnimateYield=3>")
+                        page:noCancel()
+                    end)
+                    result:build()
+                    controller.start(result)
+                end
+            end
         end)
         for _,connection in ipairs(connections) do connection:Disconnect() end
         if not ok then self:dismiss() end
@@ -51,10 +72,6 @@ function NativeDialogue.new(controller)
         self.dialogue=nil
         if not ok then return false,tostring(message) end
         if self.closed then return false,"Native fruit menu was closed" end
-        if selected and actions[selected] then
-            local called,err=pcall(actions[selected])
-            if not called then return false,tostring(err) end
-        end
         return true
     end
     function binding:close()

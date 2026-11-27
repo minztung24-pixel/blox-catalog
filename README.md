@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.22 Native take-out and Store feedback
+
+Taking a local physical fruit or fruit skin out of inventory now calls the game's Notification API with **Fruit added to backpack.** Re-equipping an existing local Tool does not repeat the take-out notice. A successful Store calls the same API with **Blox Fruit stored.** and opens a native cinematic result page containing **[Blox Fruit stored.]** beneath the Blox Fruit title. These messages follow successful local inventory changes; failed model loads or inventory syncs cannot announce success.
+
+The result page keeps menu ownership until it closes, and Tool listeners are disconnected before Store destroys the Tool. Another active game dialogue is never replaced. Notification rendering is shared with the existing gift notices while preserving their applied-balance guard. Fonts, colors, positions, animation and default notification duration come from the live game's modules.
+
+Validation: the two new behavior checks fail before the change and pass in Client Play. They cover repeated take-out, failed Equip/Store, Store followed by another take-out, terminal native result content, action errors, re-entry and foreign-dialogue ownership. The native Store result page was visually checked in Blox Fruits, and the current Notification source was inspected. The complete Catalog flow still needs the user's live confirmation; no real fruits were dropped or stored for testing. Model/VFX availability is unchanged.
+
 ## v12.21 Consistent native fruit dialogue
 
 The fruit menu now explicitly selects the game's cinematic layout. The current native controller otherwise selects a legacy theme when the account's `DialogueV1` test group is absent or `Legacy`, explaining the plain gray menu seen on both real and local fruit. The per-dialogue `Cinematic=true` flag selects the native speech-bubble buttons and gold title treatment without changing the account's test-group attribute or replacing the game's UI.

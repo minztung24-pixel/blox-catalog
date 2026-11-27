@@ -1,4 +1,4 @@
--- Blox Catalog v12.21 simulator. Snapshot place version 4632.
+-- Blox Catalog v12.22 simulator. Snapshot place version 4632.
 local DataFruits = (function()
 -- Generated from ItemConfig; update with tools/build_catalog.py.
 return {
@@ -931,6 +931,27 @@ function NativeDialogue.new(controller)
             table.insert(connections,tool.Unequipped:Connect(dismissOwned))
             table.insert(connections,tool.Destroying:Connect(dismissOwned))
             controller.start(dialogue)
+            -- Store destroys the Tool; its listeners must not dismiss the result page.
+            for _,connection in ipairs(connections)do connection:Disconnect()end
+            table.clear(connections)
+            if self.closed then return end
+            if selected and actions[selected]then
+                local success,reason=actions[selected]()
+                if success==false then error(tostring(reason or "Fruit action failed"),0)end
+                if selected=="Store"and success==true and not self.closed then
+                    assert(not controller.getActiveDialogue(),"Finish the current game dialogue first")
+                    local result=controller.new()
+                    self.dialogue=result
+                    result:setTitle("Blox Fruit")
+                    result:setLayout({Cinematic=true})
+                    result:addPage(function(page)
+                        page:addText("[Blox Fruit stored.]<AnimateYield=3>")
+                        page:noCancel()
+                    end)
+                    result:build()
+                    controller.start(result)
+                end
+            end
         end)
         for _,connection in ipairs(connections) do connection:Disconnect() end
         if not ok then self:dismiss() end
@@ -938,10 +959,6 @@ function NativeDialogue.new(controller)
         self.dialogue=nil
         if not ok then return false,tostring(message) end
         if self.closed then return false,"Native fruit menu was closed" end
-        if selected and actions[selected] then
-            local called,err=pcall(actions[selected])
-            if not called then return false,tostring(err) end
-        end
         return true
     end
     function binding:close()
@@ -1260,6 +1277,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
             if not ok then return false,message end
         end
         self:remove(item.id)
+        if item.category=="Fruits"or item.isPhysicalFruit then notify("Blox Fruit stored.",true)end
         return true
     end
     function controller:drop(item)
@@ -1324,12 +1342,14 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
         end
         if not row or row.count < 1 then return false, "Add the item first" end
         local tool = row.tool
+        local created=false
         if not tool or not tool.Parent then
             self:remove(item.id)
             local source, sourceError = getSource(item)
             tool = Equipment.clone(source, item)
             if not tool then return false, sourceError or ("Missing 3D model for " .. item.name .. "; the catalog only has its metadata/icon") end
             row.tool = tool
+            created=true
         end
         if state.native then
             local synced, err = state.native:sync(item, row.count, true, true)
@@ -1375,6 +1395,7 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
                 end))
             end
         end
+        if created and (item.category=="Fruits"or item.isPhysicalFruit)then notify("Fruit added to backpack.",true)end
         return true, nil, "visual"
     end
     function controller:close(final)
@@ -2342,8 +2363,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.21", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.21")
+    text(panel, "Title", "BLOX CATALOG v12.22", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.22")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -2364,7 +2385,28 @@ function UI.start()
         AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollingDirection = Enum.ScrollingDirection.Y})
     local footer = make("Frame", panel, {Name = "Footer", BackgroundTransparency = 1})
     local status = text(panel, "Status", "Simulation / Right Shift: show or hide", UDim2.new(), UDim2.new(), 11, true)
-    local function tell(value) if alive then status.Text = value end end
+    local function displayNotification(notificationText,attribute,isCurrent)
+        task.spawn(function()
+            local module=game:GetService("ReplicatedStorage"):FindFirstChild("Notification")
+            if not module or not module:IsA("ModuleScript")then
+                if alive then gui:SetAttribute(attribute,"Unavailable")end
+                return
+            end
+            local ok,notification=pcall(require,module)
+            if ok and alive and (not isCurrent or isCurrent())
+                and type(notification)=="table"and type(notification.new)=="function"then
+                local displayed=pcall(function()notification.new(notificationText):Display()end)
+                gui:SetAttribute(attribute,displayed and "Displayed"or "Failed")
+            elseif alive then
+                gui:SetAttribute(attribute,"Unavailable")
+            end
+        end)
+    end
+    local function tell(value,native)
+        if not alive then return end
+        status.Text=value
+        if native then displayNotification(value,"FruitNotificationStatus")end
+    end
     local function sourceFor(item)
         return (fruitModels.native[item.id] and fruitModels.models[item.id]) or models[item.id]
             or (item.physicalId and models[tostring(item.physicalId)]) or fruitModels.models[item.id]
@@ -2405,21 +2447,7 @@ function UI.start()
         if message then tell(message)end
         if notificationText then
             local balance=state.balance
-            task.spawn(function()
-                local module=game:GetService("ReplicatedStorage"):FindFirstChild("Notification")
-                if not module or not module:IsA("ModuleScript")then
-                    if alive then gui:SetAttribute("GiftNotificationStatus","Unavailable")end
-                    return
-                end
-                local ok,notification=pcall(require,module)
-                if ok and alive and state.balance==balance and balance.applied
-                    and type(notification)=="table" and type(notification.new)=="function"then
-                    local displayed=pcall(function()notification.new(notificationText):Display()end)
-                    gui:SetAttribute("GiftNotificationStatus",displayed and "Displayed"or "Failed")
-                elseif alive then
-                    gui:SetAttribute("GiftNotificationStatus","Unavailable")
-                end
-            end)
+            displayNotification(notificationText,"GiftNotificationStatus",function()return state.balance==balance and balance.applied end)
         end
     end
     shopGifts=NativeShop.new(playerGui,state,balanceChanged,function()return flags.Balance end)
@@ -2491,6 +2519,7 @@ function UI.start()
                 local success,err=equipment:store(item)
                 if success then updateQuantity();render() end
                 tell(success and "Local fruit returned to stock." or tostring(err))
+                return success,err
             end,
         })
         if alive then

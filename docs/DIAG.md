@@ -1,6 +1,16 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.21. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.22. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Phản hồi lấy trái ra và Store, v12.22
+
+Equipment trước đây chỉ phát trạng thái animation; UI.Store chỉ viết thanh trạng thái rồi kết thúc menu. Thêm thông báo native sau khi tạo/equip thành công Tool trái vật phẩm hoặc skin: Fruit added to backpack. Không phát khi cầm lại cùng Tool, nhặt Tool local đã tồn tại, dùng Tool thật, preview khả năng hay nạp model/sync thất bại. Store thành công phát Blox Fruit stored.; thao tác thất bại không phát thành công.
+
+Tách phần gọi Notification.new(text):Display() đã có cho gift thành helper dùng chung, giữ nguyên điều kiện balance/applied cho gift và guard alive. Source Notification trong phiên hiện tại xác nhận Display đưa thông báo qua Controllers.UI.NotificationFeed với duration mặc định của game. Không dựng TextLabel hoặc tự chọn font/màu/tọa độ thông báo.
+
+NativeDialogue giữ running xuyên suốt Store và trang kết quả. Ngắt listener của Tool trước khi action Store phá Tool; chỉ khi callback trả true mới mở dialogue native mới cùng title Blox Fruit, Cinematic=true, nội dung [Blox Fruit stored.] với tag AnimateYield=3 và không có cancel. Lỗi action hoặc một dialogue khác xuất hiện thì không dựng kết quả thành công hay đóng menu của người khác. UI.Store trả kết quả thật của Equipment.store cho adapter.
+
+Hai regression thất bại trước sửa và đạt trong Client Play sau sửa: NativeDialogue kiểm tra nội dung terminal, lỗi action, chống mở chồng và quyền sở hữu; FruitFeedback kiểm tra thiếu model, sync thất bại, Equip lặp, Store thất bại/thành công và lấy ra lại. Trang Store native đã được quan sát trực tiếp trong Blox Fruits. Chưa xác nhận toàn bộ luồng Catalog mới trong game live hoặc mọi loại trái; không dùng trái thật để thử, không đổi ASSET_AUDIT/model/animation/VFX. Source/report game thô giữ private.
 
 ## Hai kiểu menu trái, v12.21
 
