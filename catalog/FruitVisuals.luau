@@ -32,6 +32,9 @@ local function encode(value,indices)
     elseif kind=="UDim"then return {value.Scale,value.Offset}
     elseif kind=="UDim2"then return {value.X.Scale,value.X.Offset,value.Y.Scale,value.Y.Offset}
     elseif kind=="Color3"then return {value.R,value.G,value.B}
+    elseif kind=="Content"then
+        assert(value.SourceType==Enum.ContentSourceType.Uri or value.SourceType==Enum.ContentSourceType.None,"Archive cannot preserve object-backed texture content")
+        return value.Uri or ""
     elseif kind=="NumberRange"then return {value.Min,value.Max}
     elseif kind=="NumberSequence"or kind=="ColorSequence"then
         local points={}
@@ -51,7 +54,10 @@ local function read(root)
         values[i]={}
         for class,fields in pairs(props)do if node:IsA(class)then
             for _,property in ipairs(fields)do
-                local value=node[property]
+                -- SurfaceAppearance's legacy map strings require PluginSecurity; Content maps are publicly readable.
+                local value
+                if node:IsA("SurfaceAppearance")and property:match("Map$")then value=node[property.."Content"]
+                else value=node[property]end
                 values[i][property]=encode(value,indices)
                 local kind=typeof(value)
                 if kind=="NumberRange"or kind=="NumberSequence"or kind=="ColorSequence"then

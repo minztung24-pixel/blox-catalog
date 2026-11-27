@@ -11,6 +11,14 @@ Kiểm kê cập nhật ngày 27/11/2026 cho 81 trái vật phẩm trong Fruits 
 - **Đo lại trong Blox Fruits ngày 26/11:** Dragon, Dragon (West), Ember, Flame, Lightning, Quake và Werewolf (Tiger) đều có 4 mẫu Tool đang cầm, trạng thái cuối Failed do preload trả Failure và không có track đang chạy. Báo cáo kết thúc bình thường nhưng thiếu Tiger (1430).
 
 
+## Phản hồi người dùng và sửa có giới hạn, v12.26
+
+Đã ghi 43 mục theo physical ItemId trong data/user-fruit-observations-2026-11-28.json; 19 mục được người dùng xác nhận hiển thị đúng gồm 17 Fruits và Galaxy/Arcsteel Magnet. Các mục chưa liệt kê giữ chưa xác nhận. Tình trạng Add vào kho tách biệt với model, chuyển động và VFX.
+
+Celestial/Oni có HasInvisibleTile trong cấu hình native. V12.26 thêm đúng ngoại lệ người dùng yêu cầu: Add ra Tool tên/ItemId trong hotbar native, không mesh/model giả và không activation. Live check đạt cả hai; bảng vẫn ghi thiếu model và Items native vẫn có tag ẩn. Các trái thiếu model khác tiếp tục Add/No model như trước. Control tiếp tục nạp được file nhưng người dùng xác nhận file là model cũ, chưa được thay.
+
+Tool thật trong lượt đối chiếu mới chỉ có Spring. Sửa lỗi đọc texture SurfaceAppearance bằng các Content map công khai; Spring lưu/nạp được sau sửa, Yeti/Arcsteel/Dark đã lưu vẫn nạp được. Chưa có Tool thật Rocket/Bomb/Eagle để xác nhận phục hồi model/VFX trong lượt này. Coverage **45 file nạp được, 35 thiếu, 1 sai Empyrean** không đổi; hai Tool hotbar metadata không tính là model. Ghi chú cuối bảng phản ánh phản hồi mới, các cột đo kỹ thuật vẫn giữ mốc đo cũ.
+
 ## Bổ sung đường tìm và lưu nguồn, v12.25
 
 Watcher nay nhận Tool vật phẩm trực tiếp trong Character thật của người chơi khác đang được replicate tới client, xác thực Character và ItemId, bỏ qua NPC và clone Catalog. Nguồn local có ưu tiên. Không chạm vào Tool gốc hoặc yêu cầu/mua tài nguyên. Kiểm tra khả năng exporter ghi nhận 6 Character khác nhưng không có Tool physical hợp lệ đang cầm tại thời điểm đo; không lưu danh tính người chơi trong báo cáo tổng hợp.
@@ -68,87 +76,87 @@ Cột **Mesh** ghi số MeshPart và số tham chiếu mesh tải thành công /
 
 | Fruit | ID | Tab v12.7 | Model trong Work Potassium | Mesh | Texture | Cầm / Equip | Animation | VFX | Ghi chú |
 |---|---|---|---|---|---|---|---|---|---|
-| Arcsteel Magnet | 1525 | Fruit Skins | Nạp được · Arcsteel Magnet.rbxm | 3 · 3/3 | 7/7 | Đã thấy cầm | Đổi pose · 37/56 khớp · 90561160320604 | 9/51 bật · 33/33 | — |
+| Arcsteel Magnet | 1525 | Fruit Skins | Nạp được · Arcsteel Magnet.rbxm | 3 · 3/3 | 7/7 | Đã thấy cầm | Đổi pose · 37/56 khớp · 90561160320604 | 9/51 bật · 33/33 | 28/11: người dùng xác nhận hiển thị đúng |
 | Azura Bomb | 512 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Blade | 1399 | Fruits | Nạp được · Blade-Blade.rbxm | 4 · 4/4 | 0 ref. | Có BasePart · chưa thử cầm | Đổi pose · 11/15 khớp · 15123613404 | 0/0 bật · 0 ref. | — |
-| Blizzard | 1416 | Fruits | Nạp được · Blizzard-Blizzard.rbxm | 4 · 4/4 | 6/6 | Có BasePart · chưa thử cầm | Đổi pose · 28/43 khớp · 15123587371 | 8/8 bật · 7/7 | — |
-| Bomb | 1397 | Fruits | Nạp được · Bomb-Bomb.rbxm | 5 · 5/5 | 1/1 | Có BasePart · chưa thử cầm | Đổi pose · 38/44 khớp · 87174669415581, 15123595806 | 3/12 bật · 8/8 | — |
-| Buddha | 1393 | Fruits | Nạp được · Buddha-Buddha.rbxm | 6 · 6/6 | 1/1 | Có mẫu thật từng cầm | Đổi pose · 61/68 khớp · 15123606541 | 1/2 bật · 1/2 | Đổi Idle theo mẫu Buddha; 1 texture VFX tải lỗi |
+| Blade | 1399 | Fruits | Nạp được · Blade-Blade.rbxm | 4 · 4/4 | 0 ref. | Có BasePart · chưa thử cầm | Đổi pose · 11/15 khớp · 15123613404 | 0/0 bật · 0 ref. | 28/11: người dùng xác nhận hiển thị đúng |
+| Blizzard | 1416 | Fruits | Nạp được · Blizzard-Blizzard.rbxm | 4 · 4/4 | 6/6 | Có BasePart · chưa thử cầm | Đổi pose · 28/43 khớp · 15123587371 | 8/8 bật · 7/7 | 28/11: người dùng xác nhận hiển thị đúng |
+| Bomb | 1397 | Fruits | Nạp được · Bomb-Bomb.rbxm | 5 · 5/5 | 1/1 | Có BasePart · chưa thử cầm | Đổi pose · 38/44 khớp · 87174669415581, 15123595806 | 3/12 bật · 8/8 | người dùng đã thấy chuyển động; người dùng chưa thấy VFX; người dùng báo có trái thật, chờ mẫu Tool |
+| Buddha | 1393 | Fruits | Nạp được · Buddha-Buddha.rbxm | 6 · 6/6 | 1/1 | Có mẫu thật từng cầm | Đổi pose · 61/68 khớp · 15123606541 | 1/2 bật · 1/2 | 28/11: người dùng xác nhận hiển thị đúng |
 | Celebration Bomb | 539 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Celestial | 1428 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
+| Celestial | 1428 | Fruits | Thiếu file | — | — | Hotbar metadata; chưa cầm model | — | — | 28/11: người dùng chưa có model để cầm; HasInvisibleTile; v12.26 Hotbar metadata, chưa có model |
 | Celestial Pain | 498 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Control | 1409 | Fruits | Nạp được · Control-Control.rbxm | 5 · 5/5 | 1/1 | Đã thấy cầm | Đổi pose · 36/41 khớp · 15123616275 | 0/0 bật · 0 ref. | Model cũ theo phản hồi |
+| Control | 1409 | Fruits | Nạp được · Control-Control.rbxm | 5 · 5/5 | 1/1 | Đã thấy cầm | Đổi pose · 36/41 khớp · 15123616275 | 0/0 bật · 0 ref. | 28/11: người dùng xác nhận model cũ, chưa đúng hiện tại |
 | Creation | 1426 | Fruits | Nạp được · Creation-Creation.rbxm | 13 · 13/13 | 0 ref. | Có BasePart · chưa thử cầm | Đổi pose · 68/254 khớp · 116828771482820 | 0/0 bật · 0 ref. | — |
-| Dark | 1395 | Fruits | Nạp được · Dark-Dark.rbxm | 6 · 6/6 | 3/3 | Có BasePart · chưa thử cầm | Đổi pose · 47/70 khớp · 15123618591 | 0/0 bật · 0 ref. | — |
-| Diamond | 1421 | Fruits | Nạp được · Diamond-Diamond.rbxm | 5 · 5/5 | 0 ref. | Có BasePart · chưa thử cầm | Không có idle trong nguồn | 3/3 bật · 2/2 | — |
+| Dark | 1395 | Fruits | Nạp được · Dark-Dark.rbxm | 6 · 6/6 | 3/3 | Có BasePart · chưa thử cầm | Đổi pose · 47/70 khớp · 15123618591 | 0/0 bật · 0 ref. | 28/11: người dùng xác nhận hiển thị đúng |
+| Diamond | 1421 | Fruits | Nạp được · Diamond-Diamond.rbxm | 5 · 5/5 | 0 ref. | Có BasePart · chưa thử cầm | Không có idle trong nguồn | 3/3 bật · 2/2 | 28/11: người dùng xác nhận hiển thị đúng |
 | Divine | 1048 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Dough | 1417 | Fruits | Nạp được · Dough-Dough.rbxm | 6 · 6/6 | 4/4 | Có BasePart · chưa thử cầm | Đổi pose · 77/83 khớp · 15123624401 | 0/6 bật · 1/1 | — |
-| Dragon | 1447 | Fruits | Nạp được · Dragon-Dragon.rbxm | 7 · 7/7 | 7/7 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 89485756852231 | 8/8 bật · 7/7 | Người dùng thấy đứng yên; đã thấy VFX |
-| Dragon (East) | 885 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Dragon (West) | 884 | Fruits | Nạp được · Dragon (West)-Dragon (West).rbxm | 7 · 7/7 | 7/7 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 89485756852231 | 33/33 bật · 13/13 | Root ghi Dragon-Dragon, thiếu ItemId; Người dùng thấy đứng yên; đã thấy VFX |
-| Eagle | 1425 | Fruits | Nạp được · Eagle-Eagle.rbxm | 3 · 3/3 | 4/4 | Có BasePart · chưa thử cầm | Đổi pose · 50/69 khớp · 77885466312115 | 0/12 bật · 7/7 | Eagle được thêm clip đã đo |
-| Ember | 1047 | Fruit Skins | Nạp được · Ember Dragon (West).rbxm | 7 · 7/7 | 2/2 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 96038340477884 | 8/8 bật · 7/7 | Người dùng thấy đứng yên; đã thấy VFX |
+| Dragon | 1447 | Fruits | Nạp được · Dragon-Dragon.rbxm | 7 · 7/7 | 7/7 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 89485756852231 | 8/8 bật · 7/7 | người dùng chưa thấy chuyển động; người dùng đã thấy VFX |
+| Dragon (East) | 885 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
+| Dragon (West) | 884 | Fruits | Nạp được · Dragon (West)-Dragon (West).rbxm | 7 · 7/7 | 7/7 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 89485756852231 | 33/33 bật · 13/13 | người dùng chưa thấy chuyển động; người dùng đã thấy VFX |
+| Eagle | 1425 | Fruits | Nạp được · Eagle-Eagle.rbxm | 3 · 3/3 | 4/4 | Có BasePart · chưa thử cầm | Đổi pose · 50/69 khớp · 77885466312115 | 0/12 bật · 7/7 | người dùng đã thấy chuyển động; người dùng chưa thấy VFX; người dùng báo có trái thật, chờ mẫu Tool |
+| Ember | 1047 | Fruit Skins | Nạp được · Ember Dragon (West).rbxm | 7 · 7/7 | 2/2 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 96038340477884 | 8/8 bật · 7/7 | người dùng chưa thấy chuyển động; người dùng đã thấy VFX |
 | Emerald Diamond | 471 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Empyrean | 1041 | Fruit Skins | Bị chặn · nguồn Galaxy gán nhầm | — | — | Bị chặn | — | — | Root Galaxy, thiếu ItemId |
-| Fiend (Yeti) | 1060 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Flame | 1394 | Fruits | Nạp được · Flame-Flame.rbxm | 8 · 8/8 | 4/4 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 92872930988510 | 6/6 bật · 6/6 | Người dùng thấy đứng yên; đã thấy VFX; Clip thử trước đó tải được nhưng 0 khớp chạy |
+| Empyrean | 1041 | Fruit Skins | Bị chặn · nguồn Galaxy gán nhầm | — | — | Bị chặn | — | — | 28/11: người dùng chưa có model để cầm |
+| Fiend (Yeti) | 1060 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
+| Flame | 1394 | Fruits | Nạp được · Flame-Flame.rbxm | 8 · 8/8 | 4/4 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 92872930988510 | 6/6 bật · 6/6 | người dùng chưa thấy chuyển động; người dùng đã thấy VFX |
 | Frustration Pain | 492 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Galaxy | 1042 | Fruit Skins | Nạp được · Galaxy Empyrean Kitsune.rbxm | 6 · 6/6 | 2/2 | Người dùng đã xem · chưa đo Equip | Đổi pose · 102/115 khớp · 121051622257427 | 3/3 bật · 2/2 | — |
-| Gas | 1422 | Fruits | Nạp được · Gas-Gas.rbxm | 6 · 6/6 | 3/3 | Đã thấy cầm | Đổi pose · 109/144 khớp · 118054805452821 | 7/7 bật · 3/3 | Gas đã được chấp nhận |
-| Ghost | 1412 | Fruits | Nạp được · Ghost-Ghost.rbxm | 3 · 3/3 | 1/1 | Có BasePart · chưa thử cầm | Đổi pose · 75/86 khớp · 15123662036 | 4/4 bật · 4/4 | — |
+| Galaxy | 1042 | Fruit Skins | Nạp được · Galaxy Empyrean Kitsune.rbxm | 6 · 6/6 | 2/2 | Người dùng đã xem · chưa đo Equip | Đổi pose · 102/115 khớp · 121051622257427 | 3/3 bật · 2/2 | 28/11: người dùng xác nhận hiển thị đúng |
+| Gas | 1422 | Fruits | Nạp được · Gas-Gas.rbxm | 6 · 6/6 | 3/3 | Đã thấy cầm | Đổi pose · 109/144 khớp · 118054805452821 | 7/7 bật · 3/3 | 28/11: người dùng xác nhận hiển thị đúng |
+| Ghost | 1412 | Fruits | Nạp được · Ghost-Ghost.rbxm | 3 · 3/3 | 1/1 | Có BasePart · chưa thử cầm | Đổi pose · 75/86 khớp · 15123662036 | 4/4 bật · 4/4 | 28/11: người dùng xác nhận hiển thị đúng |
 | Glacier Eagle | 496 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Gravity | 1405 | Fruits | Nạp được · Gravity-Gravity.rbxm | 8 · 8/8 | 3/3 | Có BasePart · chưa thử cầm | Đổi pose · 8/18 khớp · 15123633312 | 0/0 bật · 0 ref. | — |
+| Gravity | 1405 | Fruits | Nạp được · Gravity-Gravity.rbxm | 8 · 8/8 | 3/3 | Có BasePart · chưa thử cầm | Đổi pose · 8/18 khớp · 15123633312 | 0/0 bật · 0 ref. | 28/11: người dùng xác nhận hiển thị đúng |
 | Green Lightning | 462 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Hellfire (Gas) | 1601 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
+| Hellfire (Gas) | 1601 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
 | Ice | 1392 | Fruits | Nạp được · Ice-Ice.rbxm | 4 · 4/4 | 3/3 | Có BasePart · chưa thử cầm | Không có idle trong nguồn | 10/10 bật · 8/8 | — |
-| Kitsune | 1423 | Fruits | Nạp được · Kitsune-Kitsune.rbxm | 6 · 6/6 | 4/4 | Người dùng đã xem · chưa đo Equip | Đổi pose · 128/148 khớp · 15487764876 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
+| Kitsune | 1423 | Fruits | Nạp được · Kitsune-Kitsune.rbxm | 6 · 6/6 | 4/4 | Người dùng đã xem · chưa đo Equip | Đổi pose · 128/148 khớp · 15487764876 | 0/0 bật · 0 ref. | người dùng đã thấy chuyển động; người dùng chưa thấy VFX |
 | Light | 1407 | Fruits | Nạp được · Light-Light.rbxm | 6 · 6/6 | 3/3 | Có BasePart · chưa thử cầm | Đổi pose · 32/38 khớp · 15123640714 | 0/0 bật · 0 ref. | — |
-| Lightning | 1427 | Fruits | Nạp được · Lightning-Lightning.rbxm | 8 · 8/8 | 4/4 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 74759006007335 | 4/4 bật · 4/4 | Người dùng thấy đứng yên; đã thấy VFX |
+| Lightning | 1427 | Fruits | Nạp được · Lightning-Lightning.rbxm | 8 · 8/8 | 4/4 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 74759006007335 | 4/4 bật · 4/4 | người dùng chưa thấy chuyển động; người dùng đã thấy VFX |
 | Lime Blade | 1526 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Love | 1408 | Fruits | Nạp được · Love-Love.rbxm | 6 · 6/6 | 6/6 | Người dùng đã xem · chưa đo Equip | Đổi pose · 46/53 khớp · 15123643097 | 3/3 bật · 2/2 | — |
+| Love | 1408 | Fruits | Nạp được · Love-Love.rbxm | 6 · 6/6 | 6/6 | Người dùng đã xem · chưa đo Equip | Đổi pose · 46/53 khớp · 15123643097 | 3/3 bật · 2/2 | 28/11: người dùng xác nhận hiển thị đúng |
 | Magma | 1391 | Fruits | Nạp được · Magma-Magma.rbxm | 4 · 4/4 | 0 ref. | Đã thấy cầm | Đổi pose · 33/37 khớp · 15123645682 | 3/9 bật · 3/3 | Người dùng chưa thấy VFX |
-| Magnet | 1516 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
+| Magnet | 1516 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
 | Mammoth | 1418 | Fruits | Nạp được · Mammoth-Mammoth.rbxm | 6 · 6/6 | 3/3 | Người dùng đã xem · chưa đo Equip | Đổi pose · 24/59 khớp · 15123648309 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
 | Matrix Eagle | 502 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Meme | 1431 | Fruits | Nạp được · Meme-Meme.rbxm | 2 · 2/2 | 2/2 | Người dùng đã xem · chưa đo Equip | Đổi pose · 39/42 khớp · 94535044798318 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
+| Meme | 1431 | Fruits | Nạp được · Meme-Meme.rbxm | 2 · 2/2 | 2/2 | Người dùng đã xem · chưa đo Equip | Đổi pose · 39/42 khớp · 94535044798318 | 0/0 bật · 0 ref. | 28/11: người dùng xác nhận hiển thị đúng |
 | Nuclear Bomb | 508 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Oni | 1429 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
+| Oni | 1429 | Fruits | Thiếu file | — | — | Hotbar metadata; chưa cầm model | — | — | 28/11: người dùng chưa có model để cầm; HasInvisibleTile; v12.26 Hotbar metadata, chưa có model |
 | Orange Portal | 463 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Pain | 1406 | Fruits | Nạp được · Pain-Pain.rbxm | 6 · 6/6 | 7/7 | Người dùng đã xem · chưa đo Equip | Đổi pose · 43/52 khớp · 15123652069 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
 | Phoenix | 1401 | Fruits | Nạp được · Phoenix-Phoenix.rbxm | 11 · 11/11 | 7/7 | Người dùng đã xem · chưa đo Equip | Đổi pose · 120/134 khớp · 15123654553 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
 | Pink Portal | 458 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Portal | 1414 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
+| Portal | 1414 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
 | Purple Lightning | 460 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Quake | 1389 | Fruits | Nạp được · Quake-Quake.rbxm | 4 · 4/4 | 3/3 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 87225712156404, 87225712156404 | 0/5 bật · 5/5 | Người dùng thấy đứng yên |
 | Red Lightning | 540 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Requiem Eagle | 495 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Rocket | 1390 | Fruits | Thiếu file | — | — | Đã từng cầm · ngoài file | — | — | Đã từng cầm theo phản hồi |
+| Rocket | 1390 | Fruits | Thiếu file | — | — | Đã từng cầm · ngoài file | — | — | 28/11: người dùng chưa có model để cầm; người dùng báo có trái thật, chờ mẫu Tool |
 | Rose Quartz Diamond | 470 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Rubber | 1396 | Fruits | Nạp được · Rubber-Rubber.rbxm | 3 · 3/3 | 3/3 | Người dùng đã xem · chưa đo Equip | Đổi pose · 83/93 khớp · 15123668008 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
 | Ruby Diamond | 468 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Runic Fiend | 1522 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Sadness Pain | 479 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Sand | 1404 | Fruits | Nạp được · Sand-Sand.rbxm | 3 · 3/3 | 4/4 | Người dùng đã xem · chưa đo Equip | Đổi pose · 126/141 khớp · 15123673019 | 4/5 bật · 5/5 | — |
+| Sand | 1404 | Fruits | Nạp được · Sand-Sand.rbxm | 3 · 3/3 | 4/4 | Người dùng đã xem · chưa đo Equip | Đổi pose · 126/141 khớp · 15123673019 | 4/5 bật · 5/5 | 28/11: người dùng xác nhận hiển thị đúng |
 | Scarlet Ghost | 1524 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Shadow | 1413 | Fruits | Nạp được · Shadow-Shadow.rbxm | 6 · 6/6 | 6/6 | Người dùng đã xem · chưa đo Equip | Đổi pose · 89/99 khớp · 15123675904 | 3/4 bật · 3/3 | — |
+| Shadow | 1413 | Fruits | Nạp được · Shadow-Shadow.rbxm | 6 · 6/6 | 6/6 | Người dùng đã xem · chưa đo Equip | Đổi pose · 89/99 khớp · 15123675904 | 3/4 bật · 3/3 | 28/11: người dùng xác nhận hiển thị đúng |
 | Smoke | 1400 | Fruits | Nạp được · Smoke-Smoke.rbxm | 4 · 4/4 | 3/3 | Có BasePart · chưa thử cầm | Đổi pose · 162/167 khớp · 15123677932 | 0/0 bật · 0 ref. | — |
-| Sound | 1419 | Fruits | Nạp được · Sound-Sound.rbxm | 7 · 7/7 | 4/4 | Có BasePart · chưa thử cầm | Đổi pose · 3/11 khớp · 15123679712 | 7/7 bật · 6/6 | — |
-| Spider | 1403 | Fruits | Nạp được · Spider-Spider.rbxm | 5 · 5/5 | 0 ref. | Người dùng đã xem · chưa đo Equip | Đổi pose · 100/105 khớp · 15123681598 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
+| Sound | 1419 | Fruits | Nạp được · Sound-Sound.rbxm | 7 · 7/7 | 4/4 | Có BasePart · chưa thử cầm | Đổi pose · 3/11 khớp · 15123679712 | 7/7 bật · 6/6 | 28/11: người dùng xác nhận hiển thị đúng |
+| Spider | 1403 | Fruits | Nạp được · Spider-Spider.rbxm | 5 · 5/5 | 0 ref. | Người dùng đã xem · chưa đo Equip | Đổi pose · 100/105 khớp · 15123681598 | 0/0 bật · 0 ref. | 28/11: người dùng xác nhận hiển thị đúng |
 | Spike | 1398 | Fruits | Nạp được · Spike-Spike.rbxm | 7 · 7/7 | 1/1 | Có BasePart · chưa thử cầm | Đổi pose · 72/144 khớp · 15124220207 | 0/0 bật · 0 ref. | — |
 | Spin | 1411 | Fruits | Nạp được · Spin-Spin.rbxm | 3 · 3/3 | 3/3 | Có mẫu thật từng cầm | Đổi pose · 15/23 khớp · 15123685330 | 0/0 bật · 0 ref. | — |
 | Spirit | 1415 | Fruits | Nạp được · Spirit-Spirit.rbxm | 11 · 11/11 | 11/11 | Người dùng đã xem · chưa đo Equip | Đổi pose · 24/37 khớp · 11911905519 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
-| Spring | 1402 | Fruits | Nạp được · Spring-Spring.rbxm | 4 · 4/4 | 3/3 | Người dùng đã xem · chưa đo Equip | Đổi pose · 38/48 khớp · 15123689268 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
+| Spring | 1402 | Fruits | Nạp được · Spring-Spring.rbxm | 4 · 4/4 | 3/3 | Người dùng đã xem · chưa đo Equip | Đổi pose · 38/48 khớp · 15123689268 | 0/0 bật · 0 ref. | 28/11: người dùng xác nhận hiển thị đúng |
 | Starlight Gravity | 1523 | Fruit Skins | Nạp được · Heavenly Gravity.rbxm | 9 · 9/9 | 6/6 | Có BasePart · chưa thử cầm | Đổi pose · 29/39 khớp · 15123633312 | 0/0 bật · 0 ref. | — |
 | Super Spirit Pain | 541 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| T-Rex | 1420 | Fruits | Nạp được · T-Rex-T-Rex.rbxm | 3 · 3/3 | 5/5 | Có BasePart · chưa thử cầm | Đổi pose · 27/31 khớp · 15694681122 | 4/4 bật · 4/4 | — |
+| T-Rex | 1420 | Fruits | Nạp được · T-Rex-T-Rex.rbxm | 3 · 3/3 | 5/5 | Có BasePart · chưa thử cầm | Đổi pose · 27/31 khớp · 15694681122 | 4/4 bật · 4/4 | 28/11: người dùng xác nhận hiển thị đúng |
 | Thermite Bomb | 511 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Tiger | 1430 | Fruits | Nạp được · Tiger-Tiger.rbxm | 6 · 6/6 | 2/2 | Người dùng đã xem · chưa đo Equip | Preload Failure · 119940442528522 | 0/0 bật · 0 ref. | Người dùng thấy đứng yên; đã thấy VFX |
-| Topaz Diamond | 469 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Torment Pain | 491 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Venom | 1410 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Werewolf (Tiger) | 814 | Fruit Skins | Nạp được · Werewolf (Tiger)-Werewolf (Tiger).rbxm | 6 · 6/6 | 3/3 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 133333989918142 | 0/0 bật · 0 ref. | Người dùng thấy đứng yên; đã thấy VFX |
-| Yellow Lightning | 450 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Yeti | 1424 | Fruits | Nạp được · Yeti-Yeti.rbxm | 5 · 5/5 | 4/4 | Người dùng đã xem · chưa đo Equip | Đổi pose · 108/120 khớp · 115276580506154 | 8/8 bật · 6/6 | — |
+| Tiger | 1430 | Fruits | Nạp được · Tiger-Tiger.rbxm | 6 · 6/6 | 2/2 | Người dùng đã xem · chưa đo Equip | Preload Failure · 119940442528522 | 0/0 bật · 0 ref. | người dùng chưa thấy chuyển động; người dùng chưa thấy VFX |
+| Topaz Diamond | 469 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
+| Torment Pain | 491 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
+| Venom | 1410 | Fruits | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
+| Werewolf (Tiger) | 814 | Fruit Skins | Nạp được · Werewolf (Tiger)-Werewolf (Tiger).rbxm | 6 · 6/6 | 3/3 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 133333989918142 | 0/0 bật · 0 ref. | người dùng chưa thấy chuyển động; người dùng đã thấy VFX |
+| Yellow Lightning | 450 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | 28/11: người dùng chưa có model để cầm |
+| Yeti | 1424 | Fruits | Nạp được · Yeti-Yeti.rbxm | 5 · 5/5 | 4/4 | Người dùng đã xem · chưa đo Equip | Đổi pose · 108/120 khớp · 115276580506154 | 8/8 bật · 6/6 | 28/11: người dùng xác nhận hiển thị đúng |
 
 ## Các file Catalog chưa chọn
 

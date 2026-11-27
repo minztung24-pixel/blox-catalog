@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.26 Celestial/Oni hotbar fallback and public texture reads
+
+Native metadata marks Celestial and Oni with HasInvisibleTile. Their Add-to-Items visibility issue is separate from missing 3D models. As requested, adding either can now create a disabled metadata-only Tool in the native Backpack/hotbar when its model is missing. It retains the correct name/physical ItemId and contains no invented mesh, scripts or fruit activation. The Added action says Hotbar; the card does not claim a model is available. Other missing-model fruits retain their existing behavior, and native inventory visibility tags are not changed.
+
+The live local-Add check passed for both items with Items linked, no geometry and disabled activation. The regression failed before the change; repeated requests, failed stock sync, cleanup and unrelated missing fruits are covered. Archive texture verification now uses publicly readable SurfaceAppearance Content maps while retaining the existing URI fields and validation tolerance. A genuine Spring snapshot that failed on the legacy PluginSecurity map getters now saves successfully; the existing Yeti/Arcsteel/Dark archives still import.
+
+The user's detailed v12.25 observations are recorded separately from instrumented checks in data/user-fruit-observations-2026-11-28.json. Unlisted entries remain unknown, and accepted appearance does not imply that every fruit must contain emitters. No newly missing model, current Control model or unavailable motion/FX is claimed recovered. See docs/DIAG.md and docs/ASSET_AUDIT.md.
+
 ## v12.25 Observe replicated player-held fruits and retain validated captures
 
 The source watcher also recognizes physical fruit/skin Tools directly inside other players' engine-verified Characters already replicated to this client. It requires the exact physical ItemId, ignores NPC lookalikes and Catalog clones, handles player/character lifecycle, and preserves local/native-source priority. It does not inspect another player's private Backpack or modify their Tool.

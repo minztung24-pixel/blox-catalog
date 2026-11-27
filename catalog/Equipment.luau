@@ -1,5 +1,9 @@
 local Equipment = {}
 
+function Equipment.allowsHotbarOnly(item)
+    return (item.category=="Fruits"or item.isPhysicalFruit)and (item.id=="1428"or item.id=="1429")
+end
+
 function Equipment.findExistingTool(player, item)
     local function normalized(name) return name:lower():gsub("%s", "") end
     local names = {}
@@ -357,6 +361,13 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
             self:remove(item.id)
             local source, sourceError = getSource(item)
             tool = Equipment.clone(source, item)
+            if not tool and Equipment.allowsHotbarOnly(item)then
+                tool=Instance.new("Tool")
+                tool.Name=item.name;tool.ToolTip="Fruits";tool.RequiresHandle=false
+                tool.Enabled=false;tool.ManualActivationOnly=true;tool.CanBeDropped=false
+                tool:SetAttribute("ItemId",tonumber(item.id));tool:SetAttribute("BloxCatalogOwned",true)
+                tool:SetAttribute("BloxCatalogHotbarOnly",true)
+            end
             if not tool then return false, sourceError or ("Missing 3D model for " .. item.name .. "; the catalog only has its metadata/icon") end
             row.tool = tool
             created=true
@@ -366,6 +377,10 @@ function Equipment.new(state, player, getSource, notify, onFruitActivated, abili
             if not synced then self:remove(item.id); return false, err end
         end
         tool.Parent = backpack
+        if tool:GetAttribute("BloxCatalogHotbarOnly")then
+            row.equipped=false
+            return true,nil,"hotbar"
+        end
         tool.Handle.CanCollide=false
         tool.Handle.CanTouch=false
         tool.Handle.Massless=true

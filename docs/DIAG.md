@@ -1,6 +1,18 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 28/11/2026, Catalog v12.25. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Thống kê toàn bộ giữ mốc 27/11; các lượt đối chứng 28/11 ghi riêng bên dưới. Chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 28/11/2026, Catalog v12.26. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số nạp được không xác nhận model hiện hành là đúng; Control được người dùng xác nhận là bản cũ. Thống kê toàn bộ giữ mốc 27/11; các lượt đối chứng 28/11 ghi riêng bên dưới. Chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Phản hồi mới, hotbar Celestial/Oni và đọc texture, v12.26
+
+Phân biệt Add vào Items với model để cầm: người dùng xác nhận các mục khác đều Add được, còn Celestial (1428) và Oni (1429) không hiện trong kho. Đọc cấu hình native thấy cả hai có Inventory.Tags.HasInvisibleTile và CanShowcase=false. Không gỡ tag hay sửa danh sách Items của game. Theo ngoại lệ người dùng cho phép, Add hai mục này tạo Tool metadata trực tiếp trong Backpack/hotbar native: đúng tên/ItemId, RequiresHandle=false, Enabled=false, ManualActivationOnly=true, không BasePart/model/code hay handler Eat/Drop. Thẻ không được tô như đã có model; nút trong Added ghi Hotbar. Nếu tìm được model thật, đường clone thông thường vẫn dùng khi tạo Tool.
+
+Phép thử live v12.26 gọi chính callback Add local của Catalog, không gọi giao dịch: Items linked=true, cả hai Tool xuất hiện trong Backpack, đúng ItemId, có cờ HotbarOnly, không geometry và không activation. Đây là xác nhận đường hotbar được yêu cầu, không phải tuyên bố đã làm hai ô Items native hết ẩn hay có model mới. Kiểm thử hồi quy trước sửa thất bại No source model; sau sửa đạt, có lặp yêu cầu không nhân đôi, rollback khi sync lỗi, Clear/cleanup và không mở ngoại lệ sang Venom/các trái thiếu model khác.
+
+Đọc Tool thật thấy Spring (1402), chưa thấy Rocket/Bomb/Eagle dưới dạng Tool thật ở Backpack/Character trong lượt đo. Archive đã có một snapshot Eagle hợp lệ theo ItemId: 102 node tính cả root, 12 ParticleEmitter đều Enabled=false, clip 77885466312115. Không suy ra các emitter này phải bật liên tục hoặc tự bật chúng; vẫn cần mẫu đang cầm để đối chiếu controller/burst VFX. Các mẫu này không làm tăng số mục model vốn thiếu.
+
+Thử lưu Spring bắt lỗi đọc SurfaceAppearance.ColorMap thiếu Plugin capability. Đổi sang các thuộc tính ColorMapContent/NormalMapContent/RoughnessMapContent/MetalnessMapContent đọc công khai, giữ các URI trong schema archive cũ và vẫn kiểm chứng đủ các trường đang đo; không nâng quyền thread và không bỏ qua texture. Sau sửa Spring lưu/nạp qua kiểm chứng thành công, archive Yeti/Arcsteel/Dark cũ vẫn nạp được. [Định nghĩa quyền API chính thức](https://github.com/Roblox/creator-docs/blob/main/content/en-us/reference/engine/classes/SurfaceAppearance.yaml), [Content.Uri](https://github.com/Roblox/creator-docs/blob/main/content/en-us/reference/engine/datatypes/Content.yaml).
+
+Phản hồi đầy đủ theo physical ItemId: data/user-fruit-observations-2026-11-28.json, 43 mục được nêu cụ thể, 19 mục được người dùng chấp nhận hình ảnh. Các mục chưa nêu giữ unknown. Accepted appearance không đồng nghĩa mọi trái phải có emitter. Không ghi các phản hồi này thành số đo máy mới. Control vẫn chờ model hiện hành; Rocket vẫn chưa được xác nhận phục hồi; VFX Bomb/Eagle và các clip Dragon/Flame/Lightning/Tiger/Ember/Werewolf chưa được sửa trong thay đổi này.
 
 ## Nhận nguồn từ người chơi khác và lưu cache, v12.25
 

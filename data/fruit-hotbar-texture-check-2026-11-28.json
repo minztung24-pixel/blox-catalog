@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-28",
+  "catalogVersion": "12.26",
+  "scope": "Local Catalog callbacks and archive verification in Blox Fruits; no purchases, Drop or Eat",
+  "nativeMetadata": {"1428": {"name": "Celestial", "invisibleInventoryTile": true}, "1429": {"name": "Oni", "invisibleInventoryTile": true}},
+  "hotbarCheck": {
+    "complete": true,
+    "passed": true,
+    "itemsLinked": true,
+    "results": [
+      {"physicalItemId": "1428", "name": "Celestial", "inBackpack": true, "noGeometry": true, "activationDisabled": true, "markedHotbarOnly": true},
+      {"physicalItemId": "1429", "name": "Oni", "inBackpack": true, "noGeometry": true, "activationDisabled": true, "markedHotbarOnly": true}
+    ],
+    "nativeInventoryVisibilityChanged": false
+  },
+  "textureArchiveCheck": {
+    "springPhysicalItemId": "1402",
+    "before": "Legacy SurfaceAppearance.ColorMap getter rejected: Plugin capability required",
+    "after": "Public Content map reads; export and verification passed",
+    "existingArchivesLoaded": ["1424", "1525", "1395"],
+    "validationToleranceChanged": false
+  },
+  "eagleArchiveInspection": {"physicalItemId": "1425", "nodesIncludingRoot": 102, "particleEmitters": 12, "enabledParticleEmitters": 0, "vfxRepairClaimed": false},
+  "newMissingModelsRecovered": 0,
+  "limits": ["Hotbar metadata entries are not 3D models", "Native invisible inventory tiles remain unchanged", "Control current model and Rocket model are not recovered", "Bomb/Eagle VFX and unavailable motion clips remain unresolved", "Raw captures and runtime reports remain private"]
+}

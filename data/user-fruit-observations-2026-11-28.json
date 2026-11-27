@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-28",
+  "catalogVersionObserved": "12.25",
+  "source": "User visual observations; not an instrumented pass/fail audit",
+  "nativeItemsAdd": {
+    "userReportedWorksForOtherEntries": true,
+    "exceptions": [
+      "1428",
+      "1429"
+    ]
+  },
+  "unlistedEntries": "unknown",
+  "aliases": {
+    "elestial": "Celestial",
+    "Vemom": "Venom",
+    "Tonment pain": "Torment Pain",
+    "Friend (Yeti)": "Fiend (Yeti)",
+    "Werewoft": "Werewolf (Tiger)",
+    "Galaxy empyrean": "Galaxy"
+  },
+  "observations": [
+    {
+      "id": "1428",
+      "name": "Celestial",
+      "category": "Fruits",
+      "model": "missing",
+      "nativeItemsAdd": "notVisible",
+      "hotbarOnlyRequested": true
+    },
+    {
+      "id": "1429",
+      "name": "Oni",
+      "category": "Fruits",
+      "model": "missing",
+      "nativeItemsAdd": "notVisible",
+      "hotbarOnlyRequested": true
+    },
+    {
+      "id": "885",
+      "name": "Dragon (East)",
+      "category": "Fruits",
+      "model": "missing"
+    },
+    {
+      "id": "1516",
+      "name": "Magnet",
+      "category": "Fruits",
+      "model": "missing"
+    },
+    {
+      "id": "1410",
+      "name": "Venom",
+      "category": "Fruits",
+      "model": "missing"
+    },
+    {
+      "id": "1390",
+      "name": "Rocket",
+      "category": "Fruits",
+      "model": "missing",
+      "realFruitAvailableReported": true
+    },
+    {
+      "id": "1414",
+      "name": "Portal",
+      "category": "Fruits",
+      "model": "missing"
+    },
+    {
+      "id": "1041",
+      "name": "Empyrean",
+      "category": "Fruit Skins",
+      "model": "missing"
+    },
+    {
+      "id": "450",
+      "name": "Yellow Lightning",
+      "category": "Fruit Skins",
+      "model": "missing"
+    },
+    {
+      "id": "491",
+      "name": "Torment Pain",
+      "category": "Fruit Skins",
+      "model": "missing"
+    },
+    {
+      "id": "469",
+      "name": "Topaz Diamond",
+      "category": "Fruit Skins",
+      "model": "missing"
+    },
+    {
+      "id": "1601",
+      "name": "Hellfire (Gas)",
+      "category": "Fruit Skins",
+      "model": "missing"
+    },
+    {
+      "id": "1060",
+      "name": "Fiend (Yeti)",
+      "category": "Fruit Skins",
+      "model": "missing"
+    },
+    {
+      "id": "1409",
+      "name": "Control",
+      "category": "Fruits",
+      "model": "outdated"
+    },
+    {
+      "id": "1397",
+      "name": "Bomb",
+      "category": "Fruits",
+      "animation": "present",
+      "vfx": "notSeen",
+      "realFruitAvailableReported": true
+    },
+    {
+      "id": "1425",
+      "name": "Eagle",
+      "category": "Fruits",
+      "animation": "present",
+      "vfx": "notSeen",
+      "realFruitAvailableReported": true
+    },
+    {
+      "id": "1423",
+      "name": "Kitsune",
+      "category": "Fruits",
+      "animation": "present",
+      "vfx": "notSeen"
+    },
+    {
+      "id": "1430",
+      "name": "Tiger",
+      "category": "Fruits",
+      "animation": "notSeen",
+      "vfx": "notSeen"
+    },
+    {
+      "id": "1394",
+      "name": "Flame",
+      "category": "Fruits",
+      "animation": "notSeen",
+      "vfx": "present"
+    },
+    {
+      "id": "1427",
+      "name": "Lightning",
+      "category": "Fruits",
+      "animation": "notSeen",
+      "vfx": "present"
+    },
+    {
+      "id": "1447",
+      "name": "Dragon",
+      "category": "Fruits",
+      "animation": "notSeen",
+      "vfx": "present"
+    },
+    {
+      "id": "884",
+      "name": "Dragon (West)",
+      "category": "Fruits",
+      "animation": "notSeen",
+      "vfx": "present"
+    },
+    {
+      "id": "1047",
+      "name": "Ember",
+      "category": "Fruit Skins",
+      "animation": "notSeen",
+      "vfx": "present"
+    },
+    {
+      "id": "814",
+      "name": "Werewolf (Tiger)",
+      "category": "Fruit Skins",
+      "animation": "notSeen",
+      "vfx": "present"
+    },
+    {
+      "id": "1424",
+      "name": "Yeti",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1420",
+      "name": "T-Rex",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1419",
+      "name": "Sound",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1413",
+      "name": "Shadow",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1403",
+      "name": "Spider",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1416",
+      "name": "Blizzard",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1399",
+      "name": "Blade",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1422",
+      "name": "Gas",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1405",
+      "name": "Gravity",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1393",
+      "name": "Buddha",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1395",
+      "name": "Dark",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1412",
+      "name": "Ghost",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1408",
+      "name": "Love",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1402",
+      "name": "Spring",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1421",
+      "name": "Diamond",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1404",
+      "name": "Sand",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1431",
+      "name": "Meme",
+      "category": "Fruits",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1042",
+      "name": "Galaxy",
+      "category": "Fruit Skins",
+      "appearance": "accepted"
+    },
+    {
+      "id": "1525",
+      "name": "Arcsteel Magnet",
+      "category": "Fruit Skins",
+      "appearance": "accepted"
+    }
+  ],
+  "limits": [
+    "Accepted appearance does not assert that every Fruit must contain particle emitters",
+    "Missing/old model and Add-to-Items visibility are separate issues",
+    "No new model or animation recovery is claimed by this feedback record"
+  ]
+}

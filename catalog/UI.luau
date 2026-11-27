@@ -75,8 +75,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.25", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.25")
+    text(panel, "Title", "BLOX CATALOG v12.26", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.26")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -133,6 +133,7 @@ function UI.start()
     local function equip(item)
         local ok, err, mode = equipment:equip(item)
         local prefix=mode=="existing" and "Equipped existing Tool: "
+            or mode=="hotbar"and "Added to hotbar / no 3D model: "
             or ((item.category=="Fruits" or item.isPhysicalFruit) and "Fruit equipped / checking animation: " or "Equipped local visual: ")
         local row=state.items[item.id]
         local animationError
@@ -168,7 +169,7 @@ function UI.start()
     end)
     local function useVisual(item)
         if not Equipment.findExistingTool(player, item) and not state.items[item.id] then
-            if not NativeAbilities.supports(item)and not sourceFor(item) then
+            if not NativeAbilities.supports(item)and not Equipment.allowsHotbarOnly(item)and not sourceFor(item) then
                 tell("Missing 3D model for " .. item.name .. ". View shows its icon; no Tool is available to equip.")
                 return
             end
@@ -179,7 +180,7 @@ function UI.start()
         local ok, _, mode = equip(item)
         if ok then
             state.visualId = item.id
-            if state.items[item.id] then state.items[item.id].visual = mode == "visual"or mode=="ability" end
+            if state.items[item.id] then state.items[item.id].visual = mode == "visual"or mode=="ability"or mode=="hotbar" end
             gui:SetAttribute("VisualItemId", item.id)
         end
     end
@@ -420,7 +421,8 @@ function UI.start()
             local source = sourceFor(item)
             local stock = state.items[item.id]
             local available = NativeAbilities.supports(item)or (source and source.Parent and source:FindFirstChildWhichIsA("BasePart", true))
-                or Equipment.findExistingTool(player, item) or (stock and stock.tool and stock.tool.Parent) or fruitModels:available(item)
+                or Equipment.findExistingTool(player, item) or (stock and stock.tool and stock.tool.Parent and not stock.tool:GetAttribute("BloxCatalogHotbarOnly")) or fruitModels:available(item)
+            local hotbarOnly=Equipment.allowsHotbarOnly(item)and not available
             local card = make("Frame", content, {Name = "Item_" .. item.id, LayoutOrder = index,
                 BackgroundColor3 = available and colors.available or colors.surface, BorderSizePixel = 0})
             card:SetAttribute("ItemId", item.id); round(card, false)
@@ -430,7 +432,7 @@ function UI.start()
             text(card, "Metadata", item.rarity .. " • " .. item.id, UDim2.fromOffset(10, 64), UDim2.new(1, -20, 0, 16), 10, true)
             if tab == "Added" then
                 text(card, "Count", "×" .. state.items[item.id].count, UDim2.fromOffset(10, 88), UDim2.new(0.4, 0, 0, 22), 12)
-                button(card, "Equip", available and "Equip" or "No model", UDim2.new(1, -168, 1, -48), UDim2.fromOffset(76, 42), function() equip(item) end, available and colors.green or colors.surface)
+                button(card, "Equip", hotbarOnly and "Hotbar"or available and "Equip" or "No model", UDim2.new(1, -168, 1, -48), UDim2.fromOffset(76, 42), function() equip(item) end, (available or hotbarOnly)and colors.green or colors.surface)
                 button(card, "Clear", "Clear", UDim2.new(1, -84, 1, -48), UDim2.fromOffset(76, 42), function()
                     local ok, err = Inventory.clear(state, item.id)
                     updateQuantity(); render(); tell(ok and "Item cleared from the local inventory." or ("Clear failed: " .. tostring(err)))
@@ -446,7 +448,7 @@ function UI.start()
                             local ok, err = Inventory.add(state, item)
                             if ok then
                                 updateQuantity()
-                                if item.category=="Permanent"then equip(item)
+                                if item.category=="Permanent"or hotbarOnly then equip(item)
                                 else tell((state.native and "Added to Items locally: " or "Added to panel only / Items offline: ") .. item.name)end
                             else
                                 tell("Add failed: " .. tostring(err))

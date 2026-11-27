@@ -2,6 +2,9 @@ return function(FruitVisuals)
     local folder=Instance.new("Folder")
     local source=Instance.new("Tool",folder);source.Name="Fixture";source:SetAttribute("ItemId",1516);source:SetAttribute("UID","do-not-export")
     local part=Instance.new("Part",source);part.Name="Handle"
+    local surfacePart=Instance.new("MeshPart",source);surfacePart.Name="Surface"
+    local appearance=Instance.new("SurfaceAppearance",surfacePart)
+    appearance.ColorMapContent=Content.fromUri("rbxassetid://80555823838184")
     local fx=Instance.new("ParticleEmitter",part)
     fx.Speed=NumberRange.new(1.3016364574432374,2.7334365844726564)
     fx.Size=NumberSequence.new(2.2874526977539064)
@@ -9,6 +12,9 @@ return function(FruitVisuals)
     local copies={}
     local ok,message=pcall(function()
         local meta=FruitVisuals.metadata(source)
+        local surfaceIndex
+        for index,node in ipairs(meta.expected.shape)do if node.class=="SurfaceAppearance"then surfaceIndex=index end end
+        assert(surfaceIndex and meta.expected.values[surfaceIndex].ColorMap==appearance.ColorMapContent.Uri,"Read public Content maps while preserving archive field compatibility")
         assert(meta.id=="1516"and not game:GetService("HttpService"):JSONEncode(meta):find("do-not-export",1,true),"Store physical identity, not runtime UID")
         local copy=source:Clone();copy.Parent=folder;table.insert(copies,copy)
         copy:SetAttribute("ItemId",nil)
