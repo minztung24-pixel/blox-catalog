@@ -12,6 +12,12 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## Additional verification on v12.23: known-good controls and Dragon
+
+Compared Yeti, Shadow and Dark with eight affected fruits/skins using three playback paths in the original game: Catalog preload, immediate Animator playback and immediate AnimationController playback. All nine control cases changed pose; all eight affected items failed preload and both direct paths remained at zero loaded clip length within seven seconds. Changing playback API alone did not restore Dragon or the other affected clips in this session. This does not establish whether permissions, stale IDs or asset delivery caused the missing clip data.
+
+Rechecked all 50 local files against sanitized clones: zero errors or differences in the measured render/rig/FX properties. 496/497 render references loaded; Buddha's existing particle-texture failure remains. Dark has no ParticleEmitter/Beam/Trail in its file despite the user's accepted appearance, so zero emitter count is not treated as an automatic defect. The production animation logic and model coverage are unchanged; the sanitized results and limits are in `data/fruit-reference-check-2026-11-28.json`. Raw game reports stay private.
+
 ## v12.23 Recognize native fruit preview templates
 
 Rescan now checks `PlayerGui.__ReplicatedSpinnerInstances` before the older model roots and snapshots native physical Tools in Workspace before preview cleanup. Physical fruit/skin templates need an exact ItemId, pass the existing sanitizer, retain authored animation/FX data and remain cached after their source disappears. Captured held Tools take priority over holder templates; names and icons cannot substitute a base fruit for a skin.

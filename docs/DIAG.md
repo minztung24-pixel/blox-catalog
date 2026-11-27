@@ -2,6 +2,24 @@
 
 Cập nhật ngày 28/11/2026, Catalog v12.23. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Các số đo model/animation/VFX dưới đây vẫn là lượt 27/11; kiểm tra nguồn Shop mới chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
 
+## Đối chứng Yeti/Shadow/Dark và Dragon, ngày 28/11/2026
+
+User xác nhận Yeti, Shadow và Dark là các mẫu hiển thị đầy đủ. Chạy CompareFruitAnimationPaths trong Blox Fruits bằng module v12.23, trên bản sao sạch, vô hình; không Equip/Drop/Store trái thật và không gọi giao dịch. 11 mục × 3 đường phát = 33 trường hợp, hoàn tất trong 124.05 giây, cả 9 trường hợp đối chứng đều đổi pose. Ba đường gồm Catalog preload, Animator.LoadAnimation rồi Play ngay, và AnimationController.LoadAnimation rồi Play ngay theo API dùng trong FruitAnimator native. Mỗi đường trực tiếp chờ tối đa 7 giây.
+
+| Đối chứng | Khớp đổi pose / đo | VFX đang bật / có trong file | Kết quả cả 3 đường |
+|---|---|---|---|
+| Yeti, 1424 | 108/120 | 8/8 | Đổi pose |
+| Shadow, 1413 | 89/99 | 3/4 | Đổi pose |
+| Dark, 1395 | 47/70 | 0/0 | Đổi pose |
+
+Dragon (1447), Dragon (West) (884), Ember (1047), Flame (1394), Lightning (1427), Quake (1389), Tiger (1430) và Werewolf (Tiger) (814): cả 8 bị preload Failure; cả 16 đường phát trực tiếp trả track nhưng Length vẫn bằng 0 khi hết hạn. Dragon và Dragon (West) dùng chung 89485756852231, nên đây là 8 mục và 7 ID riêng biệt. Không có bằng chứng rằng bỏ preload hoặc đổi từ Animator sang AnimationController sẽ khắc phục được các clip hiện có. Phép đo chưa phân biệt được quyền truy cập, ID cũ hay nguyên nhân phân phối tài nguyên; không kết luận chắc chắn bị khóa quyền chỉ từ kết quả này.
+
+Dragon vẫn có 8/8 VFX bật, West 33/33, Ember 8/8, Flame 6/6, Lightning 4/4; Quake 0/5, Tiger/Werewolf 0/0 trong file. Đây là trạng thái dữ liệu trước khi tắt FX trên bản sao đo, không phải phép thử VFX hình ảnh. Dark là mẫu user xác nhận chuẩn dù file không có ParticleEmitter/Beam/Trail, nên không đánh dấu mọi mục 0 VFX là lỗi hoặc tự bật tất cả emitter.
+
+Chạy thêm CompareFruitVisuals trên 50 file hiện có với Equipment.clone v12.23: complete=true, 0 lỗi model, 0 lỗi đọc thuộc tính, 0 file có khác biệt ở các thuộc tính được đo. Bao gồm mesh/texture/PBR, attachment, bone/motor, emitter/beam/trail, image, GUI và light. 496/497 tham chiếu render tải được; Buddha 6960307279 tiếp tục Failure. Đối chiếu này chỉ chứng minh bảo toàn dữ liệu từ file sang clone, không chứng minh file đầy đủ so với game hiện tại, không kiểm tra controller/script đã thiếu từ trước khi xuất file.
+
+Không đổi logic animation sản phẩm hoặc tăng số model đã khôi phục sau lượt kiểm tra này. 35 file thiếu và Empyrean chứa nhầm Galaxy vẫn còn; các trái khác ngoài 11 mục không được phát lại animation. Kết quả đã loại source thô/thông tin cá nhân ở data/fruit-reference-check-2026-11-28.json; hai báo cáo runtime gốc giữ private. Chưa cần user chạy thêm mã hoặc mua/thả trái để đo lại.
+
 ## Shop, Dealer, Gacha và nguồn preview bị bỏ sót, v12.23
 
 Kiểm tra ItemConfig đang cache ghi 258 cấu hình liên quan, gồm đủ 81 PhysicalMoveset. Shop gốc có 195 ImageLabel, 37 ImageButton và không có ViewportFrame trong lượt đọc ban đầu. Những ảnh atlas đủ tên/icon không phải model 3D. Các cấu hình vật phẩm dùng State.EquipMethod=LoadFruit nhưng không chứa trường mesh/model/animation/VFX; tên phương thức không cung cấp mã tải phía server.

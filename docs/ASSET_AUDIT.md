@@ -11,6 +11,16 @@ Kiểm kê cập nhật ngày 27/11/2026 cho 81 trái vật phẩm trong Fruits 
 - **Đo lại trong Blox Fruits ngày 26/11:** Dragon, Dragon (West), Ember, Flame, Lightning, Quake và Werewolf (Tiger) đều có 4 mẫu Tool đang cầm, trạng thái cuối Failed do preload trả Failure và không có track đang chạy. Báo cáo kết thúc bình thường nhưng thiếu Tiger (1430).
 
 
+## Đối chứng chuyển động và bảo toàn model ngày 28/11/2026
+
+Đã kiểm tra sâu Yeti, Shadow, Dark (user xác nhận đầy đủ) và 8 mục lỗi bằng v12.23. 33 ca gồm preload Catalog, phát trực tiếp qua Animator và phát trực tiếp qua AnimationController. Yeti đổi pose 108/120 khớp, Shadow 89/99, Dark 47/70 ở cả ba đường. Dark không có ParticleEmitter/Beam/Trail trong file; 0 VFX không tự động đồng nghĩa chưa hoàn chỉnh.
+
+Dragon, Dragon (West), Ember, Flame, Lightning, Quake, Tiger, Werewolf (Tiger) vẫn preload Failure và không có dữ liệu clip trong cả hai đường phát trực tiếp sau thời hạn 7 giây. 8 mục dùng 7 ID riêng biệt. Không thay clip bằng chuyển động của các trái đối chứng; chưa xác định nguyên nhân phân phối/quyền/ID cũ. Đường gọi native cũng không giải quyết được nguồn clip hiện có trong lượt đo.
+
+Đối chiếu riêng **50 file gốc → clone v12.23** hoàn tất: 0 lỗi model, 0 lỗi đọc thuộc tính, 0 file khác các thuộc tính render/attachment/bone/motor/VFX đã đo. **496/497 tham chiếu render tải thành công**; texture VFX Buddha 6960307279 vẫn lỗi. Đây là kiểm tra bảo toàn dữ liệu file, không xác nhận toàn bộ VFX/controller hiện tại của game. Không thêm emitter giả hay tự bật các emitter vốn bị tắt.
+
+Bảng chi tiết bên dưới giữ số đo toàn bộ ngày 27/11, trừ phần bổ sung đối chứng này. Không tăng phạm vi thành đã thử Equip thật mọi trái. Số nguồn model vẫn **45 nạp được, 35 thiếu file, 1 Empyrean sai model**. Báo cáo tổng hợp mới: data/fruit-reference-check-2026-11-28.json; chi tiết phương pháp và giới hạn ở DIAG.md.
+
 ## Đối chiếu nguồn Shop/Dealer/Gacha ngày 28/11/2026, v12.23
 
 Đã đọc dữ liệu ItemConfig và 39 source UI/NPC gốc; mã kiểm tra không mua hoặc quay. Shop hiển thị 232 thành phần ảnh, không có ViewportFrame trong lượt đọc; đủ icon không chứng minh đủ mesh, texture bề mặt hay rig. Dealer mở Fruit Shop để đổi năng lực; Gacha đi qua RandomFruitSeller → GachaClient → GachaWindow → Spinner, template 3D được game cấp riêng cho preview. Không dùng chế độ GachaSimulation của build thử nghiệm.

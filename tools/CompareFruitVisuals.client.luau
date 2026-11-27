@@ -8,7 +8,7 @@ local replacements
 source,replacements=source:gsub("return UI%.start%(%)%s*$","return {Equipment=Equipment,Catalog=Catalog}")
 assert(replacements==1,"Expected the standalone client; no UI was started")
 local modules=assert(loadstring(source,"VisualAuditModules"))()
-local good={['1424']=true,['1042']=true,['1525']=true,['1413']=true,['1408']=true,['1404']=true}
+local good={['1424']=true,['1042']=true,['1525']=true,['1413']=true,['1395']=true,['1408']=true,['1404']=true}
 local report={schemaVersion=1,gameId=game.GameId,placeId=game.PlaceId,placeVersion=game.PlaceVersion,
     complete=false,models={},assets={},limits={},scope="Source-file versus sanitized-clone parity; no claim of current native visual parity"}
 local output="blox-fruits-visual-parity-"..game.PlaceId..".json"

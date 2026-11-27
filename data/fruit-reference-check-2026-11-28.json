@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "observedDate": "2026-11-28",
+  "catalogVersion": "12.23",
+  "scope": "Invisible sanitized copies and source-file property parity in the original game; no real Tool changes or transactions",
+  "userConfirmedReferenceIds": [
+    "1424",
+    "1413",
+    "1395"
+  ],
+  "playback": {
+    "complete": true,
+    "controlsPassed": true,
+    "cases": 33,
+    "elapsedSeconds": 124.05,
+    "results": [
+      {
+        "id": "1424",
+        "name": "Yeti",
+        "control": true,
+        "mode": "CatalogPreload",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://115276580506154",
+        "length": 1.6666666269302368,
+        "playing": true,
+        "joints": 120,
+        "movingJoints": 108,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1424",
+        "name": "Yeti",
+        "control": true,
+        "mode": "AnimatorImmediate",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://115276580506154",
+        "length": 1.6666666269302368,
+        "playing": true,
+        "joints": 120,
+        "movingJoints": 108,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1424",
+        "name": "Yeti",
+        "control": true,
+        "mode": "NativeControllerImmediate",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://115276580506154",
+        "length": 1.6666666269302368,
+        "playing": true,
+        "joints": 120,
+        "movingJoints": 108,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1413",
+        "name": "Shadow",
+        "control": true,
+        "mode": "CatalogPreload",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://15123675904",
+        "length": 1,
+        "playing": true,
+        "joints": 99,
+        "movingJoints": 89,
+        "authoredFx": {
+          "enabled": 3,
+          "total": 4
+        }
+      },
+      {
+        "id": "1413",
+        "name": "Shadow",
+        "control": true,
+        "mode": "AnimatorImmediate",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://15123675904",
+        "length": 1,
+        "playing": true,
+        "joints": 99,
+        "movingJoints": 89,
+        "authoredFx": {
+          "enabled": 3,
+          "total": 4
+        }
+      },
+      {
+        "id": "1413",
+        "name": "Shadow",
+        "control": true,
+        "mode": "NativeControllerImmediate",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://15123675904",
+        "length": 1,
+        "playing": true,
+        "joints": 99,
+        "movingJoints": 89,
+        "authoredFx": {
+          "enabled": 3,
+          "total": 4
+        }
+      },
+      {
+        "id": "1395",
+        "name": "Dark",
+        "control": true,
+        "mode": "CatalogPreload",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://15123618591",
+        "length": 6.666666507720947,
+        "playing": true,
+        "joints": 70,
+        "movingJoints": 47,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "1395",
+        "name": "Dark",
+        "control": true,
+        "mode": "AnimatorImmediate",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://15123618591",
+        "length": 6.666666507720947,
+        "playing": true,
+        "joints": 70,
+        "movingJoints": 47,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "1395",
+        "name": "Dark",
+        "control": true,
+        "mode": "NativeControllerImmediate",
+        "status": "PoseChangesObserved",
+        "animationId": "rbxassetid://15123618591",
+        "length": 6.666666507720947,
+        "playing": true,
+        "joints": 70,
+        "movingJoints": 47,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "1447",
+        "name": "Dragon",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://89485756852231",
+        "length": null,
+        "playing": null,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1447",
+        "name": "Dragon",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://89485756852231",
+        "length": 0,
+        "playing": true,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1447",
+        "name": "Dragon",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://89485756852231",
+        "length": 0,
+        "playing": true,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "884",
+        "name": "Dragon (West)",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://89485756852231",
+        "length": null,
+        "playing": null,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 33,
+          "total": 33
+        }
+      },
+      {
+        "id": "884",
+        "name": "Dragon (West)",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://89485756852231",
+        "length": 0,
+        "playing": true,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 33,
+          "total": 33
+        }
+      },
+      {
+        "id": "884",
+        "name": "Dragon (West)",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://89485756852231",
+        "length": 0,
+        "playing": true,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 33,
+          "total": 33
+        }
+      },
+      {
+        "id": "1047",
+        "name": "Ember",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://96038340477884",
+        "length": null,
+        "playing": null,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1047",
+        "name": "Ember",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://96038340477884",
+        "length": 0,
+        "playing": true,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1047",
+        "name": "Ember",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://96038340477884",
+        "length": 0,
+        "playing": true,
+        "joints": 143,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 8,
+          "total": 8
+        }
+      },
+      {
+        "id": "1394",
+        "name": "Flame",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://92872930988510",
+        "length": null,
+        "playing": null,
+        "joints": 57,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 6,
+          "total": 6
+        }
+      },
+      {
+        "id": "1394",
+        "name": "Flame",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://92872930988510",
+        "length": 0,
+        "playing": true,
+        "joints": 57,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 6,
+          "total": 6
+        }
+      },
+      {
+        "id": "1394",
+        "name": "Flame",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://92872930988510",
+        "length": 0,
+        "playing": true,
+        "joints": 57,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 6,
+          "total": 6
+        }
+      },
+      {
+        "id": "1427",
+        "name": "Lightning",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://74759006007335",
+        "length": null,
+        "playing": null,
+        "joints": 11,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 4,
+          "total": 4
+        }
+      },
+      {
+        "id": "1427",
+        "name": "Lightning",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://74759006007335",
+        "length": 0,
+        "playing": true,
+        "joints": 11,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 4,
+          "total": 4
+        }
+      },
+      {
+        "id": "1427",
+        "name": "Lightning",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://74759006007335",
+        "length": 0,
+        "playing": true,
+        "joints": 11,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 4,
+          "total": 4
+        }
+      },
+      {
+        "id": "1389",
+        "name": "Quake",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://87225712156404",
+        "length": null,
+        "playing": null,
+        "joints": 26,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 5
+        }
+      },
+      {
+        "id": "1389",
+        "name": "Quake",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://87225712156404",
+        "length": 0,
+        "playing": true,
+        "joints": 26,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 5
+        }
+      },
+      {
+        "id": "1389",
+        "name": "Quake",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://87225712156404",
+        "length": 0,
+        "playing": true,
+        "joints": 26,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 5
+        }
+      },
+      {
+        "id": "1430",
+        "name": "Tiger",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://119940442528522",
+        "length": null,
+        "playing": null,
+        "joints": 44,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "1430",
+        "name": "Tiger",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://119940442528522",
+        "length": 0,
+        "playing": true,
+        "joints": 44,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "1430",
+        "name": "Tiger",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://119940442528522",
+        "length": 0,
+        "playing": true,
+        "joints": 44,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "814",
+        "name": "Werewolf (Tiger)",
+        "control": false,
+        "mode": "CatalogPreload",
+        "status": "LoadFailed",
+        "animationId": "rbxassetid://133333989918142",
+        "length": null,
+        "playing": null,
+        "joints": 45,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "814",
+        "name": "Werewolf (Tiger)",
+        "control": false,
+        "mode": "AnimatorImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://133333989918142",
+        "length": 0,
+        "playing": true,
+        "joints": 45,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      },
+      {
+        "id": "814",
+        "name": "Werewolf (Tiger)",
+        "control": false,
+        "mode": "NativeControllerImmediate",
+        "status": "NoLoadedClipData",
+        "animationId": "rbxassetid://133333989918142",
+        "length": 0,
+        "playing": true,
+        "joints": 45,
+        "movingJoints": null,
+        "authoredFx": {
+          "enabled": 0,
+          "total": 0
+        }
+      }
+    ]
+  },
+  "visual": {
+    "complete": true,
+    "files": 50,
+    "comparisonReadErrors": 0,
+    "modelErrors": 0,
+    "filesWithMeasuredDifferences": 0,
+    "distinctRenderAssetReferences": 497,
+    "failedRenderReferences": [
+      {
+        "id": "rbxassetid://6960307279",
+        "after": "Enum.AssetFetchStatus.Failure"
+      }
+    ]
+  },
+  "limits": [
+    "Playback waits up to seven seconds per direct path.",
+    "File-to-clone parity does not establish parity with current native Fruit visuals.",
+    "Three controls and eight affected items were measured; the other physical fruits were not replayed.",
+    "Missing files and the mismatched Empyrean source remain unresolved."
+  ],
+  "productionAnimationLogicChanged": false,
+  "newModelsRecovered": 0,
+  "transactionsInvoked": 0
+}
