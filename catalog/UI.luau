@@ -74,8 +74,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.22", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.22")
+    text(panel, "Title", "BLOX CATALOG v12.23", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.23")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
@@ -487,7 +487,8 @@ function UI.start()
                 else state.nativeError = tostring(bridge) end
             end
             local storage = game:GetService("ReplicatedStorage")
-            local roots = {}
+            local previewHolder=playerGui:FindFirstChild("__ReplicatedSpinnerInstances")
+            local roots = previewHolder and {previewHolder} or {}
             for _, root in pairs({storage:FindFirstChild("HybridDownloadedFruitTemplates"),
                 player:FindFirstChild("Backpack"), player.Character, playerGui:FindFirstChild("WeaponAssetCache")}) do
                 table.insert(roots, root)
@@ -502,11 +503,16 @@ function UI.start()
                     local node = queue[head]; head += 1; visited += 1
                     if not node:GetAttribute("BloxCatalogOwned") and (node:IsA("Tool") or node:IsA("Model")) then
                         local id = tostring(node:GetAttribute("ItemId") or "")
-                        if id == "" and node:IsA("Tool") then id = Catalog.byToolName[node.Name] or "" end
+                        if id == "" and node:IsA("Tool") and node.Parent~=previewHolder then id = Catalog.byToolName[node.Name] or "" end
                         if Catalog.byId[id] then
-                            found[id] = node
-                            if node:IsA("Tool") and (node.Parent == player.Character or node.Parent == player:FindFirstChildOfClass("Backpack")) then
-                                fruitModels:capture(Catalog.byId[id],node)
+                            if node.Parent==previewHolder then
+                                local captured=fruitModels:capture(Catalog.byId[id],node)
+                                if captured then found[id]=captured end
+                            else
+                                found[id] = node
+                                if node:IsA("Tool") and (node.Parent == workspace or node.Parent == player.Character or node.Parent == player:FindFirstChildOfClass("Backpack")) then
+                                    fruitModels:capture(Catalog.byId[id],node)
+                                end
                             end
                         end
                     end

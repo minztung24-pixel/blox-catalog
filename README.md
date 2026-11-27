@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.23 Recognize native fruit preview templates
+
+Rescan now checks `PlayerGui.__ReplicatedSpinnerInstances` before the older model roots and snapshots native physical Tools in Workspace before preview cleanup. Physical fruit/skin templates need an exact ItemId, pass the existing sanitizer, retain authored animation/FX data and remain cached after their source disappears. Captured held Tools take priority over holder templates; names and icons cannot substitute a base fruit for a skin.
+
+The connected Shop/Dealer/Gacha audit read 258 relevant configs and 39 modules, distinguishing image metadata, server purchase/switch calls and separately replicated preview templates. It initiates no purchases, rolls, resource requests or developer simulation. The initial preview holder was absent; during the user's native Spin display it existed empty while the actual Spin Tool was in Workspace. Spin was already covered by an existing model file. This is a source-recognition fix, not a claim that missing assets were recovered.
+
+Coverage stays at **45 loaded files, 35 missing files and one mismatched Empyrean file** across 81 physical fruits/skins. Eight previously failed idle clips remain unresolved. Client Play regressions cover exact identity, sanitation, source cleanup, held-Tool priority and actual Catalog availability cards; existing model/animation-import checks pass. See `docs/DIAG.md` and `docs/ASSET_AUDIT.md` for scope and evidence. Raw game reports/source remain private.
+
 ## v12.22 Native take-out and Store feedback
 
 Taking a local physical fruit or fruit skin out of inventory now calls the game's Notification API with **Fruit added to backpack.** Re-equipping an existing local Tool does not repeat the take-out notice. A successful Store calls the same API with **Blox Fruit stored.** and opens a native cinematic result page containing **[Blox Fruit stored.]** beneath the Blox Fruit title. These messages follow successful local inventory changes; failed model loads or inventory syncs cannot announce success.

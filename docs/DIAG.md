@@ -1,6 +1,22 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.22. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu model giữ nguyên: khả năng preview Skills/Permanent không có Handle không được tính thành model đã tìm thấy. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 28/11/2026, Catalog v12.23. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Các số đo model/animation/VFX dưới đây vẫn là lượt 27/11; kiểm tra nguồn Shop mới chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Shop, Dealer, Gacha và nguồn preview bị bỏ sót, v12.23
+
+Kiểm tra ItemConfig đang cache ghi 258 cấu hình liên quan, gồm đủ 81 PhysicalMoveset. Shop gốc có 195 ImageLabel, 37 ImageButton và không có ViewportFrame trong lượt đọc ban đầu. Những ảnh atlas đủ tên/icon không phải model 3D. Các cấu hình vật phẩm dùng State.EquipMethod=LoadFruit nhưng không chứa trường mesh/model/animation/VFX; tên phương thức không cung cấp mã tải phía server.
+
+NPC FruitShop (Blox Fruit Dealer) mở Library.openFruitShop("FruitDealer"). Chính lời thoại native nói mua ở đây cấp năng lực thay vì trái vật phẩm. StateUtil mua tạm thời qua PurchaseRawFruit, mua permanent qua buyRobuxShop, chuyển năng lực đã sở hữu qua SwitchFruit. Chỉ đọc source, không gọi các giao dịch đó.
+
+NPC RandomFruitSeller (Blox Fruit Gacha/Zioles) dùng GachaClient.CheckGachaAsync rồi GachaWindow.Open("ZiolesGacha", cost). GachaClient phân biệt rõ Context Check/getGachaFromBoxName với Purchase trên GachaNetworkRF. Cửa Gacha nối Spinner; Spinner nhận SpinGacha và PrepClientSpin từ server. GachaSimulation là công cụ riêng có kiểm tra build không phải live, không dùng để thử cấp model hay quay.
+
+PreviewModel.HOLDER_NAME xác nhận kho native PlayerGui.__ReplicatedSpinnerInstances. Replicator chỉ đọc/clone template khi game đã cấp; không phải danh sách ID tải được tùy ý. Catalog trước đây bỏ qua kho này. Rescan nay quét kho trước các root cũ, chỉ nhận root Tool/Model có ItemId vật phẩm chính xác, không suy từ tên/icon, không lấy base fruit thay skin. Bản sao qua Equipment.clone giữ animation/FX gốc, loại code/remotes/tags; cache sống sau khi preview bị dọn. Tool thật đã capture được ưu tiên hơn preview. Không gọi PreviewModel.new, remote tải tài nguyên, Purchase, Roll, admin preview hay simulation.
+
+Trong lượt đọc nguồn ban đầu kho preview chưa tồn tại. 18 ứng viên tên trùng tìm trong ReplicatedStorage/PlayerGui là các asset kỹ năng, chalice, NPC hoặc đạo cụ; không có ItemId vật phẩm để xác nhận là nguồn trái cầm. Không dùng MemeFakeFruits, PortalPotion hay đảo Magma/Ice thay fruit. Không tìm thêm file RBXM/RBXMX ngoài 50 file cũ trong Work Potassium.
+
+Lượt tiếp theo khi người dùng giữ màn hình Spin: kho preview đã tồn tại nhưng không còn child; Tool Spin-Spin [PhysicalMoveset-1411] đang ở Workspace, có ItemId=1411, 6 BasePart, Idle 15123685330 và FruitAnimator. Đây là model 3D thật, khác các FruitIcon/AnimatedTile 2D trong cửa Cousin. Rescan nay cũng snapshot Tool vật phẩm đúng ItemId ở Workspace trước khi native đóng preview/phá Tool. Regression mới mất model sau cleanup trên code cũ và đạt sau sửa. Spin đã thuộc 45 file có sẵn, không tính thành model thiếu mới khôi phục. Không suy lượt Spin này đã tải toàn bộ model; không yêu cầu mua/quay thêm. Tổng lượt đọc kết thúc có 39 module source, không lỗi/truncated; bản tổng hợp đã bỏ source thô và thông tin cá nhân nằm ở data/fruit-shop-source-audit-2026-11-28.json.
+
+Regression nhận preview thất bại trên code cũ, đạt sau sửa trong Client Play. Kiểm tra cache và UI thực cover nhận Model/Tool native đúng ID, thiếu ID, nhầm fruit/skin, từ chối clone Catalog, giữ nguồn thật, sanitation và giữ model sau cleanup. FruitModels/FruitAnimationImport cũ vẫn đạt. Không nâng số asset đã khôi phục; 35 thiếu file, Empyrean sai file và 8 idle tải lỗi vẫn chưa được giải quyết. Source/report game thô giữ private.
 
 ## Phản hồi lấy trái ra và Store, v12.22
 

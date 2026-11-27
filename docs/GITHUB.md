@@ -12,9 +12,137 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.8 Visual Robux / Shop Gifts
+## v12.23 Recognize native fruit preview templates
 
-**Follow-up investigation (27 November 2026):** this version still performs an immediate local gift record; it does not implement the native Buy item → Purchase completed checkout. The user requires native UI only and declined a recreated dialog. Native purchase components and their test mocks were found, but all five attempted export loads failed with `Cannot require a RobloxScript module from a non RobloxScript context`. The UI capture of the real Robux upsell contained shells rather than usable checkout controls. See [DIAG](docs/DIAG.md) for the bounded probes and exact scope. No replacement client or complete native mock checkout is claimed.
+Rescan now checks `PlayerGui.__ReplicatedSpinnerInstances` before the older model roots and snapshots native physical Tools in Workspace before preview cleanup. Physical fruit/skin templates need an exact ItemId, pass the existing sanitizer, retain authored animation/FX data and remain cached after their source disappears. Captured held Tools take priority over holder templates; names and icons cannot substitute a base fruit for a skin.
+
+The connected Shop/Dealer/Gacha audit read 258 relevant configs and 39 modules, distinguishing image metadata, server purchase/switch calls and separately replicated preview templates. It initiates no purchases, rolls, resource requests or developer simulation. The initial preview holder was absent; during the user's native Spin display it existed empty while the actual Spin Tool was in Workspace. Spin was already covered by an existing model file. This is a source-recognition fix, not a claim that missing assets were recovered.
+
+Coverage stays at **45 loaded files, 35 missing files and one mismatched Empyrean file** across 81 physical fruits/skins. Eight previously failed idle clips remain unresolved. Client Play regressions cover exact identity, sanitation, source cleanup, held-Tool priority and actual Catalog availability cards; existing model/animation-import checks pass. See `docs/DIAG.md` and `docs/ASSET_AUDIT.md` for scope and evidence. Raw game reports/source remain private.
+
+## v12.22 Native take-out and Store feedback
+
+Taking a local physical fruit or fruit skin out of inventory now calls the game's Notification API with **Fruit added to backpack.** Re-equipping an existing local Tool does not repeat the take-out notice. A successful Store calls the same API with **Blox Fruit stored.** and opens a native cinematic result page containing **[Blox Fruit stored.]** beneath the Blox Fruit title. These messages follow successful local inventory changes; failed model loads or inventory syncs cannot announce success.
+
+The result page keeps menu ownership until it closes, and Tool listeners are disconnected before Store destroys the Tool. Another active game dialogue is never replaced. Notification rendering is shared with the existing gift notices while preserving their applied-balance guard. Fonts, colors, positions, animation and default notification duration come from the live game's modules.
+
+Validation: the two new behavior checks fail before the change and pass in Client Play. They cover repeated take-out, failed Equip/Store, Store followed by another take-out, terminal native result content, action errors, re-entry and foreign-dialogue ownership. The native Store result page was visually checked in Blox Fruits, and the current Notification source was inspected. The complete Catalog flow still needs the user's live confirmation; no real fruits were dropped or stored for testing. Model/VFX availability is unchanged.
+
+## v12.21 Consistent native fruit dialogue
+
+The fruit menu now explicitly selects the game's cinematic layout. The current native controller otherwise selects a legacy theme when the account's `DialogueV1` test group is absent or `Legacy`, explaining the plain gray menu seen on both real and local fruit. The per-dialogue `Cinematic=true` flag selects the native speech-bubble buttons and gold title treatment without changing the account's test-group attribute or replacing the game's UI.
+
+Validation: the regression fails without the layout flag and passes with it; existing ownership, cancellation, error cleanup and delayed-action assertions still pass. A temporary native menu in the connected Blox Fruits session visibly showed the requested icons, rounded options and gold title, then closed automatically without Eat/Drop/Store actions. Seven Python build tests pass. The renderer is supplied by the live game; future native UI changes may require another check. Real-fruit menus and other NPC dialogues keep their original behavior.
+
+## v12.20 Preserve native dropped-fruit clearance
+
+Physical fruits with the game's invisible **2.25×2.25×2.25 Handle** now collide using that Handle. The previous visible-mesh collider forced the fruit's visible bottom onto the floor and removed the native clearance. An inherited Catalog collider is removed for these canonical Handles; imported models with oversized/noncanonical Handles retain the prior bounded-mesh fallback. No arbitrary hover offset or replacement animation is added.
+
+The live Rocket drop yielded 24 settled observations: Handle center 1.105–1.121 studs above the floor, matching a 2.25-stud collision box. Yeti's existing Handle is already 2.25 studs; its extra Catalog collider was the mismatch. Bomb's Handle was also observed at that size, but samples after another player picked up a fruit are excluded from settled-ground measurements. No further real-fruit drops are needed.
+
+Validation: the new native-clearance assertion fails on v12.19 and passes after the change. Studio physics checks cover native clearance, contact pickup, repeated Drop without recreating a collider, the oversized-Handle fallback, foreign-contact rejection and cleanup. Equipment/action assertions and seven Python build tests pass. The new Yeti Drop appearance still needs the user's visual confirmation; no native model/VFX assets were added.
+
+## v12.19 Native Mastery and ability slots without models
+
+**Visual → Skills → Equip** now previews a native fighting style in hotbar **slot 1** without requiring a 3D model. **Inventory → Permanent → + Add** equips the corresponding fruit ability in **slot 2**; selecting another permanent replaces that ability. Added → Equip also supports these previews. These are separate from physical fruit Tools and their model/VFX pipeline.
+
+The native ItemConfig relation resolves the actual Moveset ID, name and icon; the game's cached FruitSkills and CombatData supply the skill list. A handle-free, non-activating local Tool lets the existing hotbar and SetUpSkills build their own UI. The adapter uses the native hotbar's numeric Drag branch and a narrowly scoped skill-data hook for its own proxies only; it does not copy a different fruit's skill data. Real Tools are temporarily held outside the Backpack and restored with their previous slots on Clear, Restore visuals or close. Missing native moveset/skill data produces an explicit error; admin/utility records without a native fighting-style/fruit skill list are not fabricated.
+
+Added physical fruits now initialize missing local Mastery to 1 so the native inventory card can show **1 Mastery**. Existing mastery is preserved; Clear restores missing baselines and keeps newer replicated values. Mastery write failures roll back the attempted quantity update. Ability previews keep their local inventory quantity rather than consuming a physical copy.
+
+Validation: six Luau suites pass in Studio Edit, the ability suite passes in Client Play, and seven Python build tests pass. A reversible Blox Fruits trial confirmed Death Step in slot 1 with Mastery 400 and four native skills, then Control in slot 2 with Mastery 1 and its five current native skills; the game's own hotbar supplied both icons. Original Tools and hooks were restored. A separate cache trial confirmed a missing physical-fruit Mastery changed nil → 1 → nil on cleanup. No attacks, purchases or item transaction actions were invoked by the trial. Reports and decompiled game source remain private. Respawn and gamepad/touch behavior have not been playtested in the live game.
+
+## v12.18 Remove the checkout caption
+
+Removed the **LOCAL SIMULATION** caption from both confirmation and completion. Their geometry, contents, behavior and local-only transaction logic are unchanged. Catalog still describes the preview behavior. Renderer regression assertions cover both dialogs; all five Luau suites and seven build tests pass.
+
+## v12.17 Compact completion and legal-link underline (caption removed in v12.18)
+
+Completion now reads **You have successfully bought Dragon.** (using the selected short product name), without the permanent prefix or recipient. Gift records and native gift notices still retain the full product and recipient. The reference image's aspect ratio gives a 456×236 completion, replacing 456×280; the installed Roblox circle-check glyph is centered in its 48px slot at (204,64), the result is at (20,124) in a 416×32 area, and OK starts at y=176. The visible local marker remains.
+
+The confirmation footer now underlines **Terms of Use** only; **Roblox** is plain text, matching the supplied native screenshot. Ordinary confirmation and Plus layout/behavior are unchanged.
+
+Validation: regression assertions failed against v12.16 and pass after the changes; all five Luau suites and seven build tests pass. Studio screenshots checked completion and confirmation, and a real Studio OK click dismissed completion once. Geometry is derived from the supplied scaled reference image, not a native CoreGui extraction; exact live-game appearance still needs confirmation. No real transaction was used.
+
+## v12.16 Buy item and native gift notification formatting
+
+Affordable visual checkout uses **Buy item** again. The standalone Total card is removed; the regular dialog is 456×264. Short product names, the existing Buy animation and the reference product positions remain. Plus retains its savings accordion, 456×344 collapsed and 456×456 expanded, with Subtotal / reduction / Total inside the expanded details only. Quotes with no actual saving do not show the accordion.
+
+Both gift messages use the game's own `Notification.new(text):Display()` feed. The first is **Sending gift <Permanent …> to receiver...**, with the full committed product name in yellow; the second is **Gift sent successfully!**, in green. The live game's color-shortcut formatter was inspected and tested: it renders the literal angle brackets around the product correctly, yellow RGB(255,229,51), green RGB(102,255,102). The native font, stroke, placement and animation are unchanged. Switching the selected product cannot change an already completed gift's message.
+
+Validation: five Luau suites and seven Python build tests pass. Studio visual checks covered regular and collapsed/expanded Plus layouts. The native text formatter was tested separately with the exact strings. No paid transaction was performed; the actual notification feed after this change still needs visual confirmation in the user's session. The checkout dialogs remain local recreations with a visible local marker, not imported native CoreGui. Raw game reports and source stay private.
+
+## v12.15 Short product names and reference-sized confirmation (superseded heading and Total card)
+
+The local confirmation now uses the requested **Buy Robux and item** heading and short product names such as **Blade** and **Flame**. This is presentation text after Apply; it does not open a real Robux upsell or change the original checkout before Apply. The recorded gift still keeps its permanent item name and ID.
+
+The confirmation footprint is 456×344 with or without Plus. Image measurements place the product name at (100,64), the price at (123,92) and the price icon at (100,97), relative to the dialog. The original-price gap is reduced to 8px. The existing Buy control, input delay, completion and native notification behavior remain in use.
+
+Without Plus, the outlined price area displays **Total** and the actual quoted Robux charge. With Plus, the existing savings accordion shows the discount breakdown. These are local price presentations; the real-currency bundle row in the native screenshots has not been extracted, and no bundle quantities or cash prices are invented.
+
+Validation: five Luau suites and seven Python build tests pass. Studio screenshots/clicks checked Blade at 100, then Flame at a native quote of 550 with the visual Plus cost of 495: 9800 → 9700 → 9205. Records retain Permanent Blade / Permanent Flame, four completion notices arrive after acknowledgement, no original purchase callback runs after Apply, and Reset restores the original button. The user's standalone Roblox purchase window was left open; no real purchase was made or new loader executed there. Native inner-dialog measurements still come from the supplied screenshots, not an extracted CoreGui tree.
+
+## v12.14 Installed Roblox icons, screen alignment and visible gift notices (previous heading and footprint)
+
+A read-only snapshot from the running client confirmed that native PurchasePromptApp uses **DeviceSafeInsets**. The local dialogs now use the same coordinate space, removing the top-bar centering offset. Both reference dialogs measured approximately 456px wide; their different heights also reflect different branches: **Buy Robux and item** includes a Robux bundle when real funds are insufficient, while **Buy item** confirms an affordable item. Enough visual funds retain Buy item; insufficient visual funds remain blocked rather than opening a real-currency upsell.
+
+X, Robux, Plus, the accordion chevrons and the completion check now use the installed **BuilderIcons** font used by Roblox Foundation. The package and font family were located in the installed client and the icon rendering was checked in Studio. No copied bitmap, ordinary multiplication sign or unsupported chevron character is used. Buy and legal-footer spacing follow the supplied native reference more closely; the explicit local marker remains visible.
+
+The two gift messages wait until completion is dismissed with OK/X, so they do not expire or appear dimmed behind the checkout backdrop. After the 0.1s exit, the game's own notification feed receives **Sending gift to …** and then **Gift sent successfully**, separated by its 0.22s transition interval. The verified game White markup preserves white text; its native Source Sans Pro SemiBold, 32px text and dark stroke remain untouched. This is local presentation after a simulated charge, not a server gift.
+
+Validation: five Luau suites and seven Python build tests pass. Studio screenshots checked regular, Plus and completion layouts, icon rendering and screen centering. Clicks verified 1000000 → 996500 → 993350, no notices underneath completion, two notices after OK and another two after completion X. Cancelling confirmation with X neither charged nor emitted gift notices. The original purchase callback remained unused after Apply, and Reset restored it. Test fixtures were removed. See [DIAG](docs/DIAG.md) for live measurements and remaining limits; this is not a claim of a pixel-perfect native CoreGui renderer.
+
+## v12.13 Plus details, native notification feed and consecutive gifts (previous timing)
+
+Click **Saving… with Plus** to expand/collapse Subtotal, the Plus reduction and Total. The layout follows the pinned Roblox `DiscountSummary` component. Opening details never changes the quote, discount or balance. The confirmation footer follows the wording in the supplied native screenshot; completion has no footer. A compact **LOCAL SIMULATION** marker remains beside the dialog content, so the reference legal wording does not mean that a real payment happens.
+
+Local confirmation emits “Sending gift to …” and successful local charging emits “Gift sent successfully” through the game's UI-only `Notification.new(...):Display()` API. These two message strings are based on the user's observation: the saved real checkout reports did not capture them. Missing native notification support is recorded in the Catalog `GiftNotificationStatus` attribute; no replacement notification UI or server event is generated.
+
+The native Cancel handler calls `Close(onClose)`, while the previous adapter called only `Close()`. Where the runtime exposes exactly one enabled readable Cancel handler, the adapter invokes that UI-only handler to release the Shop owner's close callback. It never reads or invokes Purchase handlers. `GiftWindow.BloxCatalogClosePath` records `NativeCancel` or `ControllerFallback`. Runtimes without readable Cancel connections retain the controller fallback and may still require reopening Shop. Opening another native Gift also clears an old local completion rather than leaving the adapter stuck in Completed.
+
+Validation: five Luau suites and seven Python build tests pass. Studio clicks checked the expanded Plus breakdown and both dialog layouts. With a UI-only Cancel/Notification fixture, Control → Yeti → Yeti completed without reopening Shop: 65500 → 61900 → 59200 → 56500, three local records, three close callbacks and six ordered notifications. The original purchase callback stayed at zero after Apply; Reset restored it. Test objects were removed. The live executor's Cancel access and native notification appearance still need confirmation in the user's session. No paid test is required.
+
+## v12.12 Shared local prompt and source-based motion (previous layout)
+
+The presentation now lives in `RobloxPrompt`, separate from the Blox Fruits adapter and local inventory. Both confirmation and completion use one renderer. Reference theme values update Builder Sans sizes, colors, backdrop, corners and the success check. The medium button uses an 18px label; the original price uses 15px body text.
+
+The previous Quad/Out approximation is corrected: there is a 0.3-second initial input lock, followed by a 2.5-second **Quad ease-in** Buy fill. Entry uses 0.3-second StandardOut motion from 32px below; exit uses 0.1-second StandardIn. Backdrop fade takes 0.1 seconds. Reduced-motion settings remove the transitions while preserving the input locks. Filling never submits a purchase. Completion has its own 0.3-second initial OK lock.
+
+These values come from pinned, decompiled Roblox component/theme artifacts, not an imported CoreGui or proof of the installed client's exact build. The native Shop/Gift selection and Processing overlay remain in use; the two financial dialogs remain local recreations with an explicit simulation footer. No real Robux, purchase handler or receipt is used after Apply. Reset restores the original button. Insufficient fake balance is blocked; a real-currency Robux upsell is not simulated.
+
+Validation: five Luau suites (RobloxPrompt, NativeShop, Simulation, NativeItems and NativeEquip) and seven Python build tests pass. Studio clicks checked native processing, the delayed confirmation guard, the visual Plus discount and a single charge: 975141 minus 3600 for Control leaves 971541. The original purchase callback stayed unchanged after Apply, the UI-only Close fixture ran once, OK cleaned up, and Reset restored the original callback. Test-only Studio objects were removed. See [DIAG](docs/DIAG.md) for reference links and remaining live-game limits.
+
+## v12.11 Processing, delayed Buy and completion flow (previous timing)
+
+After Apply, the flow is now **Gift → the existing game Processing Purchase overlay → Buy input-delay fill → local processing → Gift closes → local completion**. The adapter uses `GiftWindow.Window.Overlay.Loading` directly, preserves its icon/caption/visibility, and restores them on cancel or cleanup. Missing or already busy native processing UI is reported instead of creating a replacement. No game purchase handler is called.
+
+The Buy button fills automatically and rejects input for 2.5 seconds. Clicking early does nothing; filling alone never spends. Confirmation enters a pending local phase and revalidates the recipient, price and balance before charging once. Reset/close during preparation or pending processing cancels the charge. Completion disables GiftWindow and, when its game UI module is readable, calls its UI-only Close method to release the native overlay state. The completion dialog remains until OK.
+
+The confirmation width is reduced from 640 to 456 pixels, matching the medium-sheet body and new screenshots more closely. The Buy-delay mechanism is based on pinned, decompiled Roblox client component artifacts; they have not been identified as the exact binary build installed on the user's computer. See [DIAG](docs/DIAG.md) for sources and limits. The two financial dialogs remain local recreations with simulation labels. Insufficient fake funds still block checkout; no real Robux upsell or payment is initiated.
+
+Validation: NativeShop/Simulation assertions and seven Python build tests pass. A Studio client fixture used the recorded native processing layout and a UI-only Close controller. Processing appeared 0.334 seconds before confirmation; the Buy guard lasted 2.515 seconds with intermediate frames captured. Cancel preserved 79150; confirming Control charged 4000 once to 75150, called the fixture's UI Close once, and never called its original purchase handler. OK and Reset passed. Test-only Studio objects were removed. Live Blox Fruits integration still needs confirmation; no real purchase was performed.
+
+## v12.10 Gift appearance and checkout styling (previous flow)
+
+The native Gift price label is copied verbatim, including its icon and rich text. The added “Visual” suffix and the banner below GiftWindow are removed. The visual discount is shown only in checkout. Simulation remains explicit in Catalog and the local confirmation/completion dialogs.
+
+The two local dialogs now use the installed Roblox Builder Sans font and built-in white Robux icon. Product spacing, the separate Plus savings row, strike-through price, close control, centered success text and outlined check circle follow the supplied reference images more closely. This is a local recreation, not an exact native checkout or a verified pixel-for-pixel match. The Version attribute is now the string `12.10` so dotted version numbers retain their meaning.
+
+Validation: NativeShop and Simulation assertions and seven Python build tests pass. A fresh Studio playtest checked the unchanged Gift label, no extra banner, price spacing, real built-in icon loading and the local charge: 975141 minus 3150 leaves 971991, with one local record and no original purchase callback. OK and Reset restore the native callback. Both local screens were visually inspected. Live Blox Fruits and mobile/gamepad behavior still need confirmation.
+
+## v12.9 Local checkout confirmation (previous styling)
+
+Before Apply, the original Shop/Gift purchase button remains unchanged. After Apply, keep using the game's Permanent Fruit Shop → Gift and Server/Global recipient selection. Its purchase button opens a local **Buy item** confirmation with the selected product, recipient, fake balance and optional visual discount. Only pressing **Buy** deducts that balance and records a local gift; **Purchase completed → OK** confirms the simulation. Both dialogs explicitly identify local simulation and no delivery.
+
+Closing confirmation with X, Escape or gamepad B does not charge. Repeated Buy clicks cannot charge twice. Changing the recipient, quote, balance session or discount invalidates confirmation. Reset, disabling Balance or closing the Catalog removes the simulated controls and restores the original purchase button. With preview disabled, purchases use the game's real flow and real Robux again.
+
+The adapter supports permanent-fruit names present in this Catalog; unsupported products, unreadable prices and missing recipients stay blocked while Apply is active. The two checkout dialogs are local recreations authorized by the user, not Roblox's native financial prompt. No purchase API, server gift request, receipt or completion signal is sent. The gift recipient receives nothing.
+
+Validation: NativeShop, Simulation, NativeItems and NativeEquip assertions and seven Python build tests pass. A Studio client playtest used actual clicks against a native-path fixture: the original callback fired before Apply, remained unchanged throughout local checkout, and fired again after Reset. Cancel preserved 975141; confirming a discounted Buddha gift deducted 1485 to 973656 and recorded exactly one gift. Confirmation and success screens were visually inspected. Live Blox Fruits integration and phone/gamepad interaction still need confirmation; no real transaction was performed in these tests.
+
+## v12.8 Visual Robux / Shop Gifts (previous behavior)
+
+**Historical investigation (27 November 2026):** v12.8 performed an immediate local gift record without confirmation. At that point the user required native UI only. Native purchase components and their test mocks were found, but all five attempted export loads failed with `Cannot require a RobloxScript module from a non RobloxScript context`. UI capture contained shells rather than usable checkout controls. The user subsequently authorized the two recreated local dialogs now implemented in v12.9. See [DIAG](docs/DIAG.md).
 
 Balance now contains a Visual Robux input, APPLY BALANCE, an optional 10% visual discount and Reset. The previous Beli/Fragments editor is removed. The discount only changes the simulated checkout price, rounded up to whole visual Robux; it does not represent an account subscription.
 

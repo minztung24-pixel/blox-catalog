@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "observedDate": "2026-11-28",
+  "scope": "Read-only native Shop, Fruit Dealer and Fruit Gacha sources; physical asset coverage retains 2026-11-27 measurements",
+  "complete": true,
+  "relevantConfigs": 258,
+  "physicalConfigs": 81,
+  "modulesRead": 39,
+  "sourceErrors": 0,
+  "sourceTruncated": 0,
+  "initialShopImages": 232,
+  "initialShopViewportFrames": 0,
+  "initialPreviewHolderPresent": false,
+  "activePreviewHolderPresent": true,
+  "activePreviewHolderChildren": 0,
+  "activePhysicalWorldTools": [
+    {
+      "itemId": 1411,
+      "class": "Tool",
+      "parts": 6,
+      "animations": [
+        "rbxassetid://15123685330"
+      ],
+      "effects": 0
+    }
+  ],
+  "coverage": {
+    "physicalItems": 81,
+    "loadedLocalFiles": 45,
+    "missingMatchingFiles": 35,
+    "mismatchedFiles": 1,
+    "previouslyMeasuredMovingRigs": 35,
+    "previouslyFailedIdleClips": 8,
+    "newlyRecoveredMissingModels": 0
+  },
+  "transactionsInvokedByAudit": 0,
+  "rawGameSourcesPublished": false
+}

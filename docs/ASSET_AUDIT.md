@@ -11,6 +11,16 @@ Kiểm kê cập nhật ngày 27/11/2026 cho 81 trái vật phẩm trong Fruits 
 - **Đo lại trong Blox Fruits ngày 26/11:** Dragon, Dragon (West), Ember, Flame, Lightning, Quake và Werewolf (Tiger) đều có 4 mẫu Tool đang cầm, trạng thái cuối Failed do preload trả Failure và không có track đang chạy. Báo cáo kết thúc bình thường nhưng thiếu Tiger (1430).
 
 
+## Đối chiếu nguồn Shop/Dealer/Gacha ngày 28/11/2026, v12.23
+
+Đã đọc dữ liệu ItemConfig và 39 source UI/NPC gốc; mã kiểm tra không mua hoặc quay. Shop hiển thị 232 thành phần ảnh, không có ViewportFrame trong lượt đọc; đủ icon không chứng minh đủ mesh, texture bề mặt hay rig. Dealer mở Fruit Shop để đổi năng lực; Gacha đi qua RandomFruitSeller → GachaClient → GachaWindow → Spinner, template 3D được game cấp riêng cho preview. Không dùng chế độ GachaSimulation của build thử nghiệm.
+
+Khi người dùng giữ màn hình Spin, đã xác nhận Tool 3D ItemId 1411 ở Workspace: 6 BasePart, Idle 15123685330, 0 ParticleEmitter/Beam/Trail. Kho preview lúc này có mặt nhưng rỗng. Rescan cũng giữ snapshot sạch của Tool native ở Workspace trước khi preview đóng. Spin là nguồn đã có trong nhóm 45, không tăng số model thiếu đã khôi phục; chưa có bằng chứng toàn bộ danh sách Gacha đã có model local.
+
+Phát hiện và sửa Catalog bỏ sót `PlayerGui.__ReplicatedSpinnerInstances`: Rescan nhận template theo đúng ItemId, giữ snapshot sạch sau khi native dọn preview, ưu tiên Tool thật đã có. Không suy ItemId từ tên preview, không lắp FX/animation phỏng đoán. Kho này chưa có trong lượt đọc nguồn ban đầu; 18 model trùng tên ở các nhánh kỹ năng/chalice/NPC không đủ căn cứ nhận thành trái vật phẩm. Không có file model mới được xác minh.
+
+**Số liệu bảng bên dưới giữ nguyên lượt 27/11: 45 nạp được, 35 thiếu file, 1 Empyrean sai model; 35 rig đổi pose, 8 idle preload lỗi, Diamond/Ice thiếu idle.** Sửa nhận diện nguồn không chứng minh đã khôi phục chuyển động/VFX của các trái đang lỗi. Chưa đối chiếu hình ảnh toàn bộ 81 trái trong game hiện tại. Chi tiết luồng và kiểm thử ở [DIAG.md](DIAG.md#shop-dealer-gacha-và-nguồn-preview-bị-bỏ-sót-v1223).
+
 ## Đo lại ngày 27/11/2026, v12.6
 
 Báo cáo `blox-catalog-fruit-skin-audit-100117331123089.json` hoàn tất 134 thẻ trong 87.8 giây. Bảng dưới đây cập nhật model, mesh/texture, animation và VFX theo phép đo mới. 53 thẻ metadata-only không nằm trong 81 trái vật phẩm của bảng.

@@ -10,14 +10,19 @@ function FruitModels.new(fileExists, assetUri, getObjects)
     root.Name = "BloxCatalogLocalFruitModels"
     local cache = {models = {}, native = {}, loading = {}, errors = {}, closed = false}
     function cache:capture(item, tool)
-        if self.closed or not (item.category=="Fruits" or item.isPhysicalFruit) or not tool:IsA("Tool") or not tool.Parent
+        if self.closed then return nil end
+        local holder=tool.Parent
+        local preview=holder and holder.Name=="__ReplicatedSpinnerInstances" and holder.Parent and holder.Parent:IsA("PlayerGui")
+        if not (item.category=="Fruits" or item.isPhysicalFruit) or not (tool:IsA("Tool") or preview and tool:IsA("Model")) or not holder
             or tool:GetAttribute("BloxCatalogOwned") or tool:GetAttribute("ClientCatalogOwned")
             or tostring(tool:GetAttribute("ItemId")) ~= item.id then return nil end
+        -- Prefer a captured held Tool over transient preview copies of the same item.
+        if preview and self.native[item.id] then return self.models[item.id] end
         if self.native[item.id] == tool then return self.models[item.id] end
         if #tool:GetDescendants() > 3000 then return nil end
         local ok, clean = pcall(Equipment.clone,tool,item)
         if not ok or not clean then return nil end
-        -- Keep a sanitized snapshot before Store/respawn removes the genuine Tool.
+        -- Keep a sanitized snapshot before Store/respawn or the native preview removes its source.
         clean.Parent = root
         local previous = self.models[item.id]
         self.models[item.id] = clean
