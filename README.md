@@ -12,7 +12,17 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.14 Installed Roblox icons, screen alignment and visible gift notices
+## v12.15 Short product names and reference-sized confirmation
+
+The local confirmation now uses the requested **Buy Robux and item** heading and short product names such as **Blade** and **Flame**. This is presentation text after Apply; it does not open a real Robux upsell or change the original checkout before Apply. The recorded gift still keeps its permanent item name and ID.
+
+The confirmation footprint is 456×344 with or without Plus. Image measurements place the product name at (100,64), the price at (123,92) and the price icon at (100,97), relative to the dialog. The original-price gap is reduced to 8px. The existing Buy control, input delay, completion and native notification behavior remain in use.
+
+Without Plus, the outlined price area displays **Total** and the actual quoted Robux charge. With Plus, the existing savings accordion shows the discount breakdown. These are local price presentations; the real-currency bundle row in the native screenshots has not been extracted, and no bundle quantities or cash prices are invented.
+
+Validation: five Luau suites and seven Python build tests pass. Studio screenshots/clicks checked Blade at 100, then Flame at a native quote of 550 with the visual Plus cost of 495: 9800 → 9700 → 9205. Records retain Permanent Blade / Permanent Flame, four completion notices arrive after acknowledgement, no original purchase callback runs after Apply, and Reset restores the original button. The user's standalone Roblox purchase window was left open; no real purchase was made or new loader executed there. Native inner-dialog measurements still come from the supplied screenshots, not an extracted CoreGui tree.
+
+## v12.14 Installed Roblox icons, screen alignment and visible gift notices (previous heading and footprint)
 
 A read-only snapshot from the running client confirmed that native PurchasePromptApp uses **DeviceSafeInsets**. The local dialogs now use the same coordinate space, removing the top-bar centering offset. Both reference dialogs measured approximately 456px wide; their different heights also reflect different branches: **Buy Robux and item** includes a Robux bundle when real funds are insufficient, while **Buy item** confirms an affordable item. Enough visual funds retain Buy item; insufficient visual funds remain blocked rather than opening a real-currency upsell.
 

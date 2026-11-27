@@ -132,7 +132,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function show(completed)
         local q=quote
         view=RobloxPrompt.open(playerGui,{
-            productName=q.item.name.." - Gift",icon=q.item.icon,
+            productName=q.item.name:gsub("^Permanent%s+",""),icon=q.item.icon,
             iconRectOffset=q.item.iconRectOffset,iconRectSize=q.item.iconRectSize,
             balance=state.balance.robux,price=q.price,cost=q.cost,
             discountLabel=q.discount and ("Saving "..(q.price-q.cost).." with Plus")or nil,

@@ -55,6 +55,8 @@ return function(NativeShop,Inventory)
         assert(not pg:FindFirstChild("BloxCatalogCheckout") and not binding:confirm())
         binding:step(.33)
         assert(pg.BloxCatalogCheckout:GetAttribute("Phase")=="Confirm")
+        assert(pg.BloxCatalogCheckout.Shade.Dialog.Product.Text=="Magnet","Only the confirmation name is shortened")
+        assert(pg.BloxCatalogCheckout.Shade.Dialog.Price.Text=="3,500","Use the game's current quote")
         assert(not pg.BloxCatalogCheckout:GetAttribute("BuyReady") and not binding:confirm(),"Early Buy must be blocked")
         pg.BloxCatalogCheckout:SetAttribute("BuyReady",true)
         assert(not binding:confirm(),"Readiness is checked against elapsed time, not a UI attribute")
@@ -71,6 +73,18 @@ return function(NativeShop,Inventory)
         assert(not binding:confirm(),"Cancelled confirmation cannot charge")
         assert(not processing.Visible and loadingText.Text=="Original caption" and loadingImage.Image=="rbxassetid://1")
         assert(#notices==0,"Opening or cancelling cannot announce a gift")
+        local nativePriceLabel=price.Text
+        for _,entry in ipairs({{"Blade","100"},{"Flame","550"}})do
+            context.Text="Gifting [Player_123] <Permanent "..entry[1].."}> "
+            price.Text=entry[2]
+            assert(buy())
+            assert(pg.BloxCatalogCheckout.Shade.Dialog.Product.Text==entry[1])
+            assert(pg.BloxCatalogCheckout.Shade.Dialog.Price.Text==entry[2])
+            assert(pg.BloxCatalogCheckout.Shade.Dialog.PriceSummary.TotalAmount.Text==entry[2])
+            binding:cancel()
+        end
+        assert(state.balance.robux==10000 and #state.gifts==0 and #notices==0)
+        context.Text="Gifting [Player_123] <Permanent Magnet}> ";price.Text=nativePriceLabel
         assert(buy())
         assert(binding:confirm() and binding.phase=="Purchasing" and state.balance.robux==10000 and #state.gifts==0)
         assert(#notices==0,"Wait until completion is dismissed so the modal cannot dim or hide notices")
@@ -84,6 +98,7 @@ return function(NativeShop,Inventory)
         assert(pg.BloxCatalogCheckout:GetAttribute("Phase")=="Completed")
         assert(not binding:confirm() and not binding:buy() and state.balance.robux==6500,"Duplicate clicks cannot charge")
         assert(state.gifts[1].recipient=="Player_123" and state.gifts[1].cost==3500)
+        assert(state.gifts[1].name=="Permanent Magnet","Presentation cannot rename the recorded item")
         gui.Enabled=true;context.Text="Gifting [Player_123] <Permanent Buddha}> "
         binding:refresh()
         assert(binding.phase=="Idle" and not pg:FindFirstChild("BloxCatalogCheckout"),"Opening another gift replaces the old completion")

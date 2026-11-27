@@ -1,6 +1,18 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.14. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.15. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Tên ngắn, giá và bố cục theo mẫu, v12.15
+
+Đọc báo cáo mới khi cửa mua thật đang mở: complete=true, 31 node PurchasePromptApp, chỉ một text node là StopPropagationOverlay với text rỗng. Đã thấy RobuxUpsellContainer nhưng chưa có nội dung dialog. Không giả nhận đã lấy được nguyên cây UI hoặc kích thước từng thành phần từ file.
+
+Đo trực tiếp ảnh native Blade/Flame người dùng cung cấp, với tọa độ tương đối so với dialog: glyph tên bắt đầu khoảng (102,76); giá có icon khoảng (103,99), chữ số khoảng (125,102). Ảnh local cũ có tên khoảng (110,72), số khoảng (134,104). Điều chỉnh TextLabel tên từ (108,60) sang (100,64); giá từ (132,94) sang (123,92); icon từ (108,101), size 16 sang (100,97), size 18. Giữ ảnh vật phẩm 72×72 tại (20,58), tên có 336px bề rộng; gap giá gốc gạch ngang 8px. Đây là đối chiếu pixel trong ảnh, không phải đọc được label native bị ẩn.
+
+Theo yêu cầu mới, title local dùng Buy Robux and item kể cả khi đủ số dư giả; khung xác nhận thường cũng 456×344 như mẫu, Plus mở rộng giữ 456×456. Đây là override trình bày của simulator, không tuyên bố đó là nhánh đủ Robux nguyên bản của Roblox. Native checkout trước Apply và sau Reset không đổi.
+
+Chỉ rút tiền tố Permanent ở tên hiển thị xác nhận, không nối - Gift. ID, tên đầy đủ trong bản ghi, quote gốc, giá và các kiểm tra người nhận/session không đổi. Card Total dùng đúng cost đã quote; Plus vẫn dùng giá gốc/giảm giá/tổng từ cùng cost. Không thêm tiền tệ thật hay tự suy ra giá gói nạp 500/400, 1000/800, v.v. từ ảnh. Card Total là UI local, không phải bản trích nguyên hàng nạp tiền của CoreGui.
+
+Kiểm chứng: 5 suite Luau, 7 test Python đạt. Fixture giữ nguyên rich text nhãn giá gốc sau khi chạy thêm case Blade/Flame. Click Studio: Blade=100, Flame giá gốc=550, Plus=495; số dư 9800 → 9700 → 9205; 2 record vẫn tên Permanent Blade/Permanent Flame; 4 thông báo sau OK; callback mua gốc 0; Reset trả lại nút gốc. Đã xem screenshot thường/Plus, dừng Play và bỏ fixture client. Cửa thanh toán Roblox standalone vẫn mở; không bấm Buy, đóng cửa hay chạy đè loader trong phiên thật. Không cần người dùng chạy mã đo mới cho lượt sửa này.
 
 ## Đo trực tiếp, icon X và màu thông báo, v12.14
 

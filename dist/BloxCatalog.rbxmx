@@ -1462,7 +1462,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local expanded=false
     local reducedMotion=Gui.ReducedMotionEnabled
     local previousSelection=Gui.SelectedObject
-    local height=completed and 280 or (q.discountLabel and 344 or 264)
+    local height=completed and 280 or 344
     local gui=Instance.new("ScreenGui")
     gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
     gui:SetAttribute("Simulation",true)
@@ -1522,7 +1522,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
         return icon
     end
     local function robux(name,x,y,size)return symbol(name,"robux",x,y,size)end
-    local title=bold(label("Title",completed and "Purchase completed" or "Buy item",20,16,270,28,25))
+    local title=bold(label("Title",completed and "Purchase completed" or "Buy Robux and item",20,16,270,28,25))
     title.TextColor3=Color3.fromRGB(213,215,221)
     local close=button("Close","",404,8,40,40,function()self:cancel()end)
     close.BackgroundTransparency=1
@@ -1549,12 +1549,12 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
         icon.Position=UDim2.fromOffset(20,58);icon.Size=UDim2.fromOffset(72,72);icon.ZIndex=3
         if q.iconRectOffset then icon.ImageRectOffset=Vector2.new(table.unpack(q.iconRectOffset))end
         if q.iconRectSize then icon.ImageRectSize=Vector2.new(table.unpack(q.iconRectSize))end
-        bold(label("Product",q.productName,108,60,328,32,18))
-        robux("PriceIcon",108,101,16)
-        local amount=bold(label("Price",number(q.cost),132,94,160,28,18))
+        bold(label("Product",q.productName,100,64,336,32,18))
+        robux("PriceIcon",100,97,18)
+        local amount=bold(label("Price",number(q.cost),123,92,160,28,18))
         if q.cost~=q.price then
-            local old=label("OriginalPrice","&lt;s&gt;"..number(q.price).."&lt;/s&gt;",132,94,140,28,15)
-            local function alignPrice()old.Position=UDim2.fromOffset(132+amount.TextBounds.X+16,94)end
+            local old=label("OriginalPrice","&lt;s&gt;"..number(q.price).."&lt;/s&gt;",123,92,140,28,15)
+            local function alignPrice()old.Position=UDim2.fromOffset(123+amount.TextBounds.X+8,92)end
             table.insert(connections,amount:GetPropertyChangedSignal("TextBounds"):Connect(alignPrice))
             alignPrice()
             old.RichText=true;old.TextColor3=Color3.fromRGB(213,215,221)
@@ -1595,6 +1595,18 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
             line.Visible=false;table.insert(discountParts,line)
             detail("DiscountTotal","Total",36,288,200,true)
             detailAmount("DiscountTotalAmount",number(q.cost),288,true)
+        else
+            local summary=Instance.new("Frame",panel)
+            summary.Name="PriceSummary";summary.Position=UDim2.fromOffset(20,148);summary.Size=UDim2.fromOffset(416,58)
+            summary.BackgroundColor3=Color3.fromRGB(32,34,39);summary.BorderSizePixel=0;summary.ZIndex=2
+            Instance.new("UICorner",summary).CornerRadius=UDim.new(0,8)
+            local border=Instance.new("UIStroke",summary);border.Color=Color3.fromRGB(213,215,221);border.Thickness=1.5
+            local caption=bold(label("Total","Total",16,0,180,58,18));caption.Parent=summary
+            local total=bold(label("TotalAmount",number(q.cost),230,0,170,58,18));total.Parent=summary
+            total.TextXAlignment=Enum.TextXAlignment.Right
+            local currency=robux("TotalPriceIcon",0,20,18);currency.Parent=summary
+            local function alignTotal()currency.Position=UDim2.fromOffset(400-total.TextBounds.X-24,20)end
+            table.insert(connections,total:GetPropertyChangedSignal("TextBounds"):Connect(alignTotal));alignTotal()
         end
     end
     local primary=button(completed and "OK" or "Buy",completed and "OK" or "Buy",20,height-(completed and 60 or 86),416,40,function()
@@ -1848,7 +1860,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     local function show(completed)
         local q=quote
         view=RobloxPrompt.open(playerGui,{
-            productName=q.item.name.." - Gift",icon=q.item.icon,
+            productName=q.item.name:gsub("^Permanent%s+",""),icon=q.item.icon,
             iconRectOffset=q.item.iconRectOffset,iconRectSize=q.item.iconRectSize,
             balance=state.balance.robux,price=q.price,cost=q.cost,
             discountLabel=q.discount and ("Saving "..(q.price-q.cost).." with Plus")or nil,
@@ -2079,8 +2091,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.14", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.14")
+    text(panel, "Title", "BLOX CATALOG v12.15", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.15")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton
