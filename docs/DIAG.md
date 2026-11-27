@@ -1,6 +1,24 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.10. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.11. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Processing và thanh Buy, v12.11
+
+Đọc lại báo cáo checkout thật đã lưu (SHA256 `82e75c89cc9e1c467776ae2510fbd823d88df99120724e0c3fdfa70fa214e87e`): 12 snapshot, complete=true. Processing Purchase hiện ở 22.629s; PurchasePromptApp tăng từ 7 lên 17 node nhưng vẫn chỉ có khung/cursor, không chứa cây nội dung nút Buy. GiftWindow.Enabled=false ở 45.265s; tín hiệu client hoàn tất ở 59.948s. Đây không phải video hoặc mã hoạt ảnh Buy; không thể lấy thời lượng thanh từ báo cáo này. Dữ liệu và source game thô giữ local.
+
+Source GiftWindow đã lấy được cho thấy `Window.Overlay.Loading.ImageLabel/TextLabel`, cập nhật dấu chấm mỗi 0.33s; Close tắt ScreenGui và dọn Trove/UI overlay. V12.11 dùng trực tiếp các object này để hiển thị Processing, giữ và khôi phục thuộc tính gốc. Không gọi callback Purchase, WrapPurchase, buyRobuxShop hay tín hiệu/receipt thanh toán. Nếu không có khung native hoặc khung đang bận thì dừng, không dựng một khung game khác để thay thế.
+
+Đối chiếu thêm artifact client công khai, cố định commit `69b8d709dccdb25eb71fefd5b23f26b12fdb9b43`:
+
+- [UnifiedProductPurchaseModal](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Workspace/Packages/_Index/IAPExperience/IAPExperience/ProductPurchase/v3/UnifiedProductPurchaseModal.luau): inputDelay=2.5 khi bật delayed input.
+- [Foundation Button](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Packages/_Index/Foundation/Foundation/Components/Button/Button.luau): tự animate lúc mount, Quad và gradient transparency theo tiến trình; không phải giữ chuột để thanh chạy. Constants của artifact cho disabled transparency=0.5.
+- [Dialog variants](https://github.com/Mauio64/roblox-corescripts-decompiled/blob/69b8d709dccdb25eb71fefd5b23f26b12fdb9b43/extracontent-models/InExperience/InExperience/PatchRoot/DataModelInstances/CorePackages/Packages/_Index/Foundation/Foundation/Components/Dialog/useDialogVariants.luau): medium container=480 trước padding. Đối chiếu ảnh native mới có bề rộng khoảng 458px, nên thân dialog local đổi từ 640 xuống 456px.
+
+Các file decompile bên ngoài là bằng chứng đối chiếu, chưa chứng minh cùng binary với bản cài trên máy. Không chép cả package Roblox hay nạp native CoreScript bằng cách đổi identity. Nội suy local dùng Quad/Out; chưa đo đường cong từng khung hình của client gốc. Hai khoảng đợi local trước/sau xác nhận dùng một chu kỳ dấu chấm 0.33s để hiện được Processing, không giả nhận đó là độ trễ server thật.
+
+Luồng mới: Preparing → Confirm với khóa Buy 2.5s → Purchasing local → Completed. Không trừ tiền khi mở hoặc tự chạy đầy thanh. Confirm và trước khi trừ đều kiểm tra quote/session còn hợp lệ; khóa thao tác lặp. Reset/đóng Catalog hủy các phase đang chờ, không trừ muộn. Hoàn tất tắt GiftWindow và thử gọi phương thức Close của controller UI gốc để dọn lock; chỉ dùng phương thức UI đã đối chiếu, không gọi đường mua hàng. Nếu module không đọc được thì vẫn tắt ScreenGui; việc dọn lock native trong Blox Fruits live cần xác nhận. Khung success được giữ khi Gift đóng.
+
+Kiểm tra: NativeShop assertions qua cho thứ tự Processing, tiến trình giữa chừng, khóa click trước hạn, chống sửa attribute để mua sớm, hủy/Reset/đổi quote khi đang chờ, thiếu UI, khung native đang bận, trừ một lần và success không tự mất. Simulation và 7 test Python build qua. Playtest Studio dùng bố cục Processing đo từ report, không dùng giao dịch thật: Processing xuất hiện trước dialog 0.334s; guard Buy 2.515s và có các frame trung gian. Cancel giữ 79150; Control trừ 4000 còn 75150, GiftCount=1, callback Purchase gốc giữ=1 như trước Apply; controller Close fixture được gọi đúng một lần. Sau Reset callback gốc tăng=2 khi bấm lại. Đã xem Processing, thanh đang chạy và Completed; fixture Studio đã dọn. Chưa xác nhận v12.11 trên Blox Fruits live, chưa dựng nhánh mua thêm Robux/giá tiền tệ; không sửa asset Fruit/skin.
 
 ## Gift và giao diện checkout, v12.10
 

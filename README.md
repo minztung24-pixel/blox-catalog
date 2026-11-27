@@ -12,7 +12,17 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.10 Gift appearance and checkout styling
+## v12.11 Processing, delayed Buy and completion flow
+
+After Apply, the flow is now **Gift → the existing game Processing Purchase overlay → Buy input-delay fill → local processing → Gift closes → local completion**. The adapter uses `GiftWindow.Window.Overlay.Loading` directly, preserves its icon/caption/visibility, and restores them on cancel or cleanup. Missing or already busy native processing UI is reported instead of creating a replacement. No game purchase handler is called.
+
+The Buy button fills automatically and rejects input for 2.5 seconds. Clicking early does nothing; filling alone never spends. Confirmation enters a pending local phase and revalidates the recipient, price and balance before charging once. Reset/close during preparation or pending processing cancels the charge. Completion disables GiftWindow and, when its game UI module is readable, calls its UI-only Close method to release the native overlay state. The completion dialog remains until OK.
+
+The confirmation width is reduced from 640 to 456 pixels, matching the medium-sheet body and new screenshots more closely. The Buy-delay mechanism is based on pinned, decompiled Roblox client component artifacts; they have not been identified as the exact binary build installed on the user's computer. See [DIAG](docs/DIAG.md) for sources and limits. The two financial dialogs remain local recreations with simulation labels. Insufficient fake funds still block checkout; no real Robux upsell or payment is initiated.
+
+Validation: NativeShop/Simulation assertions and seven Python build tests pass. A Studio client fixture used the recorded native processing layout and a UI-only Close controller. Processing appeared 0.334 seconds before confirmation; the Buy guard lasted 2.515 seconds with intermediate frames captured. Cancel preserved 79150; confirming Control charged 4000 once to 75150, called the fixture's UI Close once, and never called its original purchase handler. OK and Reset passed. Test-only Studio objects were removed. Live Blox Fruits integration still needs confirmation; no real purchase was performed.
+
+## v12.10 Gift appearance and checkout styling (previous flow)
 
 The native Gift price label is copied verbatim, including its icon and rich text. The added “Visual” suffix and the banner below GiftWindow are removed. The visual discount is shown only in checkout. Simulation remains explicit in Catalog and the local confirmation/completion dialogs.
 
