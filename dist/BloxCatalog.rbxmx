@@ -1429,7 +1429,7 @@ local NativeShop={}
 
 function NativeShop.new(playerGui,state,onChange,enabled)
     local binding={}
-    local original,overlay,badge,connection,savedVisible,savedInteractable,savedSelectable
+    local original,overlay,connection,savedVisible,savedInteractable,savedSelectable
     local checkout,quote
     local checkoutConnections={}
     local function dismiss()
@@ -1480,7 +1480,6 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         dismiss()
         if connection then connection:Disconnect();connection=nil end
         if overlay then overlay:Destroy();overlay=nil end
-        if badge then badge:Destroy();badge=nil end
         if original and original.Parent then
             original.Visible=savedVisible;original.Interactable=savedInteractable;original.Selectable=savedSelectable
         end
@@ -1499,6 +1498,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
     end
     local function show(completed)
         local q=quote
+        local height=completed and 380 or (q.discount and 416 or 344)
         local gui=Instance.new("ScreenGui")
         gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
         gui:SetAttribute("Simulation",true)
@@ -1514,13 +1514,14 @@ function NativeShop.new(playerGui,state,onChange,enabled)
         shade.BackgroundTransparency=.4;shade.Text="";shade.AutoButtonColor=false;shade.Modal=true
         local panel=Instance.new("Frame",shade)
         panel.Name="Dialog";panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.5)
-        panel.Size=UDim2.fromOffset(640,400);panel.BackgroundColor3=Color3.fromRGB(25,27,33);panel.ZIndex=2
+        panel.Size=UDim2.fromOffset(640,height);panel.BackgroundColor3=Color3.fromRGB(17,18,22)
+        panel.BorderSizePixel=0;panel.ZIndex=2
         local corner=Instance.new("UICorner",panel);corner.CornerRadius=UDim.new(0,16)
         local scale=Instance.new("UIScale",panel)
         local function fit()
             local camera=workspace.CurrentCamera
             local viewport=camera and camera.ViewportSize or Vector2.new(800,600)
-            scale.Scale=math.min(1,math.max(1,viewport.X-24)/640,math.max(1,viewport.Y-100)/400)
+            scale.Scale=math.min(1,math.max(1,viewport.X-24)/640,math.max(1,viewport.Y-100)/height)
         end
         fit()
         local camera=workspace.CurrentCamera
@@ -1529,7 +1530,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             local node=Instance.new("TextLabel",panel)
             node.Name=name;node.Text=text;node.Position=UDim2.fromOffset(x,y);node.Size=UDim2.fromOffset(w,h)
             node.BackgroundTransparency=1;node.TextColor3=Color3.fromRGB(240,241,245)
-            node.Font=Enum.Font.GothamMedium;node.TextSize=size or 18
+            node.FontFace=Font.new("rbxasset://fonts/families/BuilderSans.json");node.TextSize=size or 18
             node.TextXAlignment=Enum.TextXAlignment.Left;node.TextWrapped=true;node.ZIndex=3
             return node
         end
@@ -1537,40 +1538,72 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             local node=Instance.new("TextButton",panel)
             node.Name=name;node.Text=text;node.Position=UDim2.fromOffset(x,y);node.Size=UDim2.fromOffset(w,h)
             node.BackgroundColor3=Color3.fromRGB(51,95,255);node.TextColor3=Color3.new(1,1,1)
-            node.TextSize=20;node.Font=Enum.Font.GothamBold;node.ZIndex=4
+            node.TextSize=24;node.FontFace=Font.new("rbxasset://fonts/families/BuilderSans.json",Enum.FontWeight.Bold)
+            node.BorderSizePixel=0;node.ZIndex=4
             Instance.new("UICorner",node).CornerRadius=UDim.new(0,8)
             table.insert(checkoutConnections,node.Activated:Connect(callback))
             return node
         end
-        label("Title",completed and "Purchase completed" or "Buy item",24,16,360,36,22)
-        local scope=label("Scope","SIMULATION · Local only",24,54,540,24,14)
-        scope.TextColor3=Color3.fromRGB(255,220,100)
-        local close=button("Close","×",580,12,44,44,function()binding:cancel()end)
-        close.BackgroundTransparency=1
+        local function bold(node)
+            node.FontFace=Font.new("rbxasset://fonts/families/BuilderSans.json",Enum.FontWeight.Bold)
+            return node
+        end
+        local function robux(name,x,y,size)
+            local icon=Instance.new("ImageLabel",panel)
+            icon.Name=name;icon.Image="rbxasset://textures/ui/common/robux@3x.png"
+            icon.Position=UDim2.fromOffset(x,y);icon.Size=UDim2.fromOffset(size,size)
+            icon.BackgroundTransparency=1;icon.ZIndex=3
+        end
+        bold(label("Title",completed and "Purchase completed" or "Buy item",32,24,360,32,24))
+        local close=button("Close","×",576,18,44,44,function()binding:cancel()end)
+        close.BackgroundTransparency=1;close.TextSize=34
         if completed then
-            local check=label("Check","✓",280,92,80,80,54);check.TextXAlignment=Enum.TextXAlignment.Center
-            label("Result","Simulated purchase of "..q.item.name.." for @"..q.username.." completed.",32,183,576,66,19)
-            label("Balance","Visual R$: "..number(state.balance.robux),32,250,576,28,18)
+            local circle=Instance.new("Frame",panel)
+            circle.Name="CheckCircle";circle.Position=UDim2.fromOffset(284,64);circle.Size=UDim2.fromOffset(72,72)
+            circle.BackgroundTransparency=1;circle.ZIndex=3
+            Instance.new("UICorner",circle).CornerRadius=UDim.new(1,0)
+            local stroke=Instance.new("UIStroke",circle);stroke.Thickness=2;stroke.Color=Color3.fromRGB(220,222,228)
+            local check=label("Check","✓",284,64,72,72,40);check.TextXAlignment=Enum.TextXAlignment.Center
+            local result=label("Result","Simulated purchase of "..q.item.name.." for "..q.username.." completed.",40,174,560,54,18)
+            result.TextXAlignment=Enum.TextXAlignment.Center
         else
-            label("Balance","R$ "..number(state.balance.robux),370,20,200,28,18).TextXAlignment=Enum.TextXAlignment.Right
+            robux("BalanceIcon",448,30,24)
+            local balance=bold(label("Balance",number(state.balance.robux),388,27,182,28,22))
+            balance.TextXAlignment=Enum.TextXAlignment.Right
+            local function alignBalance()
+                panel.BalanceIcon.Position=UDim2.fromOffset(570-balance.TextBounds.X-32,30)
+            end
+            table.insert(checkoutConnections,balance:GetPropertyChangedSignal("TextBounds"):Connect(alignBalance))
+            alignBalance()
             local icon=Instance.new("ImageLabel",panel)
             icon.Name="Icon";icon.Image=q.item.icon;icon.BackgroundTransparency=1
-            icon.Position=UDim2.fromOffset(28,100);icon.Size=UDim2.fromOffset(84,84);icon.ZIndex=3
+            icon.Position=UDim2.fromOffset(32,76);icon.Size=UDim2.fromOffset(96,96);icon.ZIndex=3
             if q.item.iconRectOffset then icon.ImageRectOffset=Vector2.new(table.unpack(q.item.iconRectOffset))end
             if q.item.iconRectSize then icon.ImageRectSize=Vector2.new(table.unpack(q.item.iconRectSize))end
-            label("Product",q.item.name.." - Gift",128,96,480,48,22)
-            label("Price","R$ "..number(q.cost),128,145,220,36,24)
+            bold(label("Product",q.item.name.." - Gift",144,82,464,42,24))
+            robux("PriceIcon",144,138,20)
+            local amount=bold(label("Price",number(q.cost),172,130,200,34,24))
             if q.cost~=q.price then
-                local old=label("OriginalPrice","&lt;s&gt;R$ "..number(q.price).."&lt;/s&gt;",355,149,240,28,18)
+                local old=bold(label("OriginalPrice","&lt;s&gt;"..number(q.price).."&lt;/s&gt;",172,133,240,28,22))
+                local function alignPrice()old.Position=UDim2.fromOffset(172+amount.TextBounds.X+20,133)end
+                table.insert(checkoutConnections,amount:GetPropertyChangedSignal("TextBounds"):Connect(alignPrice))
+                alignPrice()
                 old.RichText=true;old.TextColor3=Color3.fromRGB(172,175,185)
             end
-            label("Recipient","To @"..q.username,32,193,576,32,18)
-            label("Discount",q.discount and ("Saving "..number(q.price-q.cost).." with visual discount") or "No visual discount",32,238,576,36,18)
+            if q.discount then
+                local row=Instance.new("Frame",panel)
+                row.Name="DiscountRow";row.Position=UDim2.fromOffset(32,190);row.Size=UDim2.fromOffset(576,64)
+                row.BackgroundColor3=Color3.fromRGB(30,32,40);row.BorderSizePixel=0;row.ZIndex=2
+                Instance.new("UICorner",row).CornerRadius=UDim.new(0,8)
+                robux("DiscountIcon",52,210,24)
+                bold(label("Discount","Saving "..number(q.price-q.cost).." with Plus",84,208,500,28,22))
+            end
         end
-        button(completed and "OK" or "Buy",completed and "OK" or "Buy",24,302,592,50,function()
+        button(completed and "OK" or "Buy",completed and "OK" or "Buy",32,height-(completed and 100 or 144),576,60,function()
             if completed then binding:cancel()else binding:confirm()end
         end)
-        label("Delivery","No real Robux spent. No gift delivered.",24,361,592,24,14)
+        local scope=label("Scope","SIMULATION · No real Robux spent or gift delivered.",32,height-(completed and 38 or 64),576,24,16)
+        scope.TextColor3=Color3.fromRGB(180,183,193);scope.TextXAlignment=Enum.TextXAlignment.Center
         table.insert(checkoutConnections,Input.InputBegan:Connect(function(input)
             if input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB then binding:cancel()end
         end))
@@ -1601,7 +1634,6 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             quote=q;show(true)
             message="Simulated gift: "..q.item.name.." → "..q.username..". Not delivered."
         end
-        if badge then badge.Text=message end
         onChange(message)
         return ok,message
     end
@@ -1622,7 +1654,6 @@ function NativeShop.new(playerGui,state,onChange,enabled)
                 show(false);return true
             end
         end
-        if badge then badge.Text=message end
         onChange(message)
         return false,message
     end
@@ -1655,27 +1686,18 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             overlay.Interactable=true;overlay.Active=true;overlay.Selectable=true
             overlay.Parent=button.Parent
             connection=overlay.Activated:Connect(function()self:buy()end)
-            badge=Instance.new("TextLabel")
-            badge.Name="BloxCatalogGiftStatus";badge.Position=UDim2.new(0,0,1,4);badge.Size=UDim2.new(1,0,0,42)
-            badge.BackgroundColor3=Color3.fromRGB(20,20,25);badge.BackgroundTransparency=.1
-            badge.TextColor3=Color3.fromRGB(255,226,79);badge.Font=Enum.Font.GothamMedium
-            badge.TextSize=12;badge.TextWrapped=true;badge.ZIndex=frame.ZIndex+6
-            badge.Text="Visual R$: "..state.balance.robux.." · Local preview only"
-            badge.Parent=frame.Footer.Context
         end
         original.Visible=false;original.Interactable=false;original.Selectable=false
         overlay.Visible=savedVisible
         overlay.Position=button.Position;overlay.Size=button.Size;overlay.AnchorPoint=button.AnchorPoint
-        overlay.Rotation=button.Rotation;overlay.ZIndex=button.ZIndex+1
+        overlay.Rotation=button.Rotation;overlay.ZIndex=button.ZIndex
         overlay.BackgroundColor3=button.BackgroundColor3;overlay.BackgroundTransparency=button.BackgroundTransparency
         local trans=button:FindFirstChild("Trans")
         local copy=overlay:FindFirstChild("Trans")
         if trans and copy and trans:IsA("Frame") and copy:IsA("Frame")then
             copy.BackgroundColor3=trans.BackgroundColor3;copy.BackgroundTransparency=trans.BackgroundTransparency
         end
-        local cost=Inventory.shopPrice(state,price)
-        overlay.TextLabel.Text=item and username and cost and (label.Text:gsub("%d[%d,%s]*%s*$",tostring(cost).." · Visual"))
-            or "Select gift / player · Visual"
+        overlay.TextLabel.Text=label.Text
     end
     function binding:close()
         self.closed=true;clear()
@@ -1758,8 +1780,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.9", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", 12.9)
+    text(panel, "Title", "BLOX CATALOG v12.10", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.10")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

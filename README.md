@@ -12,7 +12,15 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
-## v12.9 Local checkout confirmation
+## v12.10 Gift appearance and checkout styling
+
+The native Gift price label is copied verbatim, including its icon and rich text. The added “Visual” suffix and the banner below GiftWindow are removed. The visual discount is shown only in checkout. Simulation remains explicit in Catalog and the local confirmation/completion dialogs.
+
+The two local dialogs now use the installed Roblox Builder Sans font and built-in white Robux icon. Product spacing, the separate Plus savings row, strike-through price, close control, centered success text and outlined check circle follow the supplied reference images more closely. This is a local recreation, not an exact native checkout or a verified pixel-for-pixel match. The Version attribute is now the string `12.10` so dotted version numbers retain their meaning.
+
+Validation: NativeShop and Simulation assertions and seven Python build tests pass. A fresh Studio playtest checked the unchanged Gift label, no extra banner, price spacing, real built-in icon loading and the local charge: 975141 minus 3150 leaves 971991, with one local record and no original purchase callback. OK and Reset restore the native callback. Both local screens were visually inspected. Live Blox Fruits and mobile/gamepad behavior still need confirmation.
+
+## v12.9 Local checkout confirmation (previous styling)
 
 Before Apply, the original Shop/Gift purchase button remains unchanged. After Apply, keep using the game's Permanent Fruit Shop → Gift and Server/Global recipient selection. Its purchase button opens a local **Buy item** confirmation with the selected product, recipient, fake balance and optional visual discount. Only pressing **Buy** deducts that balance and records a local gift; **Purchase completed → OK** confirms the simulation. Both dialogs explicitly identify local simulation and no delivery.
 

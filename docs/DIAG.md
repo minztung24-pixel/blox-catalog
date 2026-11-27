@@ -1,6 +1,14 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.9. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.10. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Xem bảng theo ItemId và số đo mới trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Gift và giao diện checkout, v12.10
+
+Phản hồi ảnh của người dùng: chữ Visual trên nút giá và bảng Local preview dưới GiftWindow đều do Catalog thêm, không có trong UI game. Đã bỏ hai phần này; nút bản sao giữ nguyên Text/RichText của giá native, giữ lớp vẽ gốc để không che nhãn con. Giảm giá preview chỉ xuất hiện trong cửa Buy item. Catalog và footer của hai cửa local vẫn ghi mô phỏng, không giao quà.
+
+Đối chiếu ảnh Buy item / Purchase completed đã cung cấp: dùng Builder Sans và file icon trắng `rbxasset://textures/ui/common/robux@3x.png` đã tìm trong bản Roblox cài trên máy. Chỉnh khoảng cách sản phẩm, font, hàng Plus riêng, giá gạch ngang theo bề rộng chữ, nút đóng và vòng tròn dấu tích. Giá/số dư không dùng chữ R$ thay icon nữa. Đây vẫn là UI local dựng theo ảnh; chưa xác nhận trùng từng pixel và không phải CoreGui thanh toán gốc. Attribute Version đổi sang chuỗi `12.10`.
+
+NativeShop assertions qua cho nhãn Gift không đổi, không banner, xác nhận/hủy, chống trừ hai lần, quote cũ và cleanup; Simulation assertions và 7 test build Python qua. Playtest Studio sạch với fixture: callback nút gốc=1 trước Apply, giữ=1 khi Buy local, thành=2 sau Reset. Số dư 975141 trừ 3150 còn 971991, GiftCount=1. Đã xem cả hai cửa, xác nhận icon engine tải được và giá gốc không đè giá giảm. Chưa xác nhận trên Blox Fruits live, không thử giao dịch thật hoặc cập nhật asset Fruit/skin trong bản này.
 
 ## Checkout local hai bước, v12.9
 
