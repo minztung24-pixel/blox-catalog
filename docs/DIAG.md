@@ -1,6 +1,14 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 27/11/2026, Catalog v12.16. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 27/11/2026, Catalog v12.17. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số liệu asset giữ nguyên trong bản sửa checkout này. Xem bảng theo ItemId và số đo trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Khung hoàn tất và gạch chân điều khoản, v12.17
+
+Ảnh 1 của người dùng là local hiện tại; ảnh 2 là mẫu completion cần đối chiếu. Khung mẫu rộng khoảng 718px, cao khoảng 371px trong ảnh đã phóng; chuẩn hóa về bề rộng dialog 456px cho chiều cao khoảng 236px. Không dùng trực tiếp kích thước pixel của ảnh phóng làm kích thước UI. Đổi completion từ 456×280 thành 456×236, slot icon circle-check 48×48 tại (204,64), nội dung 416×32 tại (20,124), OK tại y=176. Vẫn dùng glyph BuilderIcons cài cùng Roblox, không vẽ dấu tích mới. Vị trí được đối chiếu ảnh, không tuyên bố trích được cây nội dung CoreGui.
+
+Câu xác nhận rút về `You have successfully bought Dragon.` theo tên ngắn của sản phẩm; bỏ Permanent và phần for tên người nhận ở riêng dialog này. Quote, tên/ID/recipient trong record và hai thông báo gift gốc không đổi. RichText footer đổi thành `Your payment method will be charged. Roblox <u>Terms of Use</u> apply.`: Roblox không gạch chân. Khung Buy item thường và Plus giữ bố cục v12.16, nhãn local vẫn hiện.
+
+Kiểm chứng: thêm assertion trước khi sửa, xác nhận bản cũ lỗi ở nội dung completion và vùng gạch chân; 5 suite Luau và 7 test build đạt sau sửa. Đã xem screenshot completion và confirmation trong Studio, click OK thật đóng đúng một lần, dừng Play để dọn fixture client. Chưa kiểm tra hình ảnh bản mới trong phiên Blox Fruits của người dùng, không mua thật hay yêu cầu thêm lượt trả Robux. ASSET_AUDIT không đổi.
 
 ## Buy item và thông báo theo formatter game, v12.16
 

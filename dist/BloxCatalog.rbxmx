@@ -1462,7 +1462,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local expanded=false
     local reducedMotion=Gui.ReducedMotionEnabled
     local previousSelection=Gui.SelectedObject
-    local height=completed and 280 or (q.discountLabel and 344 or 264)
+    local height=completed and 236 or (q.discountLabel and 344 or 264)
     local gui=Instance.new("ScreenGui")
     gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
     gui:SetAttribute("Simulation",true)
@@ -1531,8 +1531,8 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local mode=label("SimulationMode","LOCAL SIMULATION",20,42,180,14,12)
     mode.TextColor3=Color3.fromRGB(255,208,110)
     if completed then
-        symbol("Check","circle-check",204,52,48)
-        local result=label("Result",q.resultText,20,116,416,64,18)
+        symbol("Check","circle-check",204,64,48)
+        local result=label("Result",q.resultText,20,124,416,32,18)
         result.TextXAlignment=Enum.TextXAlignment.Center
     else
         robux("BalanceIcon",308,21,18)
@@ -1613,7 +1613,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     primary.Interactable=false;primary.AutoButtonColor=false;primary.Selectable=false
     local terms
     if not completed then
-        terms=label("Terms","Your payment method will be charged. &lt;u&gt;Roblox Terms of Use&lt;/u&gt; apply.",20,height-39,416,24,13)
+        terms=label("Terms","Your payment method will be charged. Roblox &lt;u&gt;Terms of Use&lt;/u&gt; apply.",20,height-39,416,24,13)
         terms.RichText=true;terms.TextColor3=Color3.fromRGB(188,190,200)
         terms.TextXAlignment=Enum.TextXAlignment.Center
     end
@@ -1852,7 +1852,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             iconRectOffset=q.item.iconRectOffset,iconRectSize=q.item.iconRectSize,
             balance=state.balance.robux,price=q.price,cost=q.cost,
             discountLabel=q.discount and q.cost&lt;q.price and ("Saving "..(q.price-q.cost).." with Plus")or nil,
-            resultText="You have successfully bought "..q.item.name.." for "..q.username.."."
+            resultText="You have successfully bought "..q.item.name:gsub("^Permanent%s+","").."."
         },completed,function()binding:confirm()end,function()binding:cancel(true)end)
         checkout=view.gui
         binding.phase=completed and "Completed"or "Confirm";elapsed=0
@@ -2079,8 +2079,8 @@ function UI.start()
         Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = colors.background,
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     round(panel, true)
-    text(panel, "Title", "BLOX CATALOG v12.16", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
-    gui:SetAttribute("Version", "12.16")
+    text(panel, "Title", "BLOX CATALOG v12.17", UDim2.fromOffset(14, 6), UDim2.new(1, -220, 0, 32), 18)
+    gui:SetAttribute("Version", "12.17")
     local drag = make("TextButton", panel, {Name = "DragTitle", BackgroundTransparency = 1, Text = "",
         Size = UDim2.new(1, -202, 0, 42), Selectable = false})
     local openButton

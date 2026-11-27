@@ -136,7 +136,7 @@ function NativeShop.new(playerGui,state,onChange,enabled)
             iconRectOffset=q.item.iconRectOffset,iconRectSize=q.item.iconRectSize,
             balance=state.balance.robux,price=q.price,cost=q.cost,
             discountLabel=q.discount and q.cost<q.price and ("Saving "..(q.price-q.cost).." with Plus")or nil,
-            resultText="You have successfully bought "..q.item.name.." for "..q.username.."."
+            resultText="You have successfully bought "..q.item.name:gsub("^Permanent%s+","").."."
         },completed,function()binding:confirm()end,function()binding:cancel(true)end)
         checkout=view.gui
         binding.phase=completed and "Completed"or "Confirm";elapsed=0

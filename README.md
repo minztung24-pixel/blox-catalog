@@ -12,6 +12,14 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## v12.17 Compact completion and legal-link underline
+
+Completion now reads **You have successfully bought Dragon.** (using the selected short product name), without the permanent prefix or recipient. Gift records and native gift notices still retain the full product and recipient. The reference image's aspect ratio gives a 456×236 completion, replacing 456×280; the installed Roblox circle-check glyph is centered in its 48px slot at (204,64), the result is at (20,124) in a 416×32 area, and OK starts at y=176. The visible local marker remains.
+
+The confirmation footer now underlines **Terms of Use** only; **Roblox** is plain text, matching the supplied native screenshot. Ordinary confirmation and Plus layout/behavior are unchanged.
+
+Validation: regression assertions failed against v12.16 and pass after the changes; all five Luau suites and seven build tests pass. Studio screenshots checked completion and confirmation, and a real Studio OK click dismissed completion once. Geometry is derived from the supplied scaled reference image, not a native CoreGui extraction; exact live-game appearance still needs confirmation. No real transaction was used.
+
 ## v12.16 Buy item and native gift notification formatting
 
 Affordable visual checkout uses **Buy item** again. The standalone Total card is removed; the regular dialog is 456×264. Short product names, the existing Buy animation and the reference product positions remain. Plus retains its savings accordion, 456×344 collapsed and 456×456 expanded, with Subtotal / reduction / Total inside the expanded details only. Quotes with no actual saving do not show the accordion.

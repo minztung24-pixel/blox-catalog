@@ -39,7 +39,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local expanded=false
     local reducedMotion=Gui.ReducedMotionEnabled
     local previousSelection=Gui.SelectedObject
-    local height=completed and 280 or (q.discountLabel and 344 or 264)
+    local height=completed and 236 or (q.discountLabel and 344 or 264)
     local gui=Instance.new("ScreenGui")
     gui.Name="BloxCatalogCheckout";gui.ResetOnSpawn=false
     gui:SetAttribute("Simulation",true)
@@ -108,8 +108,8 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     local mode=label("SimulationMode","LOCAL SIMULATION",20,42,180,14,12)
     mode.TextColor3=Color3.fromRGB(255,208,110)
     if completed then
-        symbol("Check","circle-check",204,52,48)
-        local result=label("Result",q.resultText,20,116,416,64,18)
+        symbol("Check","circle-check",204,64,48)
+        local result=label("Result",q.resultText,20,124,416,32,18)
         result.TextXAlignment=Enum.TextXAlignment.Center
     else
         robux("BalanceIcon",308,21,18)
@@ -190,7 +190,7 @@ function RobloxPrompt.open(playerGui,data,completed,onBuy,onCancel)
     primary.Interactable=false;primary.AutoButtonColor=false;primary.Selectable=false
     local terms
     if not completed then
-        terms=label("Terms","Your payment method will be charged. <u>Roblox Terms of Use</u> apply.",20,height-39,416,24,13)
+        terms=label("Terms","Your payment method will be charged. Roblox <u>Terms of Use</u> apply.",20,height-39,416,24,13)
         terms.RichText=true;terms.TextColor3=Color3.fromRGB(188,190,200)
         terms.TextXAlignment=Enum.TextXAlignment.Center
     end
