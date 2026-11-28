@@ -2,14 +2,20 @@
 
 Kiểm kê cập nhật ngày 27/11/2026 cho 81 trái vật phẩm trong Fruits và Fruit Skins. Model, Mesh, Texture, Animation và VFX trong bảng dùng báo cáo grouped audit vừa chạy trong Blox Fruits; Cầm / Equip và Ghi chú giữ bằng chứng người dùng cùng các lượt đo cũ. Bộ nguồn có 50 file .rbxm trong Work Potassium. Phạm vi ban đầu là tab Fruits của v12.1, hiện đã phân loại lại và ghi rõ tab riêng.
 
-- Có model qua đối chiếu: **45/81**. File có một root Tool/Model và có BasePart. Kết quả này chưa kiểm tra thao tác Equip của từng trái.
-- **35/81** chưa có file khớp. **1/81** có file đúng tên nhưng chứa nhầm model và bị chặn khi nhập.
+- Bộ file gốc nạp được: **45/81**. File có một root Tool/Model và có BasePart. Kết quả này chưa kiểm tra thao tác Equip của từng trái và không xác nhận Control là model hiện hành.
+- Bộ file gốc còn 35 mục thiếu và 1 sai model. Archive riêng đã bổ sung nguồn Rocket nhưng chưa đạt tải mesh: **34/81 chưa có nguồn khớp, 1/81 Rocket có cấu trúc nhưng render chưa đạt, 1/81 Empyrean sai model**.
 - **35 rig** đổi pose trong lượt mới; báo cáo v12 trước đó ghi 34 rig. Số liệu không đánh giá hình ảnh có đúng với bản game hiện tại hay không.
 - **496/497** tham chiếu tài nguyên riêng biệt tải thành công trong lần đo cũ. Lỗi duy nhất là texture hạt trên Buddha. Đây không phải số món đồ hay số texture của icon Catalog.
 - **Kiểm tra lịch sử ngày 26/11 trong Studio:** place demo bị từ chối quyền tải cả 7 ID animation gốc của 8 trái thiếu chuyển động và clip thử của Flame. Hai clip đối chứng tải được. Không dùng kết quả quyền tải của place demo để suy ra nguyên nhân trong game gốc. [Kết quả Studio trong DIAG](DIAG.md#kiểm-tra-lại-trong-roblox-studio-ngày-26112026)
 
 - **Đo lại trong Blox Fruits ngày 26/11:** Dragon, Dragon (West), Ember, Flame, Lightning, Quake và Werewolf (Tiger) đều có 4 mẫu Tool đang cầm, trạng thái cuối Failed do preload trả Failure và không có track đang chạy. Báo cáo kết thúc bình thường nhưng thiếu Tiger (1430).
 
+
+## Rocket: đã có archive thật, chưa xác nhận hiển thị hoàn chỉnh
+
+Watcher v12.26 nhận Rocket thật ItemId 1390; bộ nạp mới nhập archive được, có Handle và model thật, 97 descendants / 10 BasePart / 5 MeshPart / 56 Bone, rig khớp Tool thật. Sáu emitter đang tắt; có Idle 15124425041 nhưng chưa thử phát. Mẫu riêng tư 56350 bytes. Không thay bằng model/clip của trái khác.
+
+Preload render **6/11 thành công, 5/11 thất bại**, cả 5 lỗi là MeshId. Kiểm tra fullCheckPassed=false; chưa chạy phép thử cầm bản sao hoặc đối chiếu hình ảnh do Roblox/Potassium đã đóng. Vì vậy chỉ đánh dấu nguồn đã có, không ghi Rocket là model hoàn chỉnh. Tổng hợp: data/rocket-capture-check-2026-11-28.json. Các kết quả trước đó ghi 35 thiếu nguồn vẫn giữ nghĩa lịch sử; hiện còn 34 chưa có nguồn cộng Rocket đang chờ kiểm chứng render.
 
 ## Phản hồi người dùng và sửa có giới hạn, v12.26
 
@@ -130,7 +136,7 @@ Cột **Mesh** ghi số MeshPart và số tham chiếu mesh tải thành công /
 | Quake | 1389 | Fruits | Nạp được · Quake-Quake.rbxm | 4 · 4/4 | 3/3 | Đã đo cầm · 4 mẫu · 26/11 | Preload Failure · 87225712156404, 87225712156404 | 0/5 bật · 5/5 | Người dùng thấy đứng yên |
 | Red Lightning | 540 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Requiem Eagle | 495 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
-| Rocket | 1390 | Fruits | Thiếu file | — | — | Đã từng cầm · ngoài file | — | — | 28/11: người dùng chưa có model để cầm; người dùng báo có trái thật, chờ mẫu Tool |
+| Rocket | 1390 | Fruits | Archive native · ItemId 1390 · cấu trúc nạp được | 5 · 0/5 mesh tải được | 0 ref. | Chưa thử cầm bản sao | Có Idle 15124425041 · chưa đo phát | 0/6 bật · 6/6 texture | 28/11: nguồn thật đã lưu; rig khớp; preload 6/11 thành công, 5 mesh Failure; chưa xác nhận hình ảnh |
 | Rose Quartz Diamond | 470 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |
 | Rubber | 1396 | Fruits | Nạp được · Rubber-Rubber.rbxm | 3 · 3/3 | 3/3 | Người dùng đã xem · chưa đo Equip | Đổi pose · 83/93 khớp · 15123668008 | 0/0 bật · 0 ref. | Người dùng chưa thấy VFX |
 | Ruby Diamond | 468 | Fruit Skins | Thiếu file | — | — | Chưa xác nhận | — | — | — |

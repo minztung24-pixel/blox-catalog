@@ -1,6 +1,14 @@
 # DIAG — Model và chuyển động của Fruits
 
-Cập nhật ngày 28/11/2026, Catalog v12.26. Trong 81 trái vật phẩm, **45 nạp được model, 35 chưa có file khớp, 1 bị chặn vì file chứa sai model**. Số nạp được không xác nhận model hiện hành là đúng; Control được người dùng xác nhận là bản cũ. Thống kê toàn bộ giữ mốc 27/11; các lượt đối chứng 28/11 ghi riêng bên dưới. Chưa tăng số model đã xác nhận. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+Cập nhật ngày 28/11/2026, Catalog v12.26. Trong 81 trái vật phẩm: **45 nạp được từ bộ file gốc, 34 chưa có nguồn khớp, Rocket đã có archive nhưng kiểm tra render chưa đạt, 1 Empyrean bị chặn vì sai model**. Số nạp được không xác nhận model hiện hành là đúng; Control được người dùng xác nhận là bản cũ. Thống kê toàn bộ giữ mốc 27/11; các lượt đối chứng 28/11 ghi riêng bên dưới. Xem bảng theo ItemId trong [ASSET_AUDIT.md](ASSET_AUDIT.md).
+
+## Rocket đã có nguồn thật, kiểm chứng render chưa đạt
+
+Sau khi người dùng đưa Rocket thật ra hotbar, watcher v12.26 tự nhận đúng physical ItemId 1390 và lưu bản sao sạch vào archive riêng. Tạo một FruitModels/FruitArchive mới nạp lạnh được nguồn này, không dùng file Rocket giả hay tên/icon để thay thế. Clone có Handle, 97 descendants, 10 BasePart (5 MeshPart), 56 Bone, 6 ParticleEmitter đang tắt và Idle 15124425041. Rig signature c8c16832:72 khớp bản sao từ Rocket thật đang có. Model riêng tư 56350 bytes; Tool thật không bị đổi parent, Equip/Drop/Eat/Store trong phép kiểm tra này.
+
+**Không báo đã sửa hoàn chỉnh:** Preload 11 tham chiếu render hoàn tất, 6 thành công và cả 5 MeshId trả AssetFetchStatus.Failure: 15060012848, 15060012853, 15060012856, 15060012861, 15060012905. Báo cáo complete=true nhưng passed=false do yêu cầu tải render thất bại. Chưa xác định nguyên nhân quyền/phân phối/ID hay mạng; trạng thái này cũng chưa chứng minh hình ảnh bản sao chắc chắn sai. Chưa đo phát clip, chưa kiểm tra cầm/hiển thị bản sao trên tay. Roblox và Potassium đã đóng trước khi phép thử hiển thị tạm thời được chạy.
+
+Rocket chuyển từ chưa có nguồn sang **đã lưu/nạp được cấu trúc, còn lỗi tham chiếu mesh**. Không cộng thành một model đã xác nhận đầy đủ. Bộ file gốc vẫn 45 nạp được / 35 thiếu / 1 sai; tính thêm archive Rocket thì còn 34 mục chưa có nguồn, cộng 1 Rocket chưa đạt render và 1 sai Empyrean. Tổng hợp không chứa dữ liệu người chơi: data/rocket-capture-check-2026-11-28.json; raw model/metadata/report giữ riêng ở Work Potassium. Không phát hành asset game trong repo.
 
 ## Phản hồi mới, hotbar Celestial/Oni và đọc texture, v12.26
 

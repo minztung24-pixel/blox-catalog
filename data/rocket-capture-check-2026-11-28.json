@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-28",
+  "catalogVersion": "12.26",
+  "physicalItemId": "1390",
+  "name": "Rocket",
+  "source": "Genuine physical Tool observed in the user's client and captured by the source watcher",
+  "complete": true,
+  "sourceRecovered": true,
+  "coldArchiveLoadSucceeded": true,
+  "nativeReferencePresent": true,
+  "nativeRigMatches": true,
+  "rigSignature": "c8c16832:72",
+  "descendants": 97,
+  "parts": 10,
+  "meshParts": 5,
+  "particleEmitters": 6,
+  "enabledParticleEmitters": 0,
+  "animationIds": ["rbxassetid://15124425041"],
+  "privateModelBytes": 56350,
+  "renderPreload": {
+    "complete": true,
+    "references": 11,
+    "successes": 6,
+    "failures": 5,
+    "failedMeshIds": ["15060012848", "15060012853", "15060012856", "15060012861", "15060012905"]
+  },
+  "fullCheckPassed": false,
+  "visualEquipTestPerformed": false,
+  "animationPlaybackTestPerformed": false,
+  "limits": ["AssetFetchStatus.Failure does not establish a specific permission, deletion or network cause", "The native Tool and archive rig match, but full rendering is not verified", "Roblox and Potassium were closed before the temporary local display test could run", "No genuine Tool was Equipped, Dropped, Eaten or Stored by this check", "Raw model and metadata remain private; this repository does not distribute the captured game asset"]
+}

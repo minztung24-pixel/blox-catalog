@@ -12,6 +12,12 @@ Open Items in Blox Fruits, press Rescan, and wait for `Items linked locally`. Ad
 
 The client, inventory entries, Visual Robux balance and gifts are local simulations. They do not grant server items, combat abilities, Robux products or permanent ownership. Icon/ID data does not contain 3D models; missing models are reported without consuming local stock.
 
+## Rocket capture verification after v12.26
+
+The source watcher retained a genuine Rocket (physical ItemId 1390) in the user's private archive. A fresh cache imported it successfully: 97 descendants, 10 parts, 5 mesh parts, a real Handle and a rig matching the native reference. This is a real source recovery, not an icon or replacement model. Captured assets are not distributed in this repository.
+
+Full render verification **failed**: 6/11 render references loaded, while all five mesh references returned AssetFetchStatus.Failure. The cause is not established. No local-copy visual Equip or animation playback test was completed; the game and executor closed before the temporary display check. Rocket is therefore recorded as a recovered source with unresolved mesh loading, not a fully repaired fruit. There are 34 entries still without matching sources, plus this partial Rocket source and the mismatched Empyrean file; the original 45-file loading count is unchanged. See data/rocket-capture-check-2026-11-28.json and docs/DIAG.md.
+
 ## v12.26 Celestial/Oni hotbar fallback and public texture reads
 
 Native metadata marks Celestial and Oni with HasInvisibleTile. Their Add-to-Items visibility issue is separate from missing 3D models. As requested, adding either can now create a disabled metadata-only Tool in the native Backpack/hotbar when its model is missing. It retains the correct name/physical ItemId and contains no invented mesh, scripts or fruit activation. The Added action says Hotbar; the card does not claim a model is available. Other missing-model fruits retain their existing behavior, and native inventory visibility tags are not changed.
